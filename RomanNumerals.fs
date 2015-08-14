@@ -8,7 +8,7 @@ namespace FSharpKatas
 
         let rec numberToRomanNumeral number =
             match (number, conversionFor number) with
-            | (0, _) -> ""
+            | (0, _) | (_, None) -> ""
             | (n, c) -> snd(c.Value) + numberToRomanNumeral(n - fst(c.Value))
 
     module RomanNumeralsTests =
