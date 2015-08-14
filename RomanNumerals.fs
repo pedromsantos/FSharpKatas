@@ -4,12 +4,12 @@ namespace FSharpKatas
         let numbersToRomans = [1, "I"; 4, "IV"; 5, "V"; 9, "IX"; 10, "X"; 40, "XL"; 50, "L"; 90, "XC"; 100, "C"; 400, "CD"; 500, "D"; 900, "CM"; 1000, "M"] |> List.rev
 
         let conversionFor number =
-            numbersToRomans |> List.find (fun x -> number >= fst x)
+            numbersToRomans |> List.tryFind (fun x -> number >= fst x)
 
         let rec numberToRomanNumeral number =
-            match number with
-            | 0 -> ""
-            | n -> snd(conversionFor n) + numberToRomanNumeral(n - fst(conversionFor n))
+            match (number, conversionFor number) with
+            | (0, _) -> ""
+            | (n, c) -> snd(c.Value) + numberToRomanNumeral(n - fst(c.Value))
 
     module RomanNumeralsTests =
         open NUnit.Framework
