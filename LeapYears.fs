@@ -18,6 +18,6 @@
         [<TestCase(400, true)>]
         [<TestCase(1996, true)>]
         [<TestCase(2000, true)>]
-        let ``Should determine if year is a leap year``(year:int, expectedResult:bool) =
+        let ``Should determine if year is a leap year`` year isLeapYear =
             let isLeapYear = leapYear year 
-            Assert.AreEqual(expectedResult, isLeapYear)
+            Assert.AreEqual(isLeapYear, isLeapYear)
