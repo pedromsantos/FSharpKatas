@@ -55,6 +55,6 @@ namespace FSharpKatas
         [<TestCase(846, "DCCCXLVI")>]
         [<TestCase(1999, "MCMXCIX")>]
         [<TestCase(2008, "MMVIII")>]
-        let ``Should convert number to roman numeral``(number:int, expectedRomanNumeral:string) = 
+        let ``Should convert number to roman numeral`` number expectedRomanNumeral = 
             let romanNumeral = numberToRomanNumeral number
             Assert.AreEqual(expectedRomanNumeral, romanNumeral)

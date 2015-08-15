@@ -21,6 +21,6 @@ namespace FSharpKatas
         [<TestCase(9, "Fizz")>]
         [<TestCase(10, "Buzz")>]
         [<TestCase(15, "FizzBuzz")>]
-        let ``Should fizz buzz number``(number:int, expectedFizzBuzz:string) =
+        let ``Should fizz buzz number``number expectedFizzBuzz =
             let fizzBuzzed = fizzBuzz number
             Assert.AreEqual(expectedFizzBuzz, fizzBuzzed)
