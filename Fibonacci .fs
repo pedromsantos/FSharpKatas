@@ -3,10 +3,8 @@
     module Fibonacci =
         let fibonacci number =
             match number with
-            | 2 -> 1
-            | 3 -> 2
-            | 4 -> 3
-            | n -> n
+            | n when n > 1 -> n - 1
+            | n when n <= 1 -> n
 
     module FibonacciTests =
         open NUnit.Framework
