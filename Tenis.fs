@@ -50,7 +50,7 @@
             Assert.That(player.Points, Is.EqualTo(Points.Forty))
 
         [<Test>]
-        let ``Should set result Zero - Zero if no player has won a ball``() =
+        let ``Should calculate score Zero - Zero if no player has won a ball``() =
             let player1 = newPlayer "Player1"
             let player2 = newPlayer "Player2"
 
