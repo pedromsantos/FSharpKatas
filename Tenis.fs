@@ -5,16 +5,20 @@
 
         type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 
         type Player = {Name:string; Points:Points}
-        
-        let newPlayer playerName =
-           { Name = playerName; Points = Points.Zero }
+
+        let allPoints = 
+            Enum.GetValues(typeof<Points>) 
+            |> Seq.cast<Points>  
 
         let nextPoint player = 
-            Enum.GetValues(typeof<Points>) 
-                |> Seq.cast<Points> 
+                allPoints
                 |> Seq.skipWhile (fun p -> p <> player.Points) 
                 |> Seq.skip 1 
                 |> Seq.head
+
+        
+        let newPlayer playerName =
+           { Name = playerName; Points = Points.Zero }
 
         let winball player =
             { Name = player.Name; Points = nextPoint player }
@@ -33,3 +37,10 @@
             let player = winball(newPlayer "Player1")
             let player = winball(player)
             Assert.That(player.Points, Is.EqualTo(Points.Thirty))
+
+        [<Test>]
+        let ``Should increase points for ball winner from Thirty to Forty on third win``() =
+            let player = winball(newPlayer "Player1")
+            let player = winball(player)
+            let player = winball(player)
+            Assert.That(player.Points, Is.EqualTo(Points.Forty))
