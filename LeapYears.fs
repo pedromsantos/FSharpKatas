@@ -1,4 +1,4 @@
-﻿namespace FsharpKatas
+﻿namespace FSharpKatas
 
     module LeapYear  =
         let leapYear year =
