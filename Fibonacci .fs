@@ -20,6 +20,7 @@
         [<TestCase(5, 5)>]
         [<TestCase(6, 8)>]
         [<TestCase(7, 13)>]
+        [<TestCase(12, 144)>]
         let ``Should determine fibonacci number for number``(number:int, expectedFibonacciNumber:int) =
             let fibonacciNumber = fibonacci number 
             Assert.AreEqual(expectedFibonacciNumber, fibonacciNumber)
