@@ -38,15 +38,14 @@
             
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win``() =
-            let player = winball(newPlayer "Player1")
-            let player = winball(player)
+            let player = newPlayer "Player1" |> winball |> winball
+            
             Assert.That(player.Points, Is.EqualTo(Points.Thirty))
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win``() =
-            let player = winball(newPlayer "Player1")
-            let player = winball(player)
-            let player = winball(player)
+            let player = newPlayer "Player1" |> winball |> winball |> winball
+
             Assert.That(player.Points, Is.EqualTo(Points.Forty))
 
         [<Test>]
