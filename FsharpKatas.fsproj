@@ -38,6 +38,7 @@
     <Compile Include="LeapYears.fs" />
     <None Include="packages.config" />
     <Compile Include="Fibonacci .fs" />
+    <Compile Include="Tenis.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
