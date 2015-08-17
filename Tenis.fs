@@ -33,7 +33,7 @@
 
         [<Test>]
         let ``Should increase points for ball winner from Zero to Fifteen on first win``() =
-            let player = winball(newPlayer "Player1")
+            let player = newPlayer "Player1" |> winball
             Assert.That(player.Points, Is.EqualTo(Points.Fifteen)) 
             
         [<Test>]
