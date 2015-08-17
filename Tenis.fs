@@ -23,6 +23,10 @@
         let winball player =
             { Name = player.Name; Points = nextPoint player }
 
+        let score player1 player2 =
+            (player1.Points, player2.Points)
+            
+
     module TenisTests =
         open NUnit.Framework
         open Tenis
@@ -44,3 +48,10 @@
             let player = winball(player)
             let player = winball(player)
             Assert.That(player.Points, Is.EqualTo(Points.Forty))
+
+        [<Test>]
+        let ``Should set result Zero - Zero if no player has won a ball``() =
+            let player1 = newPlayer "Player1"
+            let player2 = newPlayer "Player2"
+
+            Assert.That(score player1 player2, Is.EqualTo((Points.Zero, Points.Zero))) 
