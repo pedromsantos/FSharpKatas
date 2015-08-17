@@ -9,10 +9,15 @@
         let newPlayer playerName =
            { Name = playerName; Points = Points.Zero }
 
+        let nextPoint player = 
+            Enum.GetValues(typeof<Points>) 
+                |> Seq.cast<Points> 
+                |> Seq.skipWhile (fun p -> p <> player.Points) 
+                |> Seq.skip 1 
+                |> Seq.head
+
         let winball player =
-            let allPoints = Enum.GetValues(typeof<Points>)
-            let nextPoint = allPoints |> Seq.cast<Points> |> Seq.skipWhile (fun p -> p <> player.Points) |> Seq.skip 1 |> Seq.head
-            { Name = player.Name; Points = nextPoint }
+            { Name = player.Name; Points = nextPoint player }
 
     module TenisTests =
         open NUnit.Framework
