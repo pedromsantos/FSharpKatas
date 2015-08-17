@@ -1,13 +1,11 @@
 ﻿namespace FSharpKatas
 
     module Fibonacci =
-        let fibonacci number =
+        let rec fibonacci number =
             match number with
-            | 5 -> 5
-            | 6 -> 8
-            | 7 -> 13
-            | n when n > 1 -> n - 1
-            | n when n <= 1 -> n
+            | 0 -> 0
+            | 1 -> 1
+            | n -> fibonacci(n - 1) + fibonacci(n - 2)
 
     module FibonacciTests =
         open NUnit.Framework
