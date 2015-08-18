@@ -3,7 +3,7 @@
     module Tenis =
         open System
 
-        type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 
+        type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 | Deuce = 50
         type Player = {Name:string; Points:Points}
 
         let allPoints = 
@@ -24,7 +24,9 @@
             { Name = player.Name; Points = nextPoint player }
 
         let score player1 player2 =
-            (player1.Points, player2.Points)
+            match (player1.Points, player2.Points) with
+            | (Points.Forty, Points.Forty) -> (Points.Deuce, Points.Deuce)
+            | p -> p
             
 
     module TenisTests =
@@ -54,4 +56,20 @@
             let player1 = newPlayer "Player1"
             let player2 = newPlayer "Player2"
 
-            Assert.That(score player1 player2, Is.EqualTo((Points.Zero, Points.Zero))) 
+            Assert.That(score player1 player2, Is.EqualTo((Points.Zero, Points.Zero)))
+        
+        [<Test>]
+        let ``Should calculate score Deuce if both palyers have 40 points``() =
+            let player1 = newPlayer "Player1"
+            let player2 = newPlayer "Player2"
+
+            let player1 = winball player1 
+            let player2 = winball player2          
+
+            let player1 = winball player1 
+            let player2 = winball player2          
+            
+            let player1 = winball player1 
+            let player2 = winball player2
+            
+            Assert.That(score player1 player2, Is.EqualTo((Points.Deuce, Points.Deuce)))
