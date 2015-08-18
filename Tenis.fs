@@ -3,8 +3,11 @@
     module Tenis =
         open System
 
-        type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 | Deuce = 50
+        type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 
         type Player = {Name:string; Points:Points}
+        type Score = 
+            | Points of string*string 
+            | Advantage of string
 
         let allPoints = 
             Enum.GetValues(typeof<Points>) 
@@ -25,8 +28,8 @@
 
         let score player1 player2 =
             match (player1.Points, player2.Points) with
-            | (Points.Forty, Points.Forty) -> (Points.Deuce, Points.Deuce)
-            | p -> p
+            | (Points.Forty, Points.Forty) -> "Deuce"
+            | (p1, p2) -> "" + (int p1).ToString() + "-" + (int p2).ToString()
             
 
     module TenisTests =
@@ -56,7 +59,7 @@
             let player1 = newPlayer "Player1"
             let player2 = newPlayer "Player2"
 
-            Assert.That(score player1 player2, Is.EqualTo((Points.Zero, Points.Zero)))
+            Assert.That(score player1 player2, Is.EqualTo("0-0"))
         
         [<Test>]
         let ``Should calculate score Deuce if both palyers have 40 points``() =
@@ -72,4 +75,6 @@
             let player1 = winball player1 
             let player2 = winball player2
             
-            Assert.That(score player1 player2, Is.EqualTo((Points.Deuce, Points.Deuce)))
+            Assert.That(score player1 player2, Is.EqualTo("Deuce"))
+
+        
