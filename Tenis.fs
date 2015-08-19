@@ -29,6 +29,8 @@
         let score player1 player2 =
             match (player1.Points, player2.Points) with
             | (Points.Forty, Points.Forty) -> "Deuce"
+            | (Points.Forty, _) -> "Winner"
+            | (_, Points.Forty) -> "Winner"
             | (p1, p2) -> "" + (int p1).ToString() + "-" + (int p2).ToString()
             
 
@@ -59,8 +61,8 @@
             let player1 = newPlayer "Player1"
             let player2 = newPlayer "Player2"
 
-            Assert.That(score player1 player2, Is.EqualTo("0-0"))
-        
+            Assert.That(score player1 player2, Is.EqualTo("0-0")) 
+
         [<Test>]
         let ``Should calculate score Deuce if both palyers have 40 points``() =
             let player1 = newPlayer "Player1"
@@ -76,5 +78,12 @@
             let player2 = winball player2
             
             Assert.That(score player1 player2, Is.EqualTo("Deuce"))
+
+        [<Test>]
+        let ``Should calculate score win if a palyer reaches 40 points``() =
+            let player1 = newPlayer "Player1" |> winball |> winball |> winball
+            let player2 = newPlayer "Player2"
+
+            Assert.That(score player1 player2, Is.EqualTo("Winner"))
 
         
