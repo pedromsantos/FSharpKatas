@@ -25,8 +25,8 @@
         let score player1 player2 =
             match (player1.Points, player2.Points) with
             | (Points.Forty, Points.Forty) -> "Deuce"
-            | (Points.Forty, _) -> "Winner"
-            | (_, Points.Forty) -> "Winner"
+            | (Points.Forty, _) -> "Winner " + player1.Name
+            | (_, Points.Forty) -> "Winner " + player2.Name
             | (p1, p2) -> "" + (int p1).ToString() + "-" + (int p2).ToString()
             
 
@@ -80,6 +80,6 @@
             let player1 = newPlayer "Player1" |> winball |> winball |> winball
             let player2 = newPlayer "Player2"
 
-            Assert.That(score player1 player2, Is.EqualTo("Winner"))
+            Assert.That(score player1 player2, Is.EqualTo("Winner Player1"))
 
         
