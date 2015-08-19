@@ -5,9 +5,7 @@
 
         type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 
         type Player = {Name:string; Points:Points}
-        type Score = 
-            | Points of string*string 
-            | Advantage of string
+        type Score = string*string 
 
         let allPoints = 
             Enum.GetValues(typeof<Points>) 
@@ -18,7 +16,6 @@
                 |> Seq.skipWhile (fun p -> p <> player.Points) 
                 |> Seq.skip 1 
                 |> Seq.head
-
         
         let newPlayer playerName =
            { Name = playerName; Points = Points.Zero }
