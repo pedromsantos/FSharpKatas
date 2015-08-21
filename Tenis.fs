@@ -3,31 +3,55 @@
     module Tenis =
         open System
 
-        type Points = | Zero = 0 | Fifteen = 15 | Thirty = 30 | Forty = 40 
+        type Points =
+            | Zero
+            | Fifteen
+            | Thirty
+            | Forty
+            | Deuce 
+            | Win
+
         type Player = {Name:string; Points:Points}
 
-        let allPoints = 
-            Enum.GetValues(typeof<Points>) 
-            |> Seq.cast<Points>  
+        type Game = Player*Player 
 
-        let nextPoint player = 
-                allPoints
-                |> Seq.skipWhile (fun p -> p <> player.Points) 
-                |> Seq.skip 1 
-                |> Seq.head
+        let newPlayer name =
+           { Name = name; Points = Points.Zero }
+
+        let updatePlayer name points =
+            { Name = name; Points = points }
+
+        let firstWinsBall (winner, looser) =
+            match (winner.Points, looser.Points) with
+                | (Zero, _) -> (updatePlayer winner.Name Points.Fifteen, looser)
+                | (Fifteen, _) -> (updatePlayer winner.Name Points.Thirty, looser)
+                | (Thirty, _) -> (updatePlayer winner.Name Points.Forty, looser)
+                | (Forty, Forty) -> (updatePlayer winner.Name Points.Deuce, updatePlayer looser.Name Points.Deuce)
+                | (Forty, _) -> (updatePlayer winner.Name Points.Win, looser)
         
-        let newPlayer playerName =
-           { Name = playerName; Points = Points.Zero }
 
-        let winball player =
-            { Name = player.Name; Points = nextPoint player }
+        let reverseGamePlayers game =
+            (snd game, fst game)
 
-        let score player1 player2 =
+        let secondWinsBall (looser, winner) =
+            firstWinsBall (winner, looser) |> reverseGamePlayers
+
+        let represent point =
+           match point with
+            | Zero -> "0"
+            | Fifteen -> "15"
+            | Thirty -> "30"
+            | Forty -> "40"
+            | Deuce -> "Deuce"
+            | Win -> "Winner"
+
+        let score game =
+            let player1, player2 = game
             match (player1.Points, player2.Points) with
             | (Points.Forty, Points.Forty) -> "Deuce"
-            | (Points.Forty, _) -> "Winner " + player1.Name
-            | (_, Points.Forty) -> "Winner " + player2.Name
-            | (p1, p2) -> "" + (int p1).ToString() + "-" + (int p2).ToString()
+            | (Points.Win, _) -> "Winner " + player1.Name
+            | (_, Points.Win) -> "Winner " + player2.Name
+            | (p1, p2) -> represent p1 + "-" + represent p2
             
 
     module TenisTests =
@@ -36,50 +60,75 @@
 
         [<Test>]
         let ``Should increase points for ball winner from Zero to Fifteen on first win``() =
-            let player = newPlayer "Player1" |> winball
+            let game = newPlayer "Player1", newPlayer "Player2"
 
-            Assert.That(player.Points, Is.EqualTo(Points.Fifteen)) 
+            let game = firstWinsBall (game)
+
+            Assert.That((fst game).Points, Is.EqualTo(Points.Fifteen)) 
+        
+        [<Test>]
+        let ``Should increase points for ball winner from Zero to Fifteen on first win for second player``() =
+            let game = newPlayer "Player1", newPlayer "Player2"
+
+            let game = secondWinsBall (game)
+
+            Assert.That((snd game).Points, Is.EqualTo(Points.Fifteen)) 
             
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win``() =
-            let player = newPlayer "Player1" |> winball |> winball
-            
-            Assert.That(player.Points, Is.EqualTo(Points.Thirty))
+            let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall
+
+            Assert.That((fst game).Points, Is.EqualTo(Points.Thirty))
+
+        [<Test>]
+        let ``Should increase points for ball winner from Fifteen to Thirty on second win for second player``() =
+            let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall
+
+            Assert.That((snd game).Points, Is.EqualTo(Points.Thirty))
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win``() =
-            let player = newPlayer "Player1" |> winball |> winball |> winball
+            let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall |> firstWinsBall
 
-            Assert.That(player.Points, Is.EqualTo(Points.Forty))
-
-        [<Test>]
-        let ``Should calculate score Zero - Zero if no player has won a ball``() =
-            let player1 = newPlayer "Player1"
-            let player2 = newPlayer "Player2"
-
-            Assert.That(score player1 player2, Is.EqualTo("0-0")) 
+            Assert.That((fst game).Points, Is.EqualTo(Points.Forty))
 
         [<Test>]
-        let ``Should calculate score Deuce if both palyers have 40 points``() =
-            let player1 = newPlayer "Player1"
-            let player2 = newPlayer "Player2"
+        let ``Should increase points for ball winner from Thirty to Forty on third win for second player``() =
+            let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall |> secondWinsBall
 
-            let player1 = winball player1 
-            let player2 = winball player2          
-
-            let player1 = winball player1 
-            let player2 = winball player2          
-            
-            let player1 = winball player1 
-            let player2 = winball player2
-            
-            Assert.That(score player1 player2, Is.EqualTo("Deuce"))
+            Assert.That((snd game).Points, Is.EqualTo(Points.Forty))
 
         [<Test>]
-        let ``Should calculate score win if a palyer reaches 40 points``() =
-            let player1 = newPlayer "Player1" |> winball |> winball |> winball
-            let player2 = newPlayer "Player2"
+        let ``Should calculate score 0 - 0 if no player has won a ball``() =
+            let game = (newPlayer "Player1", newPlayer "Player 2")
 
-            Assert.That(score player1 player2, Is.EqualTo("Winner Player1"))
+            Assert.That(score game, Is.EqualTo("0-0")) 
+
+        [<Test>]
+        let ``Should calculate score 15 - 0 if first player has won a ball``() =
+            let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall
+
+            Assert.That(score game, Is.EqualTo("15-0"))
+
+        [<Test>]
+        let ``Should calculate score winner Player1 if first player has won a ball having 40 points``() =
+            let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall |> firstWinsBall |> firstWinsBall |> firstWinsBall
+
+            Assert.That(score game, Is.EqualTo("Winner Player1")) 
+
+        [<Test>]
+        let ``Should calculate score Deuce if both playeres have 40 points``() =
+            let game = 
+                (newPlayer "Player1", newPlayer "Player 2") 
+                |> firstWinsBall 
+                |> secondWinsBall 
+                |> firstWinsBall 
+                |> secondWinsBall
+                |> firstWinsBall 
+                |> secondWinsBall
+
+            Assert.That(score game, Is.EqualTo("Deuce")) 
+
+        
 
         
