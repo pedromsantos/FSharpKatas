@@ -147,21 +147,6 @@
             
             Assert.That(score game, Is.EqualTo("Advantage Player 1"))
 
-        [<Test>]
-        let ``Should calculate score winner Player1 if playeres are deuce and player 1 wins ball being in advantage``() =
-            let game = 
-                (newPlayer "Player 1", newPlayer "Player 2") 
-                |> firstWinsBall 
-                |> secondWinsBall 
-                |> firstWinsBall 
-                |> secondWinsBall
-                |> firstWinsBall 
-                |> secondWinsBall
-                |> firstWinsBall 
-                |> firstWinsBall 
-            
-            Assert.That(score game, Is.EqualTo("Winner Player 1"))
-
         
 
         
