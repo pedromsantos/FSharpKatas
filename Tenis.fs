@@ -24,6 +24,7 @@
 
         let firstWinsBall (winner, looser) =
             match (winner.Points, looser.Points) with
+                | (Deuce, Advantage) -> (updatePlayer winner.Name Points.Deuce, updatePlayer looser.Name Points.Deuce)
                 | (Advantage, _) -> (updatePlayer winner.Name Points.Win, updatePlayer looser.Name Points.Deuce)
                 | (Forty, Forty) -> (updatePlayer winner.Name Points.Advantage, updatePlayer looser.Name Points.Deuce)
                 | (Deuce, Deuce) -> (updatePlayer winner.Name Points.Advantage, looser)
@@ -52,7 +53,9 @@
             let player1, player2 = game
             match (player1.Points, player2.Points) with
             | (Points.Forty, Points.Forty) -> "Deuce"
+            | (Points.Deuce, Points.Deuce) -> "Deuce"
             | (Points.Advantage, Points.Deuce) -> "Advantage " + player1.Name
+            | (Points.Deuce, Points.Advantage) -> "Advantage " + player2.Name
             | (Points.Win, _) -> "Winner " + player1.Name
             | (_, Points.Win) -> "Winner " + player2.Name
             | (p1, p2) -> represent p1 + "-" + represent p2
@@ -161,6 +164,21 @@
                 |> firstWinsBall 
             
             Assert.That(score game, Is.EqualTo("Winner Player 1"))
+
+        [<Test>]
+        let ``Should calculate score Deuce if player that has advantage looses ball``() =
+            let game = 
+                (newPlayer "Player 1", newPlayer "Player 2") 
+                |> firstWinsBall 
+                |> secondWinsBall 
+                |> firstWinsBall 
+                |> secondWinsBall
+                |> firstWinsBall 
+                |> secondWinsBall
+                |> firstWinsBall 
+                |> secondWinsBall 
+            
+            Assert.That(score game, Is.EqualTo("Deuce"))
 
         
 
