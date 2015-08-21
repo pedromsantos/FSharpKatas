@@ -16,9 +16,11 @@
 
         type Game = Player*Player 
 
-        let newPlayer name = { Name = name; Points = Points.Zero }
+        let newPlayer name = 
+            { Name = name; Points = Points.Zero }
 
-        let updatePlayer name points = { Name = name; Points = points }
+        let updatePlayer name points = 
+            { Name = name; Points = points }
 
         let firstWinsBall (winner, looser) =
             match (winner.Points, looser.Points) with
