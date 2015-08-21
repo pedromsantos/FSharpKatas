@@ -8,7 +8,8 @@
             | Fifteen
             | Thirty
             | Forty
-            | Deuce 
+            | Deuce
+            | Advantage
             | Win
 
         type Player = {Name:string; Points:Points}
@@ -23,10 +24,11 @@
 
         let firstWinsBall (winner, looser) =
             match (winner.Points, looser.Points) with
+                | (Forty, Forty) -> (updatePlayer winner.Name Points.Advantage, updatePlayer looser.Name Points.Deuce)
+                | (Deuce, Deuce) -> (updatePlayer winner.Name Points.Advantage, looser)
                 | (Zero, _) -> (updatePlayer winner.Name Points.Fifteen, looser)
                 | (Fifteen, _) -> (updatePlayer winner.Name Points.Thirty, looser)
                 | (Thirty, _) -> (updatePlayer winner.Name Points.Forty, looser)
-                | (Forty, Forty) -> (updatePlayer winner.Name Points.Deuce, updatePlayer looser.Name Points.Deuce)
                 | (Forty, _) -> (updatePlayer winner.Name Points.Win, looser)
         
 
@@ -49,6 +51,7 @@
             let player1, player2 = game
             match (player1.Points, player2.Points) with
             | (Points.Forty, Points.Forty) -> "Deuce"
+            | (Points.Advantage, Points.Deuce) -> "Advantage " + player1.Name
             | (Points.Win, _) -> "Winner " + player1.Name
             | (_, Points.Win) -> "Winner " + player2.Name
             | (p1, p2) -> represent p1 + "-" + represent p2
@@ -127,7 +130,21 @@
                 |> firstWinsBall 
                 |> secondWinsBall
 
-            Assert.That(score game, Is.EqualTo("Deuce")) 
+            Assert.That(score game, Is.EqualTo("Deuce"))
+
+        [<Test>]
+        let ``Should calculate score Advantage if playeres are deuce and player 1 wins ball``() =
+            let game = 
+                (newPlayer "Player 1", newPlayer "Player 2") 
+                |> firstWinsBall 
+                |> secondWinsBall 
+                |> firstWinsBall 
+                |> secondWinsBall
+                |> firstWinsBall 
+                |> secondWinsBall
+                |> firstWinsBall 
+            
+            Assert.That(score game, Is.EqualTo("Advantage Player 1"))
 
         
 
