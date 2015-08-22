@@ -24,11 +24,11 @@
         open TicTacToe
 
         [<Test>]
-        let ``Should enforce player X to play first``  =
+        let ``Should enforce player X to play first``()  =
             let turnResult = ticTacToe Players.O
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
         
         [<Test>]
-        let ``Should allow player X to play first``  =
+        let ``Should allow player X to play first``()  =
             let turnResult = ticTacToe Players.X
             Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
