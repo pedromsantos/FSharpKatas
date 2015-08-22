@@ -47,6 +47,7 @@
             | Thirty -> "30"
             | Forty -> "40"
             | Deuce -> "Deuce"
+            | Advantage -> "Advantage"
             | Win -> "Winner"
 
         let score game =

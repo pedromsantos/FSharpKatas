@@ -37,8 +37,9 @@
     <Compile Include="RomanNumerals.fs" />
     <Compile Include="LeapYears.fs" />
     <None Include="packages.config" />
-    <Compile Include="Fibonacci .fs" />
     <Compile Include="Tenis.fs" />
+    <Compile Include="TicTacToe.fs" />
+    <Compile Include="Fibonacci.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
