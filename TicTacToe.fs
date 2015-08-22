@@ -14,10 +14,17 @@
 
         type TurnResults = | InvalidMove | InProgress
 
+        let mutable private lastTurn = Players.O
+
+        let init() = 
+            lastTurn <- Players.O
+
         let ticTacToe player =
-            match player with
-            | O -> TurnResults.InvalidMove
-            | X -> TurnResults.InProgress
+            match player = lastTurn with
+            | true -> TurnResults.InvalidMove 
+            | false -> 
+                lastTurn <- player
+                TurnResults.InProgress 
 
     module TicTacToeTests =
         open NUnit.Framework
@@ -25,10 +32,19 @@
 
         [<Test>]
         let ``Should enforce player X to play first``()  =
+            init()
             let turnResult = ticTacToe Players.O
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
         
         [<Test>]
         let ``Should allow player X to play first``()  =
+            init()
             let turnResult = ticTacToe Players.X
+            Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
+
+        [<Test>]
+        let ``Should allow player O to play second``()  =
+            init()
+            ticTacToe Players.X |> ignore
+            let turnResult = ticTacToe Players.O
             Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
