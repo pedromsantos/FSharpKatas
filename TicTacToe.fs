@@ -12,7 +12,7 @@
 
         type Players = | X | O 
 
-        type TurnResults = | InvalidMove | InProgress
+        type TurnResults = | InvalidMove | InProgress | Winner
 
         type Rows = | First | Second | Third | None
 
@@ -25,7 +25,7 @@
         let mutable private turns:Game = []
 
         let init() = 
-            turns <- [{Player = Players.O; Row = Rows.None; Column = Columns.None }]
+            turns <- [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
 
         let lastTurn() = 
             turns.Head
@@ -38,17 +38,28 @@
 
         let isValidPlayerTurn turn =
             turn.Player <> lastTurn().Player
+        
+        let HowManySatisfy pred = 
+            Seq.filter pred >> Seq.length
+
+        let hasThreeInARow turn = 
+            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Row = t.Row))
+
+        let isWinner turn =
+            hasThreeInARow turn 
 
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
-            | (false, _) -> TurnResults.InvalidMove
-            | (_, false) -> TurnResults.InvalidMove
+            | (false, _) -> false 
+            | (_, false) -> false 
             | (_, _) -> 
                         saveTurn turn
-                        TurnResults.InProgress
+                        true
 
         let ticTacToe turn =
-             isValidTurn turn 
+             if not (isValidTurn turn) then TurnResults.InvalidMove
+             else if isWinner turn then TurnResults.Winner
+             else TurnResults.InProgress 
 
     module TicTacToeTests =
         open NUnit.Framework
@@ -117,3 +128,21 @@
             let turnResult = ticTacToe turn3
 
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+
+        [<Test>]
+        let ``Should declare player as winner if he has three in first row``()  =
+            init()
+            let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
+            let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First }
+            let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.Second }
+            let turn4 = { Player = Players.O; Row = Rows.Second; Column = Columns.Second }
+            let turn5 = { Player = Players.X; Row = Rows.First; Column = Columns.Third }
+
+            ticTacToe turn1 |> ignore
+            ticTacToe turn2 |> ignore
+            ticTacToe turn3 |> ignore
+            ticTacToe turn4 |> ignore
+
+            let turnResult = ticTacToe turn5
+
+            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
