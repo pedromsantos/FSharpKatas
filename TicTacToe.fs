@@ -16,7 +16,7 @@
 
         type Rows = | First = 0 | Second = 1 | Third = 2 | None = -1
 
-        type Columns = | First | Second | Third | None
+        type Columns = | First = 0 | Second = 1 | Third = 2 | None = -1
 
         type Turn = { Player:Players; Row:Rows; Column:Columns }
 
@@ -42,11 +42,14 @@
         let HowManySatisfy pred = 
             Seq.filter pred >> Seq.length
 
-        let hasThreeInARow turn = 
+        let hasCompletedThreeInARow turn = 
             3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Row = t.Row))
 
+        let hasCompletedThreeInAColumn turn = 
+            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Column = t.Column))
+
         let isWinner turn =
-            hasThreeInARow turn 
+            hasCompletedThreeInARow turn || hasCompletedThreeInAColumn turn
 
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
@@ -139,6 +142,26 @@
             let turn3 = { Player = Players.X; Row = winnerRow; Column = Columns.Second }
             let turn4 = { Player = Players.O; Row = looserRow; Column = Columns.Second }
             let turn5 = { Player = Players.X; Row = winnerRow; Column = Columns.Third }
+
+            ticTacToe turn1 |> ignore
+            ticTacToe turn2 |> ignore
+            ticTacToe turn3 |> ignore
+            ticTacToe turn4 |> ignore
+
+            let turnResult = ticTacToe turn5
+
+            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+
+        [<TestCase(Columns.First, Columns.Second)>]
+        [<TestCase(Columns.Second, Columns.Third)>]
+        [<TestCase(Columns.Third, Columns.First)>]
+        let ``Should declare player as winner if he has three in any column``(winnerColumn, looserColumn)  =
+            init()
+            let turn1 = { Player = Players.X; Row = Rows.First; Column = winnerColumn }
+            let turn2 = { Player = Players.O; Row = Rows.First; Column = looserColumn }
+            let turn3 = { Player = Players.X; Row = Rows.Second; Column = winnerColumn }
+            let turn4 = { Player = Players.O; Row = Rows.Second; Column = looserColumn }
+            let turn5 = { Player = Players.X; Row = Rows.Third; Column = winnerColumn }
 
             ticTacToe turn1 |> ignore
             ticTacToe turn2 |> ignore
