@@ -30,18 +30,16 @@
         
         let isValidPositionTurn turn =
             match (turn.Row = lastTurn.Row, turn.Column = lastTurn.Column) with
-                                  | (true, true) -> TurnResults.InvalidMove
-                                  | (_, _) -> TurnResults.InProgress
+                                  | (true, true) -> false 
+                                  | (_, _) -> true  
 
         let isValidPlayerTurn turn =
-            match turn.Player = lastTurn.Player with
-                                | true -> TurnResults.InvalidMove 
-                                | false -> TurnResults.InProgress
+            turn.Player <> lastTurn.Player
 
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
-            | (TurnResults.InvalidMove, _) -> TurnResults.InvalidMove
-            | (_, TurnResults.InvalidMove) -> TurnResults.InvalidMove
+            | (false, _) -> TurnResults.InvalidMove
+            | (_, false) -> TurnResults.InvalidMove
             | (_, _) -> 
                         saveTurn turn
                         TurnResults.InProgress
