@@ -27,13 +27,24 @@
 
         let saveTurn turn =
             lastTurn <- turn
+        
+        let isValidPositionTurn turn =
+            match (turn.Row = lastTurn.Row, turn.Column = lastTurn.Column) with
+                                  | (true, true) -> TurnResults.InvalidMove
+                                  | (_, _) -> TurnResults.InProgress
+
+        let isValidPlayerTurn turn =
+            match turn.Player = lastTurn.Player with
+                                | true -> TurnResults.InvalidMove 
+                                | false -> TurnResults.InProgress
 
         let isValidTurn turn =
-            match turn.Player = lastTurn.Player with
-            | true -> TurnResults.InvalidMove 
-            | false -> 
-                saveTurn turn 
-                TurnResults.InProgress
+            match (isValidPlayerTurn turn, isValidPositionTurn turn) with
+            | (TurnResults.InvalidMove, _) -> TurnResults.InvalidMove
+            | (_, TurnResults.InvalidMove) -> TurnResults.InvalidMove
+            | (_, _) -> 
+                        saveTurn turn
+                        TurnResults.InProgress
 
         let ticTacToe turn =
              let result = isValidTurn turn 
@@ -67,4 +78,11 @@
             init()
             ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First } |> ignore
             let turnResult = ticTacToe { Player = Players.X; Row = Rows.Second; Column = Columns.First }
+            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+        
+        [<Test>]
+        let ``Should not allow turn with same row and column as last one``()  =
+            init()
+            ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First } |> ignore
+            let turnResult = ticTacToe { Player = Players.O; Row = Rows.First; Column = Columns.First }
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
