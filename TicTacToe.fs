@@ -48,8 +48,7 @@
                         TurnResults.InProgress
 
         let ticTacToe turn =
-             let result = isValidTurn turn 
-             result
+             isValidTurn turn 
 
     module TicTacToeTests =
         open NUnit.Framework
