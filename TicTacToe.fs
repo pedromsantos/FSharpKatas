@@ -20,7 +20,9 @@
 
         type Turn = { Player:Players; Row:Rows; Column:Columns }
 
-        let mutable private turns = []
+        type Game = List<Turn>
+
+        let mutable private turns:Game = []
 
         let init() = 
             turns <- [{Player = Players.O; Row = Rows.None; Column = Columns.None }]
