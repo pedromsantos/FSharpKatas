@@ -14,7 +14,7 @@
 
         type TurnResults = | InvalidMove | InProgress | Winner
 
-        type Rows = | First | Second | Third | None
+        type Rows = | First = 0 | Second = 1 | Third = 2 | None = -1
 
         type Columns = | First | Second | Third | None
 
@@ -129,14 +129,16 @@
 
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
 
-        [<Test>]
-        let ``Should declare player as winner if he has three in first row``()  =
+        [<TestCase(Rows.First, Rows.Second)>]
+        [<TestCase(Rows.Second, Rows.Third)>]
+        [<TestCase(Rows.Third, Rows.First)>]
+        let ``Should declare player as winner if he has three in any row``(winnerRow, looserRow)  =
             init()
-            let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
-            let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First }
-            let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.Second }
-            let turn4 = { Player = Players.O; Row = Rows.Second; Column = Columns.Second }
-            let turn5 = { Player = Players.X; Row = Rows.First; Column = Columns.Third }
+            let turn1 = { Player = Players.X; Row = winnerRow; Column = Columns.First }
+            let turn2 = { Player = Players.O; Row = looserRow; Column = Columns.First }
+            let turn3 = { Player = Players.X; Row = winnerRow; Column = Columns.Second }
+            let turn4 = { Player = Players.O; Row = looserRow; Column = Columns.Second }
+            let turn5 = { Player = Players.X; Row = winnerRow; Column = Columns.Third }
 
             ticTacToe turn1 |> ignore
             ticTacToe turn2 |> ignore
