@@ -1,10 +1,10 @@
 ﻿namespace FSharpKatas
 
-    // The object of Tic Tac Toe is to get three in a row. 
+    // The object of TicTacToe is to get three in a row. 
     // You play on a three by three game board. 
     // The first player is known as X and the second is O. 
-    // Players alternate placing Xs and Os on the game board 
-    // until either oppent has three in a row or all nine squares are filled. 
+    // Players alternate placing X's and Os on the game board 
+    // until either opponent has three in a row or all nine squares are filled. 
     // X always goes first, and in the event that no one has three in a row, 
     // the stalemate is called a cat game.
 
@@ -19,12 +19,19 @@
         let init() = 
             lastTurn <- Players.O
 
-        let ticTacToe player =
+        let saveTurn player =
+            lastTurn <- player
+
+        let isValidTurn player =
             match player = lastTurn with
             | true -> TurnResults.InvalidMove 
             | false -> 
-                lastTurn <- player
-                TurnResults.InProgress 
+                saveTurn player
+                TurnResults.InProgress
+
+        let ticTacToe player =
+             let result = isValidTurn player
+             result
 
     module TicTacToeTests =
         open NUnit.Framework
@@ -48,3 +55,10 @@
             ticTacToe Players.X |> ignore
             let turnResult = ticTacToe Players.O
             Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
+        
+        [<Test>]
+        let ``Should enforce players alternate``()  =
+            init()
+            ticTacToe Players.X |> ignore
+            let turnResult = ticTacToe Players.X
+            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
