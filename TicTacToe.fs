@@ -14,23 +14,29 @@
 
         type TurnResults = | InvalidMove | InProgress
 
-        let mutable private lastTurn = Players.O
+        type Rows = | First | Second | Third | None
+
+        type Columns = | First | Second | Third | None
+
+        type Turn = { Player:Players; Row:Rows; Column:Columns }
+
+        let mutable private lastTurn = {Player = Players.O; Row = Rows.None; Column = Columns.None }
 
         let init() = 
-            lastTurn <- Players.O
+            lastTurn <- {Player = Players.O; Row = Rows.None; Column = Columns.None }
 
-        let saveTurn player =
-            lastTurn <- player
+        let saveTurn turn =
+            lastTurn <- turn
 
-        let isValidTurn player =
-            match player = lastTurn with
+        let isValidTurn turn =
+            match turn.Player = lastTurn.Player with
             | true -> TurnResults.InvalidMove 
             | false -> 
-                saveTurn player
+                saveTurn turn 
                 TurnResults.InProgress
 
-        let ticTacToe player =
-             let result = isValidTurn player
+        let ticTacToe turn =
+             let result = isValidTurn turn 
              result
 
     module TicTacToeTests =
@@ -40,25 +46,25 @@
         [<Test>]
         let ``Should enforce player X to play first``()  =
             init()
-            let turnResult = ticTacToe Players.O
+            let turnResult = ticTacToe { Player = Players.O; Row = Rows.First; Column = Columns.First }
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
         
         [<Test>]
         let ``Should allow player X to play first``()  =
             init()
-            let turnResult = ticTacToe Players.X
+            let turnResult = ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First }
             Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
 
         [<Test>]
         let ``Should allow player O to play second``()  =
             init()
-            ticTacToe Players.X |> ignore
-            let turnResult = ticTacToe Players.O
+            ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First } |> ignore
+            let turnResult = ticTacToe { Player = Players.O; Row = Rows.Second; Column = Columns.First }
             Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
         
         [<Test>]
         let ``Should enforce players alternate``()  =
             init()
-            ticTacToe Players.X |> ignore
-            let turnResult = ticTacToe Players.X
+            ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First } |> ignore
+            let turnResult = ticTacToe { Player = Players.X; Row = Rows.Second; Column = Columns.First }
             Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
