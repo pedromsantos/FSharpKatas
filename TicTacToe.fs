@@ -45,29 +45,29 @@
         let playerTurns player =
             turns |> Seq.filter (fun t -> player = t.Player)
 
-        let hasCompletedThreeInARow turn = 
+        let hasThreeInARow turn = 
             let turnsForPlayer = playerTurns turn.Player
             3 = (turnsForPlayer |> howManySatisfy (fun t -> turn.Row = t.Row))
 
-        let hasCompletedThreeInAColumn turn = 
+        let hasThreeInAColumn turn = 
             let turnsForPlayer = playerTurns turn.Player
             3 = (turnsForPlayer |> howManySatisfy (fun t -> turn.Column = t.Column))
 
-        let hasCompletedThreeInLeftToRightDiagonal turn =
+        let hasThreeInLeftToRightDiagonal turn =
             let turnsForPlayer = playerTurns turn.Player 
             3 = (turnsForPlayer |> howManySatisfy (fun t -> int32 t.Row = int32 t.Column))
 
-        let hasCompletedThreeInRightToLeftDiagonal turn = 
+        let hasThreeInRightToLeftDiagonal turn = 
             let turnsForPlayer = playerTurns turn.Player
             1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.First && t.Column = Columns.Third)) &&
             1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
             1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
         let isWinner turn =
-            hasCompletedThreeInARow turn 
-            || hasCompletedThreeInAColumn turn 
-            || hasCompletedThreeInLeftToRightDiagonal turn
-            || hasCompletedThreeInRightToLeftDiagonal turn
+            hasThreeInARow turn 
+            || hasThreeInAColumn turn 
+            || hasThreeInLeftToRightDiagonal turn
+            || hasThreeInRightToLeftDiagonal turn
 
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
