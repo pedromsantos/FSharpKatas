@@ -48,8 +48,11 @@
         let hasCompletedThreeInAColumn turn = 
             3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Column = t.Column))
 
+        let hasCompletedThreeInDiagonal turn = 
+            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && int32 t.Row = int32 t.Column))
+
         let isWinner turn =
-            hasCompletedThreeInARow turn || hasCompletedThreeInAColumn turn
+            hasCompletedThreeInARow turn || hasCompletedThreeInAColumn turn || hasCompletedThreeInDiagonal turn
 
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
@@ -162,6 +165,24 @@
             let turn3 = { Player = Players.X; Row = Rows.Second; Column = winnerColumn }
             let turn4 = { Player = Players.O; Row = Rows.Second; Column = looserColumn }
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = winnerColumn }
+
+            ticTacToe turn1 |> ignore
+            ticTacToe turn2 |> ignore
+            ticTacToe turn3 |> ignore
+            ticTacToe turn4 |> ignore
+
+            let turnResult = ticTacToe turn5
+
+            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+
+        [<Test>]
+        let ``Should declare player as winner if he has three in left to rigth diagonal``()  =
+            init()
+            let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
+            let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.Second }
+            let turn3 = { Player = Players.X; Row = Rows.Second; Column = Columns.Second }
+            let turn4 = { Player = Players.O; Row = Rows.First; Column = Columns.Third }
+            let turn5 = { Player = Players.X; Row = Rows.Third; Column = Columns.Third }
 
             ticTacToe turn1 |> ignore
             ticTacToe turn2 |> ignore
