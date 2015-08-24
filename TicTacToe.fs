@@ -39,22 +39,29 @@
         let isValidPlayerTurn turn =
             turn.Player <> lastTurn().Player
         
-        let HowManySatisfy pred = 
+        let howManySatisfy pred = 
             Seq.filter pred >> Seq.length
 
+        let playerTurns player =
+            turns |> Seq.filter (fun t -> player = t.Player)
+
         let hasCompletedThreeInARow turn = 
-            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Row = t.Row))
+            let turnsForPlayer = playerTurns turn.Player
+            3 = (turnsForPlayer |> howManySatisfy (fun t -> turn.Row = t.Row))
 
         let hasCompletedThreeInAColumn turn = 
-            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && turn.Column = t.Column))
+            let turnsForPlayer = playerTurns turn.Player
+            3 = (turnsForPlayer |> howManySatisfy (fun t -> turn.Column = t.Column))
 
-        let hasCompletedThreeInLeftToRightDiagonal turn = 
-            3 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && int32 t.Row = int32 t.Column))
+        let hasCompletedThreeInLeftToRightDiagonal turn =
+            let turnsForPlayer = playerTurns turn.Player 
+            3 = (turnsForPlayer |> howManySatisfy (fun t -> int32 t.Row = int32 t.Column))
 
         let hasCompletedThreeInRightToLeftDiagonal turn = 
-            1 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && t.Row = Rows.First && t.Column = Columns.Third)) &&
-            1 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && t.Row = Rows.Second && t.Column = Columns.Second)) &&
-            1 = (turns |> HowManySatisfy (fun t -> turn.Player = t.Player && t.Row = Rows.Third && t.Column = Columns.First))
+            let turnsForPlayer = playerTurns turn.Player
+            1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.First && t.Column = Columns.Third)) &&
+            1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
+            1 = (turnsForPlayer |> howManySatisfy (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
         let isWinner turn =
             hasCompletedThreeInARow turn 
