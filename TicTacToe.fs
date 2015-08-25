@@ -12,7 +12,7 @@
 
         type Players = | X | O 
 
-        type TurnResults = | InvalidMove | InProgress | Winner
+        type TurnResults = | InvalidMove | InProgress | Winner | Draw
 
         type Rows = | First = 0 | Second = 1 | Third = 2 | None = -1
 
@@ -69,6 +69,9 @@
             || hasThreeInLeftToRightDiagonal turn
             || hasThreeInRightToLeftDiagonal turn
 
+        let isDraw() =
+            (turns |> Seq.length) > 9
+
         let isValidTurn turn =
             match (isValidPlayerTurn turn, isValidPositionTurn turn) with
             | (false, _) -> false 
@@ -80,6 +83,7 @@
         let ticTacToe turn =
              if not (isValidTurn turn) then TurnResults.InvalidMove
              else if isWinner turn then TurnResults.Winner
+             else if isDraw() then TurnResults.Draw
              else TurnResults.InProgress
 
     module TicTacToeTests =
@@ -225,3 +229,29 @@
             let turnResult = ticTacToe turn5
 
             Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+
+        [<Test>]
+        let ``Should declare draw if all 9 positions are filled``()  =
+            init()
+            let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
+            let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.Second }
+            let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.Third }
+            let turn4 = { Player = Players.O; Row = Rows.Second; Column = Columns.First }
+            let turn5 = { Player = Players.X; Row = Rows.Second; Column = Columns.Second }
+            let turn6 = { Player = Players.O; Row = Rows.Third; Column = Columns.Third }
+            let turn7 = { Player = Players.X; Row = Rows.Third; Column = Columns.Second }
+            let turn8 = { Player = Players.O; Row = Rows.Third; Column = Columns.First }
+            let turn9 = { Player = Players.X; Row = Rows.Second; Column = Columns.Third }
+
+            ticTacToe turn1 |> ignore
+            ticTacToe turn2 |> ignore
+            ticTacToe turn3 |> ignore
+            ticTacToe turn4 |> ignore
+            ticTacToe turn5 |> ignore   
+            ticTacToe turn6 |> ignore
+            ticTacToe turn7 |> ignore
+            ticTacToe turn8 |> ignore
+
+            let turnResult = ticTacToe turn9
+
+            Assert.That(turnResult, Is.EqualTo(TurnResults.Draw))
