@@ -24,54 +24,51 @@
 
         let mutable private turns:Game = []
 
-        let init() = 
-            turns <- [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
-
-        let lastTurn() = 
+        let private lastTurn() = 
             turns.Head
         
-        let saveTurn turn =
+        let private saveTurn turn =
             turns <- turn :: turns
 
-        let isValidPositionTurn turn =
+        let private isPositionEmpty turn =
             not (turns |> Seq.exists (fun t -> t.Column = turn.Column && t.Row = turn.Row))
 
-        let isValidPlayerTurn turn =
+        let private isPlayerTurn turn =
             turn.Player <> lastTurn().Player
         
-        let playerTurns player =
+        let private playerTurns player =
             turns |> Seq.filter (fun t -> player = t.Player)
 
-        let howManySatisfy turn filter = 
+        let private howManySatisfy turn filter = 
             playerTurns turn.Player 
             |> Seq.filter filter 
             |> Seq.length
 
-        let hasThreeInARow turn = 
+        let private hasThreeInARow turn = 
             3 = (howManySatisfy turn (fun t -> turn.Row = t.Row))
 
-        let hasThreeInAColumn turn = 
+        let private hasThreeInAColumn turn = 
             3 = (howManySatisfy turn (fun t -> turn.Column = t.Column))
 
-        let hasThreeInLeftToRightDiagonal turn =
+        let private hasThreeInLeftToRightDiagonal turn =
             3 = (howManySatisfy turn (fun t -> int32 t.Row = int32 t.Column))
 
-        let hasThreeInRightToLeftDiagonal turn = 
+        let private hasThreeInRightToLeftDiagonal turn = 
             1 = (howManySatisfy turn (fun t -> t.Row = Rows.First && t.Column = Columns.Third)) &&
             1 = (howManySatisfy turn (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
             1 = (howManySatisfy turn (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
-        let isWinner turn =
+        let private isWinner turn =
             hasThreeInARow turn 
             || hasThreeInAColumn turn 
             || hasThreeInLeftToRightDiagonal turn
             || hasThreeInRightToLeftDiagonal turn
 
-        let isDraw() =
+        let private isDraw() =
             (turns |> Seq.length) > 9
 
-        let isValidTurn turn =
-            match (isValidPlayerTurn turn, isValidPositionTurn turn) with
+        let private isValidTurn turn =
+            match (isPlayerTurn turn, isPositionEmpty turn) with
             | (false, _) -> false 
             | (_, false) -> false 
             | (_, _) -> 
@@ -83,6 +80,9 @@
              else if isWinner turn then TurnResults.Winner
              else if isDraw() then TurnResults.Draw
              else TurnResults.InProgress
+
+        let init() = 
+            turns <- [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
 
     module TicTacToeTests =
         open NUnit.Framework
