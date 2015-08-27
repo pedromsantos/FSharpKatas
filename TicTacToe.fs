@@ -36,11 +36,11 @@
         let private isPlayerTurn turn =
             turn.Player <> lastTurn().Player
         
-        let private playerTurns player =
+        let private playerPreviousTurns player =
             turns |> Seq.filter (fun t -> player = t.Player)
 
         let private howManySatisfy turn filter = 
-            playerTurns turn.Player 
+            playerPreviousTurns turn.Player 
             |> Seq.filter filter 
             |> Seq.length
 
