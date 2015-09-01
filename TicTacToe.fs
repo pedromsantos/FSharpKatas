@@ -66,11 +66,11 @@
             | (_, _) -> true
 
         let ticTacToe (turn:Turn) (turns:Turns) :TurnOutcome =
-            let turnsWithNewturn = saveTurn turn turns
+            let turnsWithNewTurn = saveTurn turn turns
             if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
-            else if isWinner turn turnsWithNewturn then (TurnStatus.Winner, turnsWithNewturn)
-            else if isDraw turnsWithNewturn then (TurnStatus.Draw, turnsWithNewturn)
-            else (TurnStatus.InProgress, turnsWithNewturn)
+            else if isWinner turn turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
+            else if isDraw turnsWithNewTurn then (TurnStatus.Draw, turnsWithNewTurn)
+            else (TurnStatus.InProgress, turnsWithNewTurn)
 
         let init() = 
             [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
