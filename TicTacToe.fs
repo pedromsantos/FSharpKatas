@@ -4,7 +4,7 @@
 
         type Players = | X | O 
 
-        type TurnResults = | InvalidMove | InProgress | Winner | Draw
+        type TurnStatus = | InvalidMove | InProgress | Winner | Draw
 
         type Rows = | First = 0 | Second = 1 | Third = 2 | None = -1
 
@@ -68,10 +68,10 @@
                         true
 
         let ticTacToe turn =
-             if not (isValidTurn turn) then TurnResults.InvalidMove
-             else if isWinner turn then TurnResults.Winner
-             else if isDraw() then TurnResults.Draw
-             else TurnResults.InProgress
+             if not (isValidTurn turn) then TurnStatus.InvalidMove
+             else if isWinner turn then TurnStatus.Winner
+             else if isDraw() then TurnStatus.Draw
+             else TurnStatus.InProgress
 
         let init() = 
             turns <- [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
@@ -85,18 +85,18 @@
             init()
             let turn1 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
 
-            let turnResult = ticTacToe turn1
+            let turnStatus = ticTacToe turn1
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
         
         [<Test>]
         let ``Should allow player X to play first``()  =
             init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
 
-            let turnResult = ticTacToe turn1
+            let turnStatus = ticTacToe turn1
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
 
         [<Test>]
         let ``Should allow player O to play second``()  =
@@ -105,9 +105,9 @@
             let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First } 
             ticTacToe turn1 |> ignore
 
-            let turnResult = ticTacToe turn2
+            let turnStatus = ticTacToe turn2
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InProgress))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
         
         [<Test>]
         let ``Should enforce players alternate``()  =
@@ -116,9 +116,9 @@
             let turn2 = { Player = Players.X; Row = Rows.Second; Column = Columns.First }
             ticTacToe turn1 |> ignore
 
-            let turnResult = ticTacToe turn2
+            let turnStatus = ticTacToe turn2
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
         
         [<Test>]
         let ``Should not allow turn with same row and column as last one``()  =
@@ -127,9 +127,9 @@
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
             ticTacToe turn1 |> ignore
 
-            let turnResult = ticTacToe turn2
+            let turnStatus = ticTacToe turn2
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
 
         [<Test>]
         let ``Should not allow to play in any previously played positions``()  =
@@ -140,9 +140,9 @@
             ticTacToe turn1 |> ignore
             ticTacToe turn2 |> ignore
 
-            let turnResult = ticTacToe turn3
+            let turnStatus = ticTacToe turn3
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.InvalidMove))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
 
         [<TestCase(Rows.First, Rows.Second)>]
         [<TestCase(Rows.Second, Rows.Third)>]
@@ -160,9 +160,9 @@
             ticTacToe turn3 |> ignore
             ticTacToe turn4 |> ignore
 
-            let turnResult = ticTacToe turn5
+            let turnStatus = ticTacToe turn5
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
         [<TestCase(Columns.First, Columns.Second)>]
         [<TestCase(Columns.Second, Columns.Third)>]
@@ -180,9 +180,9 @@
             ticTacToe turn3 |> ignore
             ticTacToe turn4 |> ignore
 
-            let turnResult = ticTacToe turn5
+            let turnStatus = ticTacToe turn5
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
         [<Test>]
         let ``Should declare player as winner if he has three in left to rigth diagonal``()  =
@@ -198,9 +198,9 @@
             ticTacToe turn3 |> ignore
             ticTacToe turn4 |> ignore
 
-            let turnResult = ticTacToe turn5
+            let turnStatus = ticTacToe turn5
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
         [<Test>]
         let ``Should declare player as winner if he has three in rigth to left diagonal``()  =
@@ -216,9 +216,9 @@
             ticTacToe turn3 |> ignore
             ticTacToe turn4 |> ignore
 
-            let turnResult = ticTacToe turn5
+            let turnStatus = ticTacToe turn5
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.Winner))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
         [<Test>]
         let ``Should declare draw if all 9 positions are filled``()  =
@@ -242,6 +242,6 @@
             ticTacToe turn7 |> ignore
             ticTacToe turn8 |> ignore
 
-            let turnResult = ticTacToe turn9
+            let turnStatus = ticTacToe turn9
 
-            Assert.That(turnResult, Is.EqualTo(TurnResults.Draw))
+            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Draw))
