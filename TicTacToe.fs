@@ -1,13 +1,5 @@
 ﻿namespace FSharpKatas
 
-    // The object of TicTacToe is to get three in a row. 
-    // You play on a three by three game board. 
-    // The first player is known as X and the second is O. 
-    // Players alternate placing X's and Os on the game board 
-    // until either opponent has three in a row or all nine squares are filled. 
-    // X always goes first, and in the event that no one has three in a row, 
-    // the stalemate is called a cat game.
-
     module TicTacToe =
 
         type Players = | X | O 
