@@ -12,11 +12,11 @@
 
         type Turn = { Player:Players; Row:Rows; Column:Columns }
 
-        type Turns = List<Turn>
+        type Game = List<Turn>
 
-        type TurnOutcome = TurnStatus * Turns
+        type TurnOutcome = TurnStatus * Game
 
-        let private lastTurn (turns:Turns) = 
+        let private lastTurn (turns:Game) = 
             turns.Head
         
         let private saveTurn turn turns =
@@ -50,27 +50,26 @@
             1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
             1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
-        let private isWinner (turn:Turn) (turns:Turns) =
+        let private isWinner turn turns =
             hasThreeInARow turn turns
             || hasThreeInAColumn turn turns 
             || hasThreeInLeftToRightDiagonal turn turns
             || hasThreeInRightToLeftDiagonal turn turns
 
-        let private isDraw (turns:Turns) =
+        let private isDraw turns =
             (turns |> Seq.length) > 9
 
-        let private isValidTurn (turn:Turn) (turns:Turns) =
+        let private isValidTurn turn turns =
             match (isPlayerTurn turn turns, isPositionEmpty turn turns) with
             | (false, _) -> false 
             | (_, false) -> false 
             | (_, _) -> true
 
-        let ticTacToe (turn:Turn) (turns:Turns) :TurnOutcome =
-            let newTurns = saveTurn turn turns
-            if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
-            else if isWinner turn newTurns then (TurnStatus.Winner, newTurns)
-            else if isDraw newTurns then (TurnStatus.Draw, newTurns)
-            else (TurnStatus.InProgress, newTurns)
+        let ticTacToe (turn:Turn) (turns:Game) =
+             if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
+             else if isWinner turn turns then (TurnStatus.Winner, saveTurn turn turns)
+             else if isDraw turns then (TurnStatus.Draw, saveTurn turn turns)
+             else (TurnStatus.InProgress, saveTurn turn turns)
 
         let init() = 
             [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
@@ -84,7 +83,7 @@
             let turns = init()
             let turn1 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
 
-            let (turnStatus, _) = ticTacToe turn1 turns
+            let turnStatus = ticTacToe turn1 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
         
@@ -93,7 +92,7 @@
             let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
 
-            let (turnStatus, _) = ticTacToe turn1 turns
+            let turnStatus = ticTacToe turn1
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
 
@@ -102,9 +101,9 @@
             let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First } 
             let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First } 
-            let (_, turns) = ticTacToe turn1 turns
+            ticTacToe turn1 |> ignore
 
-            let (turnStatus, _) = ticTacToe turn2 turns
+            let turnStatus = ticTacToe turn2
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
         
@@ -113,9 +112,9 @@
             let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First } 
             let turn2 = { Player = Players.X; Row = Rows.Second; Column = Columns.First }
-            let (_, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
 
-            let (turnStatus, _) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
         
@@ -124,9 +123,9 @@
             let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
-            let (_, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
 
-            let (turnStatus, _) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
 
@@ -136,10 +135,10 @@
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First }
             let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
 
-            let (turnStatus, _) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
 
@@ -154,12 +153,12 @@
             let turn4 = { Player = Players.O; Row = looserRow; Column = Columns.Second }
             let turn5 = { Player = Players.X; Row = winnerRow; Column = Columns.Third }
 
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
-            let (_, turns) = ticTacToe turn3 turns
-            let (_, turns) = ticTacToe turn4 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn4 turns
 
-            let (turnStatus, _) = ticTacToe turn5 turns
+            let (turnStatus, turns) = ticTacToe turn5 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
@@ -174,12 +173,12 @@
             let turn4 = { Player = Players.O; Row = Rows.Second; Column = looserColumn }
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = winnerColumn }
 
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
-            let (_, turns) = ticTacToe turn3 turns
-            let (_, turns) = ticTacToe turn4 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn4 turns
 
-            let (turnStatus, _) = ticTacToe turn5 turns
+            let (turnStatus, turns) = ticTacToe turn5 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
@@ -192,12 +191,12 @@
             let turn4 = { Player = Players.O; Row = Rows.First; Column = Columns.Third }
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = Columns.Third }
 
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
-            let (_, turns) = ticTacToe turn3 turns
-            let (_, turns) = ticTacToe turn4 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn4 turns
 
-            let (turnStatus, _) = ticTacToe turn5 turns
+            let (turnStatus, turns) = ticTacToe turn5 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
@@ -210,12 +209,12 @@
             let turn4 = { Player = Players.O; Row = Rows.Second; Column = Columns.Third }
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = Columns.First }
 
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
-            let (_, turns) = ticTacToe turn3 turns
-            let (_, turns) = ticTacToe turn4 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn4 turns
 
-            let (turnStatus, _) = ticTacToe turn5 turns
+            let (turnStatus, turns) = ticTacToe turn5 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
 
@@ -232,15 +231,15 @@
             let turn8 = { Player = Players.O; Row = Rows.Third; Column = Columns.First }
             let turn9 = { Player = Players.X; Row = Rows.Second; Column = Columns.Third }
 
-            let (_, turns) = ticTacToe turn1 turns
-            let (_, turns) = ticTacToe turn2 turns
-            let (_, turns) = ticTacToe turn3 turns
-            let (_, turns) = ticTacToe turn4 turns
-            let (_, turns) = ticTacToe turn5 turns
-            let (_, turns) = ticTacToe turn6 turns
-            let (_, turns) = ticTacToe turn7 turns
-            let (_, turns) = ticTacToe turn8 turns
+            let (turnStatus, turns) = ticTacToe turn1 turns
+            let (turnStatus, turns) = ticTacToe turn2 turns
+            let (turnStatus, turns) = ticTacToe turn3 turns
+            let (turnStatus, turns) = ticTacToe turn4 turns
+            let (turnStatus, turns) = ticTacToe turn5 turns
+            let (turnStatus, turns) = ticTacToe turn6 turns
+            let (turnStatus, turns) = ticTacToe turn7 turns
+            let (turnStatus, turns) = ticTacToe turn8 turns
 
-            let (turnStatus, _) = ticTacToe turn9 turns
+            let (turnStatus, turns) = ticTacToe turn9 turns
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Draw))
