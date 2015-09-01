@@ -5,10 +5,10 @@ open System.Runtime.CompilerServices
 [<assembly: AssemblyTitle("FsharpKatas")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("BytesTeam")>]
+[<assembly: AssemblyCompany("")>]
 [<assembly: AssemblyProduct("")>]
-[<assembly: AssemblyCopyright("BytesTeam")>]
-[<assembly: AssemblyTrademark("BytesTeam")>]
+[<assembly: AssemblyCopyright("")>]
+[<assembly: AssemblyTrademark("")>]
 
 // The assembly version has the format {Major}.{Minor}.{Build}.{Revision}
 
