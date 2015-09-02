@@ -50,7 +50,7 @@
             1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
             1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
-        let private isWinner (turn:Turn) (turns:Turns) =
+        let private isWinner turn turns =
             let verify f = f turn turns
 
             verify hasThreeInARow
@@ -58,16 +58,16 @@
             || verify hasThreeInLeftToRightDiagonal
             || verify hasThreeInRightToLeftDiagonal
 
-        let private isDraw (turns:Turns) =
+        let private isDraw turns =
             (turns |> Seq.length) > 9
 
-        let private isValidTurn (turn:Turn) (turns:Turns) =
+        let private isValidTurn turn turns =
             match (isPlayerTurn turn turns, isPositionEmpty turn turns) with
             | (false, _) -> false 
             | (_, false) -> false 
             | (_, _) -> true
 
-        let ticTacToe (turn:Turn) (turns:Turns) :TurnOutcome =
+        let ticTacToe turn turns :TurnOutcome =
             let turnsWithNewTurn = saveTurn turn turns
             if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
             elif isWinner turn turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
