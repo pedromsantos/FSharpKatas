@@ -70,8 +70,8 @@
         let ticTacToe (turn:Turn) (turns:Turns) :TurnOutcome =
             let turnsWithNewTurn = saveTurn turn turns
             if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
-            else if isWinner turn turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
-            else if isDraw turnsWithNewTurn then (TurnStatus.Draw, turnsWithNewTurn)
+            elif isWinner turn turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
+            elif isDraw turnsWithNewTurn then (TurnStatus.Draw, turnsWithNewTurn)
             else (TurnStatus.InProgress, turnsWithNewTurn)
 
         let init() = 
