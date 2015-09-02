@@ -51,10 +51,12 @@
             1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
         let private isWinner (turn:Turn) (turns:Turns) =
-            hasThreeInARow turn turns
-            || hasThreeInAColumn turn turns 
-            || hasThreeInLeftToRightDiagonal turn turns
-            || hasThreeInRightToLeftDiagonal turn turns
+            let verify f = f turn turns
+
+            verify hasThreeInARow
+            || verify hasThreeInAColumn 
+            || verify hasThreeInLeftToRightDiagonal
+            || verify hasThreeInRightToLeftDiagonal
 
         let private isDraw (turns:Turns) =
             (turns |> Seq.length) > 9
