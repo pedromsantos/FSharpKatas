@@ -16,9 +16,9 @@
 
         type TurnOutcome = TurnStatus * Turns
 
-        type TicTacToe = Turn -> Turns -> TurnOutcome
-
         type Init = unit -> Turns
+
+        type TicTacToe = Turn -> Turns -> TurnOutcome 
 
         let private lastTurn (turns:Turns) = 
             turns.Head
@@ -76,6 +76,9 @@
             | (_, false) -> false 
             | (_, _) -> true
 
+        let init:Init = fun() ->
+            [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
+
         let ticTacToe:TicTacToe = fun turn turns ->
             let turnsWithNewTurn = saveTurn turn turns
             let verify f = f turnsWithNewTurn
@@ -83,9 +86,6 @@
             elif verify isWinner then (TurnStatus.Winner, turnsWithNewTurn)
             elif verify isDraw then (TurnStatus.Draw, turnsWithNewTurn)
             else (TurnStatus.InProgress, turnsWithNewTurn)
-
-        let init:Init = fun() ->
-            [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
 
     module TicTacToeTests =
         open NUnit.Framework
