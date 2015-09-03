@@ -18,6 +18,9 @@
 
         let private lastTurn (turns:Turns) = 
             turns.Head
+
+        let private lastTurnPlayer turns =
+            (lastTurn turns).Player
         
         let private saveTurn turn turns =
             turn :: turns
@@ -26,32 +29,36 @@
             not (turns |> Seq.exists (fun t -> t.Column = turn.Column && t.Row = turn.Row))
 
         let private isPlayerTurn turn turns =
-            turn.Player <> (lastTurn turns).Player
+            turn.Player <> lastTurnPlayer turns
         
         let private playerPreviousTurns player turns =
             turns |> Seq.filter (fun t -> player = t.Player)
 
-        let private howManySatisfy turn turns filter = 
-            playerPreviousTurns turn.Player turns 
+        let private howManySatisfy turns filter = 
+            let turn = lastTurn turns
+            playerPreviousTurns (lastTurnPlayer turns) turns 
             |> Seq.filter filter 
             |> Seq.length
 
-        let private hasThreeInARow turn turns = 
-            3 = (howManySatisfy turn turns (fun t -> turn.Row = t.Row))
+        let private hasThreeInARow turns = 
+            let turn = lastTurn turns
+            3 = (howManySatisfy turns (fun t -> turn.Row = t.Row))
 
-        let private hasThreeInAColumn turn turns = 
-            3 = (howManySatisfy turn turns (fun t -> turn.Column = t.Column))
+        let private hasThreeInAColumn turns = 
+            let turn = lastTurn turns
+            3 = (howManySatisfy turns (fun t -> turn.Column = t.Column))
 
-        let private hasThreeInLeftToRightDiagonal turn turns =
-            3 = (howManySatisfy turn turns (fun t -> int32 t.Row = int32 t.Column))
+        let private hasThreeInLeftToRightDiagonal turns =
+            let turn = lastTurn turns
+            3 = (howManySatisfy turns (fun t -> int32 t.Row = int32 t.Column))
 
-        let private hasThreeInRightToLeftDiagonal turn turns = 
-            1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.First && t.Column = Columns.Third)) &&
-            1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
-            1 = (howManySatisfy turn turns (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
+        let private hasThreeInRightToLeftDiagonal turns = 
+            1 = (howManySatisfy turns (fun t -> t.Row = Rows.First && t.Column = Columns.Third)) &&
+            1 = (howManySatisfy turns (fun t -> t.Row = Rows.Second && t.Column = Columns.Second)) &&
+            1 = (howManySatisfy turns (fun t -> t.Row = Rows.Third && t.Column = Columns.First))
 
-        let private isWinner turn turns =
-            let verify f = f turn turns
+        let private isWinner turns =
+            let verify f = f turns
 
             verify hasThreeInARow
             || verify hasThreeInAColumn 
@@ -70,7 +77,7 @@
         let ticTacToe turn turns :TurnOutcome =
             let turnsWithNewTurn = saveTurn turn turns
             if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
-            elif isWinner turn turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
+            elif isWinner turnsWithNewTurn then (TurnStatus.Winner, turnsWithNewTurn)
             elif isDraw turnsWithNewTurn then (TurnStatus.Draw, turnsWithNewTurn)
             else (TurnStatus.InProgress, turnsWithNewTurn)
 
