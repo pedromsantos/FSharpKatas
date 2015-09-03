@@ -93,30 +93,34 @@
 
         [<Test>]
         let ``Should enforce player X to play first``()  =
-            let turns = init()
             let turn1 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
 
-            let (turnStatus, _) = ticTacToe turn1 turns
+            let turnStatus = 
+                init()
+                |> ticTacToe turn1
+                |> fst
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
         
         [<Test>]
         let ``Should allow player X to play first``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
 
-            let (turnStatus, _) = ticTacToe turn1 turns
+            let turnStatus = 
+                init()
+                |> ticTacToe turn1
+                |> fst
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
 
         [<Test>]
         let ``Should allow player O to play second``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First } 
             let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First } 
             
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> fst
@@ -125,12 +129,12 @@
         
         [<Test>]
         let ``Should enforce players alternate``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First } 
             let turn2 = { Player = Players.X; Row = Rows.Second; Column = Columns.First }
             
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> fst
@@ -139,12 +143,12 @@
         
         [<Test>]
         let ``Should not allow turn with same row and column as last one``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.First }
             
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> fst 
@@ -153,13 +157,13 @@
 
         [<Test>]
         let ``Should not allow to play in any previously played positions``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.Second; Column = Columns.First }
             let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
@@ -172,7 +176,6 @@
         [<TestCase(Rows.Second, Rows.Third)>]
         [<TestCase(Rows.Third, Rows.First)>]
         let ``Should declare player as winner if he has three in any row``(winnerRow, looserRow)  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = winnerRow; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = looserRow; Column = Columns.First }
             let turn3 = { Player = Players.X; Row = winnerRow; Column = Columns.Second }
@@ -180,7 +183,8 @@
             let turn5 = { Player = Players.X; Row = winnerRow; Column = Columns.Third }
 
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
@@ -197,7 +201,6 @@
         [<TestCase(Columns.Second, Columns.Third)>]
         [<TestCase(Columns.Third, Columns.First)>]
         let ``Should declare player as winner if he has three in any column``(winnerColumn, looserColumn)  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = winnerColumn }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = looserColumn }
             let turn3 = { Player = Players.X; Row = Rows.Second; Column = winnerColumn }
@@ -205,7 +208,8 @@
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = winnerColumn }
 
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
@@ -220,7 +224,6 @@
 
         [<Test>]
         let ``Should declare player as winner if he has three in left to rigth diagonal``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.Second }
             let turn3 = { Player = Players.X; Row = Rows.Second; Column = Columns.Second }
@@ -228,7 +231,8 @@
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = Columns.Third }
 
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
@@ -243,7 +247,6 @@
 
         [<Test>]
         let ``Should declare player as winner if he has three in rigth to left diagonal``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.Third }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.Second }
             let turn3 = { Player = Players.X; Row = Rows.Second; Column = Columns.Second }
@@ -251,7 +254,8 @@
             let turn5 = { Player = Players.X; Row = Rows.Third; Column = Columns.First }
 
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
@@ -266,7 +270,6 @@
 
         [<Test>]
         let ``Should declare draw if all 9 positions are filled``()  =
-            let turns = init()
             let turn1 = { Player = Players.X; Row = Rows.First; Column = Columns.First }
             let turn2 = { Player = Players.O; Row = Rows.First; Column = Columns.Second }
             let turn3 = { Player = Players.X; Row = Rows.First; Column = Columns.Third }
@@ -278,7 +281,8 @@
             let turn9 = { Player = Players.X; Row = Rows.Second; Column = Columns.Third }
 
             let turnStatus = 
-                ticTacToe turn1 turns
+                init()
+                |> ticTacToe turn1
                 |> snd
                 |> ticTacToe turn2
                 |> snd 
