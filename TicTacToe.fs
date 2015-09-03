@@ -53,7 +53,6 @@
             3 = (howManySatisfy turns (fun t -> turn.Column = t.Column))
 
         let private hasThreeInLeftToRightDiagonal turns =
-            let turn = lastTurn turns
             3 = (howManySatisfy turns (fun t -> int32 t.Row = int32 t.Column))
 
         let private hasThreeInRightToLeftDiagonal turns = 
