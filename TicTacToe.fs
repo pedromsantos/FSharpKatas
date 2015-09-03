@@ -39,7 +39,6 @@
             turns |> Seq.filter (fun t -> player = t.Player)
 
         let private howManySatisfy turns filter = 
-            let turn = lastTurn turns
             playerPreviousTurns (lastTurnPlayer turns) turns 
             |> Seq.filter filter 
             |> Seq.length
@@ -297,6 +296,5 @@
                 |> snd
                 |> ticTacToe turn9
                 |> fst
-
 
             Assert.That(turnStatus, Is.EqualTo(TurnStatus.Draw))
