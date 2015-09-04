@@ -6,11 +6,17 @@
         type Cell = { Status:CellStatus; Neighbours:Cell list }
 
         type IsCellAlive = Cell -> bool
-        
+
+        let countAliveNeighbours (cell:Cell) =
+            cell.Neighbours 
+            |> Seq.filter (fun n -> n.Status = Alive) 
+            |> Seq.length
+
         let isCellAlive:IsCellAlive = fun cell ->
+            let aliveNeighbours = countAliveNeighbours cell
             match cell.Status with
-            | Alive -> cell.Neighbours.Length >= 2 && cell.Neighbours.Length < 4
-            | Dead -> cell.Neighbours.Length = 3 
+            | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
+            | Dead -> aliveNeighbours = 3 
 
         let nextGenerationCellStatus cell =
             match isCellAlive cell with
@@ -27,7 +33,9 @@
         [<Test>]
         let ``A live cell with fewer than two live neighbours dies, as if caused by under population``() = 
             let neighbour1 = { Status=Alive; Neighbours=[]}
-            let cell = { Status=Alive; Neighbours=[neighbour1] }
+            let neighbour2 = { Status=Dead; Neighbours=[]}
+            let neighbour3 = { Status=Dead; Neighbours=[]}
+            let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
             Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Dead))
 
