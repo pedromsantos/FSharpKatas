@@ -63,6 +63,6 @@
             let neighbour1 = { Status=Alive; Neighbours=[]}
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
-            let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3]}
+            let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
             Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Alive))
