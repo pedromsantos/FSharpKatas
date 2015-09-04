@@ -9,8 +9,13 @@
         
         let isCellAlive:IsCellAlive = fun cell ->
             match cell.Status with
-            | Alive -> cell.Neighbours.Length >= 2 && cell.Neighbours.Length <= 3
+            | Alive -> cell.Neighbours.Length >= 2 && cell.Neighbours.Length < 4
             | Dead -> cell.Neighbours.Length = 3 
+
+        let nextGenerationCellStatus cell =
+            match isCellAlive cell with
+            | true -> Alive
+            | false -> Dead
 
     module GameOfLifeTests =
         open NUnit.Framework
@@ -18,7 +23,9 @@
 
         [<Test>]
         let ``A live cell with fewer than two live neighbours dies, as if caused by under population``() = 
-            Assert.IsFalse(isCellAlive { Status=Alive; Neighbours=[]})
+            let neighbour1 = { Status=Alive; Neighbours=[]}
+
+            Assert.That(nextGenerationCellStatus { Status=Alive; Neighbours=[neighbour1]}, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
@@ -27,7 +34,7 @@
             let neighbour3 = { Status=Alive; Neighbours=[]}
             let neighbour4 = { Status=Alive; Neighbours=[]}
 
-            Assert.IsFalse(isCellAlive { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4]})
+            Assert.That(nextGenerationCellStatus { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4]}, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
@@ -35,7 +42,7 @@
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
 
-            Assert.IsTrue(isCellAlive { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3]})
+            Assert.That(nextGenerationCellStatus { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}, Is.EqualTo(CellStatus.Alive))
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
@@ -43,4 +50,4 @@
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
 
-            Assert.IsTrue(isCellAlive { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]})
+            Assert.That(nextGenerationCellStatus { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3]}, Is.EqualTo(CellStatus.Alive))
