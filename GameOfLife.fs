@@ -27,8 +27,9 @@
         [<Test>]
         let ``A live cell with fewer than two live neighbours dies, as if caused by under population``() = 
             let neighbour1 = { Status=Alive; Neighbours=[]}
+            let cell = { Status=Alive; Neighbours=[neighbour1] }
 
-            Assert.That((nextGeneration { Status=Alive; Neighbours=[neighbour1]}).Status, Is.EqualTo(CellStatus.Dead))
+            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
@@ -36,21 +37,24 @@
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
             let neighbour4 = { Status=Alive; Neighbours=[]}
+            let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4] }
 
-            Assert.That((nextGeneration { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4]}).Status, Is.EqualTo(CellStatus.Dead))
+            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
             let neighbour1 = { Status=Alive; Neighbours=[]}
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
+            let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            Assert.That((nextGeneration { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}).Status, Is.EqualTo(CellStatus.Alive))
+            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Alive))
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
             let neighbour1 = { Status=Alive; Neighbours=[]}
             let neighbour2 = { Status=Alive; Neighbours=[]}
             let neighbour3 = { Status=Alive; Neighbours=[]}
+            let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
-            Assert.That((nextGeneration { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3]}).Status, Is.EqualTo(CellStatus.Alive))
+            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Alive))
