@@ -21,7 +21,7 @@
             | true -> Alive
             | false -> Dead
 
-        let nextGeneration cell =
+        let tick cell =
             {Status = nextGenerationCellStatus cell; Neighbours = cell.Neighbours}
 
     module GameOfLifeTests =
@@ -35,7 +35,7 @@
             let neighbour3 = { Status=Dead; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Dead))
+            Assert.That((tick cell).Status, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
@@ -45,7 +45,7 @@
             let neighbour4 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4] }
 
-            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Dead))
+            Assert.That((tick cell).Status, Is.EqualTo(CellStatus.Dead))
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
@@ -54,7 +54,7 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Alive))
+            Assert.That((tick cell).Status, Is.EqualTo(CellStatus.Alive))
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
@@ -63,4 +63,4 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
-            Assert.That((nextGeneration cell).Status, Is.EqualTo(CellStatus.Alive))
+            Assert.That((tick cell).Status, Is.EqualTo(CellStatus.Alive))
