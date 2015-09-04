@@ -12,7 +12,7 @@
 
         type Turn = { Player:Players; Row:Rows; Column:Columns }
 
-        type Turns = List<Turn>
+        type Turns = Turn list 
 
         type TurnOutcome = TurnStatus * Turns
 
