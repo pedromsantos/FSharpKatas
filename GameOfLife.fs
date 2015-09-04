@@ -5,26 +5,24 @@
         
         type Cell = { Status:CellStatus; Neighbours:Cell list }
 
-        type IsCellAlive = Cell -> bool
-
-        let countAliveNeighbours (cell:Cell) =
+        let private countAliveNeighbours cell =
             cell.Neighbours 
             |> Seq.filter (fun n -> n.Status = Alive) 
             |> Seq.length
 
-        let isCellAlive:IsCellAlive = fun cell ->
+        let private isCellAlive cell =
             let aliveNeighbours = countAliveNeighbours cell
             match cell.Status with
             | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
             | Dead -> aliveNeighbours = 3 
 
-        let nextGenerationCellStatus cell =
+        let private nextGenerationCellStatus cell =
             match isCellAlive cell with
             | true -> Alive
             | false -> Dead
 
         let nextGeneration cell =
-            {Status = nextGenerationCellStatus cell; Neighbours=cell.Neighbours}
+            {Status = nextGenerationCellStatus cell; Neighbours = cell.Neighbours}
 
     module GameOfLifeTests =
         open NUnit.Framework
