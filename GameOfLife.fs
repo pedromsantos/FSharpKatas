@@ -5,6 +5,8 @@
         
         type Cell = { Status:CellStatus; Neighbours:Cell list }
 
+        type World = Cell[,]
+
         let private countAliveNeighbours cell =
             cell.Neighbours 
             |> Seq.filter (fun n -> n.Status = Alive) 
@@ -23,6 +25,9 @@
 
         let tick cell =
             {Status = nextGenerationCellStatus cell; Neighbours = cell.Neighbours}
+
+        let init size : World=
+            Array2D.zeroCreate<Cell> size size;
 
     module GameOfLifeTests =
         open NUnit.Framework
@@ -64,3 +69,16 @@
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
             Assert.That((tick cell).Status, Is.EqualTo(CellStatus.Alive))
+
+        [<Test>]
+        let ``The world is created with a size``() =
+            let world = init 5
+            
+            Assert.That(world.Length, Is.EqualTo(25))
+
+        [<Test>]
+        let ``The world is created with a specified size``() =
+            let world = init 5
+            
+            Assert.That(world.Length, Is.EqualTo(25))
+            
