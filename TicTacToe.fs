@@ -92,7 +92,7 @@
         open TicTacToe
 
         [<Test>]
-        let ``Should enforce player X to play first``()  =
+        let ``Should not allow player O to play first``()  =
             let turnStatus = 
                 init()
                 |> ticTacToe { Player = Players.O; Row = Rows.First; Column = Columns.First }
