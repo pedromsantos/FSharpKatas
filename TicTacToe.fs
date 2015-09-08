@@ -39,7 +39,8 @@
             turns |> Seq.filter (fun t -> player = t.Player)
 
         let private howManySatisfy turns filter = 
-            playerPreviousTurns (lastTurnPlayer turns) turns 
+            turns
+            |> playerPreviousTurns (lastTurnPlayer turns) 
             |> Seq.filter filter 
             |> Seq.length
 
@@ -71,7 +72,7 @@
             (turns |> Seq.length) > 9
 
         let private isValidTurn turn turns =
-            match (isPlayerTurn turn turns, isPositionEmpty turn turns) with
+            match (turns |> isPlayerTurn turn, turns |> isPositionEmpty turn) with
             | (false, _) -> false 
             | (_, false) -> false 
             | (_, _) -> true
@@ -80,9 +81,9 @@
             [{ Player = Players.O; Row = Rows.None; Column = Columns.None }]
 
         let ticTacToe:TicTacToe = fun turn turns ->
-            let turnsWithNewTurn = saveTurn turn turns
+            let turnsWithNewTurn = turns |> saveTurn turn
             let verify f = f turnsWithNewTurn
-            if not (isValidTurn turn turns) then (TurnStatus.InvalidMove, turns)
+            if not (turns |> isValidTurn turn) then (TurnStatus.InvalidMove, turns)
             elif verify isWinner then (TurnStatus.Winner, turnsWithNewTurn)
             elif verify isDraw then (TurnStatus.Draw, turnsWithNewTurn)
             else (TurnStatus.InProgress, turnsWithNewTurn)
