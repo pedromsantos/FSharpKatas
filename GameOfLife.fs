@@ -72,7 +72,7 @@
             let neighbour3 = { Status=Dead; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            (tickCell cell).Status |> should equal CellStatus.Dead
+            (tickCell cell) |> should equal { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
@@ -82,7 +82,7 @@
             let neighbour4 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4] }
 
-            (tickCell cell).Status |> should equal CellStatus.Dead
+            tickCell cell |> should equal { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4] }
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
@@ -91,7 +91,7 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            (tickCell cell).Status |> should equal CellStatus.Alive
+            tickCell cell |> should equal { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
@@ -100,7 +100,7 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
-            (tickCell cell).Status |> should equal CellStatus.Alive
+            tickCell cell |> should equal { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
         [<Test>]
         let ``The Universe is created with a specified size``() =
