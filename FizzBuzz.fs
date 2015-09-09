@@ -10,6 +10,7 @@ namespace FSharpKatas
 
     module FizzBuzzTests =
         open NUnit.Framework
+        open FsUnit
         open FizzBuzz
 
         [<TestCase(1, "1")>]
@@ -23,4 +24,4 @@ namespace FSharpKatas
         [<TestCase(15, "FizzBuzz")>]
         let ``Should fizz buzz number``number expectedFizzBuzz =
             let fizzBuzzed = fizzBuzz number
-            Assert.AreEqual(expectedFizzBuzz, fizzBuzzed)
+            fizzBuzzed |> should equal fizzBuzzed 

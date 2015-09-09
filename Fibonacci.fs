@@ -9,6 +9,7 @@
 
     module FibonacciTests =
         open NUnit.Framework
+        open FsUnit
         open Fibonacci
 
         [<TestCase(0, 0)>]
@@ -23,4 +24,4 @@
         [<TestCase(12, 144)>]
         let ``Should determine fibonacci number for number``(number:int, expectedFibonacciNumber:int) =
             let fibonacciNumber = fibonacci number 
-            Assert.AreEqual(expectedFibonacciNumber, fibonacciNumber)
+            fibonacciNumber |> should equal expectedFibonacciNumber

@@ -49,7 +49,7 @@
             | false -> Dead
 
         let tickCell (cell:Cell) =
-            {Status = nextGenerationCellStatus cell; Neighbours = cell.Neighbours}
+            {cell with Status = nextGenerationCellStatus cell}
 
         let tick (universe:Universe) :Universe =
             universe |> Array2D.map (fun c -> if c.IsSome then Some(tickCell c.Value) else c) 
@@ -62,6 +62,7 @@
 
     module GameOfLifeTests =
         open NUnit.Framework
+        open FsUnit
         open GameOfLife
 
         [<Test>]
@@ -71,7 +72,7 @@
             let neighbour3 = { Status=Dead; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            Assert.That((tickCell cell).Status, Is.EqualTo(CellStatus.Dead))
+            (tickCell cell).Status |> should equal CellStatus.Dead
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
@@ -81,7 +82,7 @@
             let neighbour4 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Alive; Neighbours=[neighbour1; neighbour2; neighbour3; neighbour4] }
 
-            Assert.That((tickCell cell).Status, Is.EqualTo(CellStatus.Dead))
+            (tickCell cell).Status |> should equal CellStatus.Dead
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
@@ -90,7 +91,7 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3] }
 
-            Assert.That((tickCell cell).Status, Is.EqualTo(CellStatus.Alive))
+            (tickCell cell).Status |> should equal CellStatus.Alive
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
@@ -99,13 +100,13 @@
             let neighbour3 = { Status=Alive; Neighbours=[] }
             let cell = { Status=Dead; Neighbours=[neighbour1; neighbour2; neighbour3]}
 
-            Assert.That((tickCell cell).Status, Is.EqualTo(CellStatus.Alive))
+            (tickCell cell).Status |> should equal CellStatus.Alive
 
         [<Test>]
         let ``The Universe is created with a specified size``() =
             let universe = init Map.empty<Coordinate, Cell>
             
-            Assert.That(universe.Length, Is.EqualTo(25))
+            universe.Length |> should equal 25
 
         [<Test>]
         let ``The Universe is created empty``() =
@@ -120,10 +121,10 @@
             let seed:Seed = [coordinate, cell] |> Map.ofList
             let universe = init seed
 
-            Assert.That(universe.[0,0].Value, Is.EqualTo(cell))
+            universe.[0,0].Value |> should equal cell
 
         [<Test>]
-        let ``A Universe with a single live cell will bring no live cells for next generation``() =
+        let ``A Universe with a single live cell will bring no cells alive for next generation``() =
             let coordinate:Coordinate = (createCoordinate 1 1).Value
             let cell:Cell = { Status=Alive; Neighbours=[] }
             let seed:Seed = [coordinate, cell] |> Map.ofList
@@ -131,4 +132,4 @@
 
             let newUniverse = tick universe
 
-            Assert.That(newUniverse.[1,1].Value, Is.EqualTo({ Status=Dead; Neighbours=[] }))
+            newUniverse.[1,1].Value |> should equal { Status=Dead; Neighbours=[] }

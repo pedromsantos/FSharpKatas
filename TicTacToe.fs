@@ -90,6 +90,7 @@
 
     module TicTacToeTests =
         open NUnit.Framework
+        open FsUnit
         open TicTacToe
 
         [<Test>]
@@ -99,7 +100,7 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.First; Column = Columns.First }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
+            turnStatus |> should equal TurnStatus.InvalidMove
         
         [<Test>]
         let ``Should allow player X to play first``()  =
@@ -108,7 +109,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
+            turnStatus |> should equal TurnStatus.InProgress
 
         [<Test>]
         let ``Should allow player O to play second``()  =
@@ -119,7 +120,7 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.Second; Column = Columns.First } 
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InProgress))
+            turnStatus |> should equal TurnStatus.InProgress
         
         [<Test>]
         let ``Should enforce players alternate``()  =
@@ -130,7 +131,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.Second; Column = Columns.First }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
+            turnStatus |> should equal TurnStatus.InvalidMove
         
         [<Test>]
         let ``Should not allow turn with same row and column as last one``()  =
@@ -141,7 +142,7 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.First; Column = Columns.First }
                 |> fst 
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
+            turnStatus |> should equal TurnStatus.InvalidMove
 
         [<Test>]
         let ``Should not allow to play in any previously played positions``()  =
@@ -154,7 +155,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.First; Column = Columns.First }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.InvalidMove))
+            turnStatus |> should equal TurnStatus.InvalidMove
 
         [<TestCase(Rows.First, Rows.Second)>]
         [<TestCase(Rows.Second, Rows.Third)>]
@@ -173,7 +174,7 @@
                 |> ticTacToe { Player = Players.X; Row = winnerRow; Column = Columns.Third }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
+            turnStatus |> should equal TurnStatus.Winner
 
         [<TestCase(Columns.First, Columns.Second)>]
         [<TestCase(Columns.Second, Columns.Third)>]
@@ -192,7 +193,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.Third; Column = winnerColumn }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
+            turnStatus |> should equal TurnStatus.Winner
 
         [<Test>]
         let ``Should declare player as winner if he has three in left to rigth diagonal``()  =
@@ -210,7 +211,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.Third; Column = Columns.Third }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
+            turnStatus |> should equal TurnStatus.Winner
 
         [<Test>]
         let ``Should declare player as winner if he has three in rigth to left diagonal``()  =
@@ -227,7 +228,7 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.Third; Column = Columns.First }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Winner))
+            turnStatus |> should equal TurnStatus.Winner
 
         [<Test>]
         let ``Should declare draw if all 9 positions are filled``()  =
@@ -252,4 +253,4 @@
                 |> ticTacToe { Player = Players.X; Row = Rows.Second; Column = Columns.Third }
                 |> fst
 
-            Assert.That(turnStatus, Is.EqualTo(TurnStatus.Draw))
+            turnStatus |> should equal TurnStatus.Draw

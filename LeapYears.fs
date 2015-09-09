@@ -9,6 +9,7 @@
 
     module LeapYearTests =
         open NUnit.Framework
+        open FsUnit
         open LeapYear
 
         [<TestCase(1, false)>]
@@ -18,6 +19,6 @@
         [<TestCase(400, true)>]
         [<TestCase(1996, true)>]
         [<TestCase(2000, true)>]
-        let ``Should determine if year is a leap year`` year isLeapYear =
+        let ``Should determine if year is a leap year`` year shouldBeLeapYear =
             let isLeapYear = leapYear year 
-            Assert.AreEqual(isLeapYear, isLeapYear)
+            isLeapYear |> should equal shouldBeLeapYear
