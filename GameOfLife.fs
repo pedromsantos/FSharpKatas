@@ -1,21 +1,18 @@
 ﻿namespace FSharpKatas
 
     module GameOfLife =
-        type Cell = Alive | Dead 
-        
         type X = X of int
         type Y = Y of int
         type Coordinate = {X:X; Y:Y} 
 
+        type Cell = Alive | Dead 
         type Neighbours =  Cell seq 
         type Universe = Map<Coordinate, Cell>
+ 
 
-        let coordinate x y :Coordinate =
-            {X=X x; Y=Y y}
+        let private valueX (X x) = x
 
-        let valueX (X x) = x
-
-        let valueY (Y y) = y
+        let private valueY (Y y) = y
 
         let private increaseX (c:Coordinate) =
             {c with X = X ((valueX c.X) + 1)}
@@ -38,6 +35,9 @@
             match isCellAlive cell neighbours with
             | true -> Alive
             | false -> Dead
+
+        let coordinate x y :Coordinate =
+            {X=X x; Y=Y y}
 
         let tickCell (cell:Cell) neighbours =
             nextGenerationCellStatus cell neighbours
@@ -98,6 +98,7 @@
 
             updatedUniverse.[coordinate 1 1] |> should equal Dead
 
+        (* Next iteration
         [<Test>]
         let ``A Universe with a three neighbour live cells will bring all cells alive for next generation``() =
             let universe = [coordinate 0 0, Alive; coordinate 0 1, Alive; coordinate 1 0, Alive;] 
@@ -108,3 +109,4 @@
             updatedUniverse.[coordinate 0 0] |> should equal Alive 
             updatedUniverse.[coordinate 0 1] |> should equal Alive
             updatedUniverse.[coordinate 1 0] |> should equal Alive
+        *)
