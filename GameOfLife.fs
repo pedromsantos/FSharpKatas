@@ -8,7 +8,6 @@
         type Cell = Alive | Dead 
         type Neighbours =  Cell seq 
         type Universe = Map<Coordinate, Cell>
- 
 
         let private valueX (X x) = x
 
