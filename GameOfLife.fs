@@ -5,16 +5,23 @@
         
         type X = X of int
         type Y = Y of int
-        type Coordinate = X*Y 
+        type Coordinate = {X:X; Y:Y} 
 
         type Neighbours =  Cell seq 
         type Universe = Map<Coordinate, Cell>
 
-        let createCoordinate x y :Coordinate =
-            (X x, Y y)
+        let coordinate x y :Coordinate =
+            {X=X x; Y=Y y}
 
-        let increaseX c:Coordinate =
-            (X c, Y c)
+        let valueX (X x) = x
+
+        let valueY (Y y) = y
+
+        let private increaseX (c:Coordinate) =
+            {c with X = X ((valueX c.X) + 1)}
+
+        let private increaseY (c:Coordinate) =
+            {c with Y = Y ((valueY c.Y) + 1)}
 
         let private countAliveNeighbours neighbours =
             neighbours 
@@ -79,25 +86,25 @@
 
         [<Test>]
         let ``The Universe can be seeded``() =
-            let universe = [createCoordinate 0 0, Alive] |> Map.ofList
+            let universe = [coordinate 0 0, Alive] |> Map.ofList
 
-            universe.[(X 0, Y 0)] |> should equal Alive
+            universe.[coordinate 0 0] |> should equal Alive
 
         [<Test>]
         let ``A Universe with a single live cell will bring no cells alive for next generation``() =
-            let universe = [createCoordinate 1 1, Alive] |> Map.ofList
+            let universe = [coordinate 1 1, Alive] |> Map.ofList
 
             let updatedUniverse  = tick universe
 
-            updatedUniverse.[(X 1, Y 1)] |> should equal Dead
+            updatedUniverse.[coordinate 1 1] |> should equal Dead
 
         [<Test>]
         let ``A Universe with a three neighbour live cells will bring all cells alive for next generation``() =
-            let universe = [(X 0,Y 0), Alive; (X 0,Y 1), Alive; (X 1,Y 0), Alive;] 
+            let universe = [coordinate 0 0, Alive; coordinate 0 1, Alive; coordinate 1 0, Alive;] 
                            |> Map.ofList
 
             let updatedUniverse  = tick universe
 
-            updatedUniverse.[(X 0, Y 0)] |> should equal Alive 
-            updatedUniverse.[(X 0, Y 1)] |> should equal Alive
-            updatedUniverse.[(X 1, Y 0)] |> should equal Alive
+            updatedUniverse.[coordinate 0 0] |> should equal Alive 
+            updatedUniverse.[coordinate 0 1] |> should equal Alive
+            updatedUniverse.[coordinate 1 0] |> should equal Alive
