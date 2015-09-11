@@ -8,28 +8,13 @@
         type Coordinate = X*Y 
 
         type Neighbours =  Cell seq 
-        type Universe = Cell option[,]
+        type Universe = Map<Coordinate, Cell>
 
-        type Seed = Map<Coordinate, Cell>
+        let createCoordinate x y :Coordinate =
+            (X x, Y y)
 
-        let size = 5
-
-        let createX n = 
-            if n >= 0 && n < size
-                then Some(X n)
-                else None
-
-        let createY n = 
-            if n >= 0 && n < size
-                then Some(Y n)
-                else None
-
-        let createCoordinate x y :Coordinate option =
-            let xCoordinate = createX x
-            let yCoordinate = createY y
-            match (xCoordinate, yCoordinate) with
-            | Some x, Some y -> Some (xCoordinate.Value, yCoordinate.Value)
-            | _, _ -> None 
+        let increaseX c:Coordinate =
+            (X c, Y c)
 
         let private countAliveNeighbours neighbours =
             neighbours 
@@ -47,17 +32,11 @@
             | true -> Alive
             | false -> Dead
 
-        let tickCell (cell:Cell) =
-            nextGenerationCellStatus cell
+        let tickCell (cell:Cell) neighbours =
+            nextGenerationCellStatus cell neighbours
 
         let tick (universe:Universe) :Universe =
-            universe |> Array2D.map (fun c -> if c.IsSome then Some(tickCell c.Value []) else c) 
-
-        let init (seed:Seed) : Universe =
-            Array2D.init<Cell option> size size (fun x y -> 
-                if seed.ContainsKey((X x, Y y)) 
-                then Some(seed.[(X x, Y y)])
-                else None)
+            universe |> Map.map (fun key value -> tickCell value [])
 
     module GameOfLifeTests =
         open NUnit.Framework
@@ -93,33 +72,32 @@
             neighbours |> tickCell cell |> should equal Alive
 
         [<Test>]
-        let ``The Universe is created with a specified size``() =
-            let universe = init Map.empty<Coordinate, Cell>
-            
-            universe.Length |> should equal 25
-
-        [<Test>]
         let ``The Universe is created empty``() =
-            let universe = init Map.empty<Coordinate, Cell>
+            let universe = Map.empty<Coordinate, Cell>
             
             Assert.That(universe |> Seq.cast<Cell option> |> Seq.choose id |> Seq.length, Is.EqualTo(0))
 
         [<Test>]
         let ``The Universe can be seeded``() =
-            let coordinate:Coordinate = (createCoordinate 0 0).Value
-            let cell:Cell = Alive
-            let seed:Seed = [coordinate, cell] |> Map.ofList
-            let universe = init seed
+            let universe = [createCoordinate 0 0, Alive] |> Map.ofList
 
-            universe.[0,0].Value |> should equal cell
+            universe.[(X 0, Y 0)] |> should equal Alive
 
         [<Test>]
         let ``A Universe with a single live cell will bring no cells alive for next generation``() =
-            let coordinate:Coordinate = (createCoordinate 1 1).Value
-            let cell:Cell = Alive
-            let seed:Seed = [coordinate, cell] |> Map.ofList
-            let universe = init seed
+            let universe = [createCoordinate 1 1, Alive] |> Map.ofList
 
-            let newUniverse = tick universe
+            let updatedUniverse  = tick universe
 
-            newUniverse.[1,1].Value |> should equal Dead
+            updatedUniverse.[(X 1, Y 1)] |> should equal Dead
+
+        [<Test>]
+        let ``A Universe with a three neighbour live cells will bring all cells alive for next generation``() =
+            let universe = [(X 0,Y 0), Alive; (X 0,Y 1), Alive; (X 1,Y 0), Alive;] 
+                           |> Map.ofList
+
+            let updatedUniverse  = tick universe
+
+            updatedUniverse.[(X 0, Y 0)] |> should equal Alive 
+            updatedUniverse.[(X 0, Y 1)] |> should equal Alive
+            updatedUniverse.[(X 1, Y 0)] |> should equal Alive
