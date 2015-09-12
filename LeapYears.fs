@@ -2,9 +2,9 @@
 
     module LeapYear  =
         let leapYear year =
-            match ((year % 4), (year % 100 = 0), (year % 400 = 0)) with
-            | (0, false, _) -> true
-            | (0, true, true) -> true
+            match ((year % 4 = 0), (year % 100 = 0), (year % 400 = 0)) with
+            | (true, false, _) -> true
+            | (true, true, true) -> true
             | _ -> false
 
     module LeapYearTests =
