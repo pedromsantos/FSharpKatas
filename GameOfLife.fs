@@ -9,15 +9,19 @@
         type Neighbours =  Cell seq 
         type Universe = Map<Coordinate, Cell>
 
-        let private valueX (X x) = x
+        type CreateCoordinate = int -> int -> Coordinate
+        type Tick = Universe -> Universe
+        type TickCell = Cell -> Neighbours -> Cell
 
-        let private valueY (Y y) = y
+        let private changeX newValue (c:Coordinate) =
+            let valueX (X x) = x
 
-        let private increaseX (c:Coordinate) =
-            {c with X = X ((valueX c.X) + 1)}
+            {c with X = X ((valueX c.X) + newValue)}
 
-        let private increaseY (c:Coordinate) =
-            {c with Y = Y ((valueY c.Y) + 1)}
+        let private changeY newValue (c:Coordinate) =
+            let valueY (Y y) = y
+
+            {c with Y = Y ((valueY c.Y) + newValue)}
 
         let private countAliveNeighbours neighbours =
             neighbours 
@@ -34,15 +38,29 @@
             match isCellAlive cell neighbours with
             | true -> Alive
             | false -> Dead
+        
+        let private neighbours (coordinate:Coordinate) (universe:Universe) :Neighbours =
+            [
+            universe |> Map.tryFind (changeX 1 coordinate);
+            universe |> Map.tryFind (changeX -1 coordinate);
+            universe |> Map.tryFind (changeY 1 coordinate);
+            universe |> Map.tryFind (changeY -1 coordinate);
+            universe |> Map.tryFind (changeX -1 (changeY -1 coordinate));
+            universe |> Map.tryFind (changeX 1 (changeY 1 coordinate));
+            universe |> Map.tryFind (changeX -1 (changeY 1 coordinate));
+            universe |> Map.tryFind (changeX 1 (changeY -1 coordinate))
+            ]
+            |> Seq.filter (fun c -> c.IsSome)
+            |> Seq.map (fun c -> c.Value)
 
-        let coordinate x y :Coordinate =
+        let coordinate:CreateCoordinate = fun x y ->  
             {X=X x; Y=Y y}
 
-        let tickCell (cell:Cell) neighbours =
+        let tickCell:TickCell = fun cell neighbours ->
             nextGenerationCellStatus cell neighbours
 
-        let tick (universe:Universe) :Universe =
-            universe |> Map.map (fun key value -> tickCell value [])
+        let tick:Tick = fun universe -> 
+            universe |> Map.map (fun key value -> tickCell value (neighbours key universe))
 
     module GameOfLifeTests =
         open NUnit.Framework
@@ -97,7 +115,6 @@
 
             updatedUniverse.[coordinate 1 1] |> should equal Dead
 
-        (* Next iteration
         [<Test>]
         let ``A Universe with a three neighbour live cells will bring all cells alive for next generation``() =
             let universe = [coordinate 0 0, Alive; coordinate 0 1, Alive; coordinate 1 0, Alive;] 
@@ -108,4 +125,3 @@
             updatedUniverse.[coordinate 0 0] |> should equal Alive 
             updatedUniverse.[coordinate 0 1] |> should equal Alive
             updatedUniverse.[coordinate 1 0] |> should equal Alive
-        *)
