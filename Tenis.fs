@@ -33,7 +33,6 @@
                 | (Thirty, _) -> (updatePlayer winner.Name Points.Forty, looser)
                 | (Forty, _) -> (updatePlayer winner.Name Points.Win, looser)
         
-
         let reverseGamePlayers game =
             (snd game, fst game)
 
@@ -61,7 +60,6 @@
             | (_, Points.Win) -> "Winner " + player2.Name
             | (p1, p2) -> represent p1 + "-" + represent p2
             
-
     module TenisTests =
         open NUnit.Framework
         open Tenis
