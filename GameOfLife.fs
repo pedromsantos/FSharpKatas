@@ -34,11 +34,6 @@
             | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
             | Dead -> aliveNeighbours = 3 
 
-        let private nextGenerationCellStatus cell neighbours =
-            match isCellAlive cell neighbours with
-            | true -> Alive
-            | false -> Dead
-        
         let private neighbours (coordinate:Coordinate) (universe:Universe) :Neighbours =
             [
             universe |> Map.tryFind (changeX 1 coordinate);
@@ -57,7 +52,9 @@
             {X=X x; Y=Y y}
 
         let tickCell:TickCell = fun cell neighbours ->
-            nextGenerationCellStatus cell neighbours
+            match isCellAlive cell neighbours with
+            | true -> Alive
+            | false -> Dead
 
         let tick:Tick = fun universe -> 
             universe |> Map.map (fun key value -> tickCell value (neighbours key universe))
