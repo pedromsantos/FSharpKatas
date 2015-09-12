@@ -113,7 +113,7 @@
             updatedUniverse.[coordinate 1 1] |> should equal Dead
 
         [<Test>]
-        let ``A Universe with a three neighbour live cells will bring all cells alive for next generation``() =
+        let ``A Universe with three neighbour live cells will bring all cells alive for next generation``() =
             let universe = [coordinate 0 0, Alive; coordinate 0 1, Alive; coordinate 1 0, Alive;] 
                            |> Map.ofList
 
