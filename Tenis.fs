@@ -62,6 +62,7 @@
             
     module TenisTests =
         open NUnit.Framework
+        open FsUnit
         open Tenis
 
         [<Test>]
@@ -70,7 +71,7 @@
 
             let game = firstWinsBall (game)
 
-            Assert.That((fst game).Points, Is.EqualTo(Points.Fifteen)) 
+            (fst game).Points |> should equal Points.Fifteen
         
         [<Test>]
         let ``Should increase points for ball winner from Zero to Fifteen on first win for second player``() =
@@ -78,49 +79,49 @@
 
             let game = secondWinsBall (game)
 
-            Assert.That((snd game).Points, Is.EqualTo(Points.Fifteen)) 
-            
+            (snd game).Points |> should equal Points.Fifteen
+
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win``() =
             let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall
 
-            Assert.That((fst game).Points, Is.EqualTo(Points.Thirty))
+            (fst game).Points |> should equal Points.Thirty
 
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win for second player``() =
             let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall
 
-            Assert.That((snd game).Points, Is.EqualTo(Points.Thirty))
+            (snd game).Points |> should equal Points.Thirty
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win``() =
             let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall |> firstWinsBall
 
-            Assert.That((fst game).Points, Is.EqualTo(Points.Forty))
+            (fst game).Points |> should equal Points.Forty
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win for second player``() =
             let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall |> secondWinsBall
 
-            Assert.That((snd game).Points, Is.EqualTo(Points.Forty))
+            (snd game).Points |> should equal Points.Forty
 
         [<Test>]
         let ``Should calculate score 0 - 0 if no player has won a ball``() =
             let game = (newPlayer "Player1", newPlayer "Player 2")
 
-            Assert.That(score game, Is.EqualTo("0-0")) 
+            score game |> should equal "0-0"
 
         [<Test>]
         let ``Should calculate score 15 - 0 if first player has won a ball``() =
             let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall
 
-            Assert.That(score game, Is.EqualTo("15-0"))
+            score game |> should equal "15-0"
 
         [<Test>]
         let ``Should calculate score winner Player1 if first player has won a ball having 40 points``() =
             let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall |> firstWinsBall |> firstWinsBall |> firstWinsBall
 
-            Assert.That(score game, Is.EqualTo("Winner Player1")) 
+            score game |> should equal "Winner Player1" 
 
         [<Test>]
         let ``Should calculate score Deuce if both playeres have 40 points``() =
@@ -133,7 +134,7 @@
                 |> firstWinsBall 
                 |> secondWinsBall
 
-            Assert.That(score game, Is.EqualTo("Deuce"))
+            score game |> should equal "Deuce"
 
         [<Test>]
         let ``Should calculate score Advantage if playeres are deuce and player 1 wins ball``() =
@@ -147,7 +148,7 @@
                 |> secondWinsBall
                 |> firstWinsBall 
             
-            Assert.That(score game, Is.EqualTo("Advantage Player 1"))
+            score game |> should equal "Advantage Player 1"
 
         [<Test>]
         let ``Should calculate score winner Player1 if playeres are deuce and player 1 wins ball being in advantage``() =
@@ -162,7 +163,7 @@
                 |> firstWinsBall 
                 |> firstWinsBall 
             
-            Assert.That(score game, Is.EqualTo("Winner Player 1"))
+            score game |> should equal "Winner Player 1"
 
         [<Test>]
         let ``Should calculate score Deuce if player that has advantage looses ball``() =
@@ -177,7 +178,7 @@
                 |> firstWinsBall 
                 |> secondWinsBall 
             
-            Assert.That(score game, Is.EqualTo("Deuce"))
+            score game |> should equal "Deuce"
 
         
 
