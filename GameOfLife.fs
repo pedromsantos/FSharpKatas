@@ -23,13 +23,13 @@
 
             {c with Y = Y ((valueY c.Y) + newValue)}
 
-        let private countAliveNeighbours neighbours =
-            neighbours 
+        let private countAlive cells =
+            cells 
             |> Seq.filter (fun n -> n = Alive) 
             |> Seq.length
 
         let private isCellAlive cell neighbours =
-            let aliveNeighbours = countAliveNeighbours neighbours
+            let aliveNeighbours = countAlive neighbours
             match cell with
             | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
             | Dead -> aliveNeighbours = 3 
