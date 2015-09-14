@@ -12,6 +12,8 @@
             type Neighbours =  Cell seq 
                         
             type TickCell = Cell -> Neighbours -> Cell
+            type CountAliveCells = Cell seq -> int
+            type IsCellAlive = Cell -> Neighbours -> bool
 
             let changeX newValue (c:Coordinate) =
                 let valueX (X x) = x
@@ -23,12 +25,12 @@
 
                 {c with Y = Y ((valueY c.Y) + newValue)}
 
-            let countAlive cells =
+            let countAlive:CountAliveCells = fun cells ->
                 cells 
                 |> Seq.filter (fun n -> n = Alive) 
                 |> Seq.length
 
-            let isCellAlive cell neighbours =
+            let isCellAlive:IsCellAlive = fun cell neighbours ->
                 let aliveNeighbours = countAlive neighbours
                 match cell with
                 | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
