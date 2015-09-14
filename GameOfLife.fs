@@ -4,7 +4,7 @@
 
         type Cell = Alive | Dead
 
-        module Cells =
+        module internal Cells =
             
             type X = X of int
             type Y = Y of int
