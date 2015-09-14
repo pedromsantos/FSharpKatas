@@ -10,9 +10,7 @@
             type Y = Y of int
             type Coordinate = {X:X; Y:Y}
             type Neighbours =  Cell seq 
-            
-            type CreateCoordinate = int -> int -> Coordinate
-            
+                        
             type TickCell = Cell -> Neighbours -> Cell
 
             let changeX newValue (c:Coordinate) =
@@ -44,6 +42,8 @@
         open Cells 
 
         type Universe = Map<Coordinate, Cell>
+        
+        type CreateCoordinate = int -> int -> Coordinate
         type Tick = Universe -> Universe
         
         let private neighbours (coordinate:Coordinate) (universe:Universe) :Neighbours =
