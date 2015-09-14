@@ -1,39 +1,51 @@
 ﻿namespace FSharpKatas
 
-    module GameOfLife =
-        type X = X of int
-        type Y = Y of int
-        type Coordinate = {X:X; Y:Y} 
+    module GameOfLife =     
 
-        type Cell = Alive | Dead 
-        type Neighbours =  Cell seq 
+        type Cell = Alive | Dead
+
+        module Cells =
+            
+            type X = X of int
+            type Y = Y of int
+            type Coordinate = {X:X; Y:Y}
+            type Neighbours =  Cell seq 
+            
+            type CreateCoordinate = int -> int -> Coordinate
+            
+            type TickCell = Cell -> Neighbours -> Cell
+
+            let changeX newValue (c:Coordinate) =
+                let valueX (X x) = x
+
+                {c with X = X ((valueX c.X) + newValue)}
+
+            let changeY newValue (c:Coordinate) =
+                let valueY (Y y) = y
+
+                {c with Y = Y ((valueY c.Y) + newValue)}
+
+            let countAlive cells =
+                cells 
+                |> Seq.filter (fun n -> n = Alive) 
+                |> Seq.length
+
+            let isCellAlive cell neighbours =
+                let aliveNeighbours = countAlive neighbours
+                match cell with
+                | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
+                | Dead -> aliveNeighbours = 3 
+
+            let tickCell:TickCell = fun cell neighbours ->
+                match isCellAlive cell neighbours with
+                | true -> Alive
+                | false -> Dead
+
+        open Cells 
+
         type Universe = Map<Coordinate, Cell>
-
-        type CreateCoordinate = int -> int -> Coordinate
         type Tick = Universe -> Universe
-        type TickCell = Cell -> Neighbours -> Cell
-
-        let private changeX newValue (c:Coordinate) =
-            let valueX (X x) = x
-
-            {c with X = X ((valueX c.X) + newValue)}
-
-        let private changeY newValue (c:Coordinate) =
-            let valueY (Y y) = y
-
-            {c with Y = Y ((valueY c.Y) + newValue)}
-
-        let private countAlive cells =
-            cells 
-            |> Seq.filter (fun n -> n = Alive) 
-            |> Seq.length
-
-        let private isCellAlive cell neighbours =
-            let aliveNeighbours = countAlive neighbours
-            match cell with
-            | Alive -> aliveNeighbours >= 2 && aliveNeighbours < 4
-            | Dead -> aliveNeighbours = 3 
-
+        
         let private neighbours (coordinate:Coordinate) (universe:Universe) :Neighbours =
             [
             universe |> Map.tryFind (changeX 1 coordinate);
@@ -51,10 +63,7 @@
         let coordinate:CreateCoordinate = fun x y ->  
             {X=X x; Y=Y y}
 
-        let tickCell:TickCell = fun cell neighbours ->
-            match isCellAlive cell neighbours with
-            | true -> Alive
-            | false -> Dead
+        
 
         let tick:Tick = fun universe -> 
             universe |> Map.map (fun key value -> tickCell value (neighbours key universe))
@@ -63,6 +72,7 @@
         open NUnit.Framework
         open FsUnit
         open GameOfLife
+        open GameOfLife.Cells
 
         [<Test>]
         let ``A live cell with fewer than two live neighbours dies, as if caused by under population``() = 
@@ -91,12 +101,6 @@
             let neighbours = [Alive; Alive; Alive]
 
             neighbours |> tickCell cell |> should equal Alive
-
-        [<Test>]
-        let ``The Universe is created empty``() =
-            let universe = Map.empty<Coordinate, Cell>
-            
-            Assert.That(universe |> Seq.cast<Cell option> |> Seq.choose id |> Seq.length, Is.EqualTo(0))
 
         [<Test>]
         let ``The Universe can be seeded``() =
