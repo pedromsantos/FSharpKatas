@@ -63,8 +63,6 @@
         let coordinate:CreateCoordinate = fun x y ->  
             {X=X x; Y=Y y}
 
-        
-
         let tick:Tick = fun universe -> 
             universe |> Map.map (fun key value -> tickCell value (neighbours key universe))
 
