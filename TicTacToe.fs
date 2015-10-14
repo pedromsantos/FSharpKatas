@@ -41,27 +41,28 @@
         let private playerPreviousTurns player turns =
             turns |> Seq.filter (fun t -> player = t.Player)
 
-        let private howManySatisfy turns filter = 
+        let private howManySatisfyForTurnPlayer filter turns = 
+            let player = turns |> lastTurnPlayer
             turns
-            |> playerPreviousTurns (lastTurnPlayer turns) 
+            |> playerPreviousTurns player
             |> Seq.filter filter 
             |> Seq.length
 
         let private hasThreeInARow turns = 
             let turn = lastTurn turns
-            3 = (howManySatisfy turns (fun t -> turn.Row = t.Row))
+            3 = (turns |> howManySatisfyForTurnPlayer (fun t -> turn.Row = t.Row))
 
         let private hasThreeInAColumn turns = 
             let turn = lastTurn turns
-            3 = (howManySatisfy turns (fun t -> turn.Column = t.Column))
+            3 = (turns |> howManySatisfyForTurnPlayer (fun t -> turn.Column = t.Column))
 
         let private hasThreeInLeftToRightDiagonal turns =
-            3 = (howManySatisfy turns (fun t -> int32 t.Row = int32 t.Column))
+            3 = (turns |> howManySatisfyForTurnPlayer (fun t -> int32 t.Row = int32 t.Column))
 
         let private hasThreeInRightToLeftDiagonal turns = 
-            1 = (howManySatisfy turns (fun t -> t.Row = Rows.Top && t.Column = Columns.Right)) &&
-            1 = (howManySatisfy turns (fun t -> t.Row = Rows.Middle && t.Column = Columns.Middle)) &&
-            1 = (howManySatisfy turns (fun t -> t.Row = Rows.Bottom && t.Column = Columns.Left))
+            1 = (turns |> howManySatisfyForTurnPlayer (fun t -> t.Row = Rows.Top && t.Column = Columns.Right)) &&
+            1 = (turns |> howManySatisfyForTurnPlayer (fun t -> t.Row = Rows.Middle && t.Column = Columns.Middle)) &&
+            1 = (turns |> howManySatisfyForTurnPlayer (fun t -> t.Row = Rows.Bottom && t.Column = Columns.Left))
 
         let private isWinner turns =
             let verify f = f turns
