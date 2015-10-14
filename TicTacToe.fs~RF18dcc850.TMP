@@ -29,11 +29,8 @@
         let private saveTurn turn turns =
             turn :: turns
 
-        let private isPositionOcupied turn turns =
-            turns |> Seq.exists (fun t -> t.Column = turn.Column && t.Row = turn.Row)
-
         let private isPositionEmpty turn turns =
-            turns |> isPositionOcupied turn |> not
+            not (turns |> Seq.exists (fun t -> t.Column = turn.Column && t.Row = turn.Row))
 
         let private isPlayerTurn turn turns =
             turn.Player <> lastTurnPlayer turns

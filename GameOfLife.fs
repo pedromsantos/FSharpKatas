@@ -50,7 +50,7 @@
         type CreateCoordinate = int -> int -> Coordinate
         type Tick = Universe -> Universe
         
-        let private neighbours (coordinate:Coordinate) (universe:Universe) :Neighbours =
+        let private neighboursForCoordinate (coordinate:Coordinate) (universe:Universe) :Neighbours =
             [
             universe |> Map.tryFind (changeX 1 coordinate);
             universe |> Map.tryFind (changeX -1 coordinate);
@@ -68,7 +68,7 @@
             {X=X x; Y=Y y}
 
         let tick:Tick = fun universe -> 
-            universe |> Map.map (fun key value -> tickCell value (neighbours key universe))
+            universe |> Map.map (fun key value -> universe |> neighboursForCoordinate key |> tickCell value)
 
     module GameOfLifeTests =
         open NUnit.Framework
