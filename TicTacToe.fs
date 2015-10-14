@@ -87,6 +87,7 @@
         let ticTacToe:TicTacToe = fun turn turns ->
             let turnsWithNewTurn = turns |> saveTurn turn
             let verify f = f turnsWithNewTurn
+
             if not (turns |> isValidTurn turn) then (TurnStatus.InvalidMove, turns)
             elif verify isWinner then (TurnStatus.Winner, turnsWithNewTurn)
             elif verify isDraw then (TurnStatus.Draw, turnsWithNewTurn)
