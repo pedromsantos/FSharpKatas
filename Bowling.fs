@@ -8,10 +8,15 @@
         let scoreSpare firstRoll secondRoll bonusRoll =
             firstRoll + secondRoll + bonusRoll
         
+        let scoreFrame firstRoll secondRoll bonusRolls =
+            match isSpare firstRoll secondRoll with
+            | true -> (scoreSpare firstRoll secondRoll (List.head bonusRolls))
+            | _ -> firstRoll + secondRoll 
+
         let rec score frames =
             match frames with
             | [] -> 0
-            | r1::r2::rest -> if isSpare r1 r2 then (scoreSpare r1 r2 (List.head rest)) + score rest else r1 + r2 + score rest
+            | r1::r2::rest -> (scoreFrame r1 r2 rest) + score rest
             | [r] -> r
 
     module BowlingTests =
