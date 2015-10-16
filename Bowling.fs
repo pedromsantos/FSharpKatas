@@ -20,7 +20,10 @@
         open Bowling 
 
         let rollSame howMany whatValue =
-           [for a in 1..howMany -> whatValue] 
+           [for a in 1..howMany -> whatValue]
+
+        let rollSpare = 
+            rollSame 2 5
 
         [<Test>]
         let ``Score should be 0 if all rolls in all frames are 0``() =
@@ -34,6 +37,6 @@
 
         [<Test>]
         let ``Score should be 16 for frames: 5 5 3 and all zeros afterwards, (5 5) is a spare``() =
-            let frames = (rollSame 20 0) |> List.append [5; 5; 3]
+            let frames = 3::(rollSame 17 0) |> List.append rollSpare
             let result = score frames 
             result |> should equal 16 
