@@ -1,10 +1,17 @@
 ﻿namespace FSharpKatas
 
     module Bowling = 
+        
+        let isSpare firstRoll secondRoll =
+            firstRoll + secondRoll = 10
+
+        let scoreSpare firstRoll secondRoll bonusRoll =
+            firstRoll + secondRoll + bonusRoll
+        
         let rec score frames =
             match frames with
             | [] -> 0
-            | r1::r2::rest -> if r1 + r2 = 10 then r1 + r2 + (List.head rest) + score rest else r1 + r2 + score rest
+            | r1::r2::rest -> if isSpare r1 r2 then (scoreSpare r1 r2 (List.head rest)) + score rest else r1 + r2 + score rest
             | [r] -> r
 
     module BowlingTests =
