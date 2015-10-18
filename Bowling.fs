@@ -5,8 +5,8 @@
         let private isStrike firstRoll =
             firstRoll = 10
 
-        let private scoreStrike firstRoll firstbonusRoll secondBonusRoll =
-            firstRoll + firstbonusRoll + secondBonusRoll
+        let private scoreStrike firstRoll firstBonusRoll secondBonusRoll =
+            firstRoll + firstBonusRoll + secondBonusRoll
 
         let private isSpare firstRoll secondRoll =
             firstRoll + secondRoll = 10
