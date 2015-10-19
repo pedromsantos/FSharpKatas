@@ -17,11 +17,11 @@
         let private strikeSecondBonus bonusRolls =
             bonusRolls |> List.tail |> List.head
 
-        let private scoreStrike firstRoll bonusRolls =
-            firstRoll + strikeFirstBonus bonusRolls + strikeSecondBonus bonusRolls 
-
         let private scoreSpare firstRoll secondRoll bonusRoll =
             firstRoll + secondRoll + spareBonus bonusRoll
+
+        let private scoreStrike firstRoll bonusRolls =
+            firstRoll + strikeFirstBonus bonusRolls + strikeSecondBonus bonusRolls  
 
         let private isNotPastLastFrame framesToScore =
             framesToScore |> List.length >= 2 
