@@ -5,6 +5,9 @@
         let private isStrike firstRoll =
             firstRoll = 10
 
+        let private isSpare firstRoll secondRoll =
+            firstRoll + secondRoll = 10
+
         let private spareBonus bonusRolls =
             bonusRolls |> List.head
 
@@ -16,9 +19,6 @@
 
         let private scoreStrike firstRoll bonusRolls =
             firstRoll + strikeFirstBonus bonusRolls + strikeSecondBonus bonusRolls 
-
-        let private isSpare firstRoll secondRoll =
-            firstRoll + secondRoll = 10
 
         let private scoreSpare firstRoll secondRoll bonusRoll =
             firstRoll + secondRoll + spareBonus bonusRoll
