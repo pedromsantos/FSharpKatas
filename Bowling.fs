@@ -5,20 +5,32 @@
         let private isStrike firstRoll =
             firstRoll = 10
 
-        let private scoreStrike firstRoll firstBonusRoll secondBonusRoll =
-            firstRoll + firstBonusRoll + secondBonusRoll
+        let private spareBonus bonusRolls =
+            bonusRolls |> List.head
+
+        let private strikeFirstBonus bonusRolls =
+            spareBonus bonusRolls
+
+        let private strikeSecondBonus bonusRolls =
+            bonusRolls |> List.tail |> List.head
+
+        let private scoreStrike firstRoll bonusRolls =
+            firstRoll + strikeFirstBonus bonusRolls + strikeSecondBonus bonusRolls 
 
         let private isSpare firstRoll secondRoll =
             firstRoll + secondRoll = 10
 
         let private scoreSpare firstRoll secondRoll bonusRoll =
-            firstRoll + secondRoll + bonusRoll
-        
+            firstRoll + secondRoll + spareBonus bonusRoll
+
+        let private isNotPastLastFrame framesToScore =
+            framesToScore |> List.length >= 2 
+
         let private scoreFrame firstRoll secondRoll bonusRolls =
-            if isStrike firstRoll && bonusRolls |> List.length >= 2 then
-               scoreStrike firstRoll (bonusRolls |> List.head) (bonusRolls |> List.tail |> List.head)
+            if isStrike firstRoll && bonusRolls |> isNotPastLastFrame  then
+               scoreStrike firstRoll bonusRolls 
             elif isSpare firstRoll secondRoll then
-                scoreSpare firstRoll secondRoll (bonusRolls |> List.head)
+                scoreSpare firstRoll secondRoll bonusRolls
             else
                 firstRoll + secondRoll 
 
