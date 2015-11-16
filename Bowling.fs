@@ -37,7 +37,7 @@
         let rec private score frames =
             match frames with
             | [] -> 0
-            | r1::r2::rest -> (scoreFrame r1 r2 rest) + score rest
+            | r1::r2::tail -> (scoreFrame r1 r2 tail) + score tail
             | [r] -> r
 
         let scoreGame frames =

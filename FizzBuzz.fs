@@ -24,4 +24,4 @@ namespace FSharpKatas
         [<TestCase(15, "FizzBuzz")>]
         let ``Should fizz buzz number``number expectedFizzBuzz =
             let fizzBuzzed = fizzBuzz number
-            fizzBuzzed |> should equal fizzBuzzed 
+            fizzBuzzed |> should equal expectedFizzBuzz 
