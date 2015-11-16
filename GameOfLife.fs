@@ -50,7 +50,7 @@
         type CreateCoordinate = int -> int -> Coordinate
         type Tick = Universe -> Universe
         
-        let private neighboursForCoordinate (coordinate:Coordinate) (universe:Universe) :Neighbours =
+        let private neighboursForCoordinate coordinate universe =
             [
             universe |> Map.tryFind (changeX 1 coordinate);
             universe |> Map.tryFind (changeX -1 coordinate);
@@ -68,7 +68,8 @@
             {X=X x; Y=Y y}
 
         let tick:Tick = fun universe -> 
-            universe |> Map.map (fun key value -> universe |> neighboursForCoordinate key |> tickCell value)
+            universe 
+            |> Map.map (fun key value -> universe |> neighboursForCoordinate key |> tickCell value)
 
     module GameOfLifeTests =
         open NUnit.Framework
@@ -77,14 +78,14 @@
         open GameOfLife.Cells
 
         [<Test>]
-        let ``A live cell with fewer than two live neighbours dies, as if caused by under population``() = 
+        let ``A live cell with fewer than two live neighbours dies, by under population``() = 
             let cell = Alive 
             let neighbours = [Alive; Dead; Dead]
 
             neighbours |> tickCell cell |> should equal Dead
 
         [<Test>]
-        let ``A live cell with more than three live neighbours dies, as if by overcrowding``() = 
+        let ``A live cell with more than three live neighbours dies, by overcrowding``() = 
             let cell = Alive
             let neighbours = [Alive; Alive; Alive; Alive]
 
