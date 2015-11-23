@@ -13,5 +13,6 @@ obj
 *.suo
 *.user
 *.pfx
-
+*.tmp
+*.TMP
 *_ReSharper.*/
