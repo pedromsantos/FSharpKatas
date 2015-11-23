@@ -1,7 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FsharpKatas", "FsharpKatas.fsproj", "{3FB8B296-ADD9-4546-9FDA-BB2B7B207D4C}"
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsharpKatas", "FsharpKatas.fsproj", "{3FB8B296-ADD9-4546-9FDA-BB2B7B207D4C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04C577CE-5624-4B46-BF7B-9F7DC8678EBA}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +20,8 @@ Global
 		{3FB8B296-ADD9-4546-9FDA-BB2B7B207D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FB8B296-ADD9-4546-9FDA-BB2B7B207D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FB8B296-ADD9-4546-9FDA-BB2B7B207D4C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

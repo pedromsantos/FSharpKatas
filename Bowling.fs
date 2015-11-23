@@ -53,7 +53,7 @@
         open Bowling 
 
         let rollSame howMany whatValue =
-           [for a in 1..howMany -> whatValue]
+           [for r in 1..howMany -> whatValue]
 
         let rollSpare = 
             rollSame 2 5
