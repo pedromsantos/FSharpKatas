@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas
+﻿namespace Bowling.FSharpKatas
 
     module Bowling = 
 

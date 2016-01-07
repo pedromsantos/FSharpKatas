@@ -1,4 +1,4 @@
-namespace FSharpKatas
+namespace FizzBuzz.FSharpKatas
 
     module FizzBuzz =
         let fizzBuzz number =

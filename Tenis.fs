@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas
+﻿namespace Tenis.FSharpKatas
 
     module Tenis =
         open System

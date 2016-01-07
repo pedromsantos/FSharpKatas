@@ -1,4 +1,4 @@
-namespace FSharpKatas
+namespace RomanNumerals.FSharpKatas
 
     module RomanNumerals =
         let numbersToRomans = [1, "I"; 

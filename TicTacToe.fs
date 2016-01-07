@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas
+﻿namespace TicTacToe.FSharpKatas
 
     module TicTacToe =
 

@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas 
+﻿module FizzBuzzProperties.FSharpKatas 
 
     module FizzBuzzProperties =
         let fizzBuzz (number:int) =

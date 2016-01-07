@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas
+﻿namespace GameOfLife.FSharpKatas
 
     module GameOfLife =     
 

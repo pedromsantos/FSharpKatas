@@ -1,4 +1,4 @@
-﻿namespace FSharpKatas
+﻿namespace Fibonacci.FSharpKatas
 
     module Fibonacci =
         let rec fibonacci number =
