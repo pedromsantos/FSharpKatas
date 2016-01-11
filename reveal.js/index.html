@@ -2,9 +2,13 @@
 <html lang="en">	
 <head>
 	<meta charset="utf-8">
-	<title>Reveal.js 3 Slide Demo</title>
+	<title>Slides</title>
 	<link rel="stylesheet" href="./css/reveal.css">
-	<link rel="stylesheet" href="./css/theme/default.css" id="theme">	
+	<link rel="stylesheet" href="./css/theme/black.css" id="theme">
+    
+    <link rel="stylesheet" href="./css/prism.css" />
+    <script src="./js/prism.js"></script>
+    
 	<!--Add support for earlier versions of Internet Explorer -->
 	<!--[if lt IE 9]>
 	<script src="lib/js/html5shiv.js"></script>
@@ -24,9 +28,9 @@
 				<p>My product discussed here</p>		
 			</section>
 
-            <section data-trim data-noescape>
-                <pre><code class="FSharp">
-                namespace FizzBuzz.FSharpKatas
+            <section>
+                <pre><code class="language-fsharp" data-trim data-noescape>
+ namespace FizzBuzz.FSharpKatas
 
     module FizzBuzz =
         let fizzBuzz number =
@@ -41,15 +45,15 @@
         open FsUnit
         open FizzBuzz
 
-        [<TestCase(1, "1")>]
-        [<TestCase(2, "2")>]
-        [<TestCase(3, "Fizz")>]
-        [<TestCase(4, "4")>]
-        [<TestCase(5, "Buzz")>]
-        [<TestCase(6, "Fizz")>]
-        [<TestCase(9, "Fizz")>]
-        [<TestCase(10, "Buzz")>]
-        [<TestCase(15, "FizzBuzz")>]
+        [&lt;TestCase(1, "1")&gt;]
+        [&lt;TestCase(2, "2")&gt;]
+        [&lt;TestCase(3, "Fizz")&gt;]
+        [&lt;TestCase(4, "4")&gt;]
+        [&lt;TestCase(5, "Buzz")&gt;]
+        [&lt;TestCase(6, "Fizz")&gt;]
+        [&lt;TestCase(9, "Fizz")&gt;]
+        [&lt;TestCase(10, "Buzz")&gt;]
+        [&lt;TestCase(15, "FizzBuzz")&gt;]
         let ``Should fizz buzz number``number expectedFizzBuzz =
             let fizzBuzzed = fizzBuzz number
             fizzBuzzed |> should equal expectedFizzBuzz               
@@ -60,7 +64,7 @@
 	</div>
 	<script src="./lib/js/head.js"></script>
 	<script src="./js/reveal.js"></script>
- 
+    
 	<script>
 		// Required, even if empty.
 		Reveal.initialize({
