@@ -53,9 +53,7 @@
                 use! resp = req.AsyncGetResponse()
                 use stream = resp.GetResponseStream() 
                 use reader = new IO.StreamReader(stream) 
-                let text = reader.ReadToEnd() 
-                printfn "finished downloading %s" url
-                printfn "%s" text
+                return reader.ReadToEnd() 
             }
 
         let rawFileChanges (gitHubClient:GitHubClient) owner repository file =
