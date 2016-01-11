@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">	
+<head>
+	<meta charset="utf-8">
+	<title>Reveal.js 3 Slide Demo</title>
+	<link rel="stylesheet" href="./css/reveal.css">
+	<link rel="stylesheet" href="./css/theme/default.css" id="theme">	
+	<!--Add support for earlier versions of Internet Explorer -->
+	<!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+</head>
+ 
+<body>
+	<!-- Wrap the entire slide show in a div using the "reveal" class. -->
+	<div class="reveal">
+		<!-- Wrap all slides in a single "slides" class -->
+		<div class="slides">
+ 
+			<!-- ALL SLIDES GO HERE -->
+			<!-- Each section element contains an individual slide -->
+			<section>
+				<h1>About My Product</h1>
+				<p>My product discussed here</p>		
+			</section>
+
+            <section data-trim data-noescape>
+                <pre><code class="FSharp">
+                namespace FizzBuzz.FSharpKatas
+
+    module FizzBuzz =
+        let fizzBuzz number =
+            match (number % 3, number % 5) with
+                | (0, 0) -> "FizzBuzz"
+                | (0, _) -> "Fizz"
+                | (_, 0) -> "Buzz"
+                | (_, _) -> number.ToString()
+
+    module FizzBuzzTests =
+        open NUnit.Framework
+        open FsUnit
+        open FizzBuzz
+
+        [<TestCase(1, "1")>]
+        [<TestCase(2, "2")>]
+        [<TestCase(3, "Fizz")>]
+        [<TestCase(4, "4")>]
+        [<TestCase(5, "Buzz")>]
+        [<TestCase(6, "Fizz")>]
+        [<TestCase(9, "Fizz")>]
+        [<TestCase(10, "Buzz")>]
+        [<TestCase(15, "FizzBuzz")>]
+        let ``Should fizz buzz number``number expectedFizzBuzz =
+            let fizzBuzzed = fizzBuzz number
+            fizzBuzzed |> should equal expectedFizzBuzz               
+                </code></pre>
+            </section>
+
+		</div>
+	</div>
+	<script src="./lib/js/head.js"></script>
+	<script src="./js/reveal.js"></script>
+ 
+	<script>
+		// Required, even if empty.
+		Reveal.initialize({
+		});
+	</script>
+</body>
+</html>
