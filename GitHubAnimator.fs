@@ -1,6 +1,6 @@
 ﻿namespace FSharpKatas.GitHubAnimator
 
-    module GitHubAnuimator =
+    module GitHubAnimator =
         open Octokit
         open System.Net
         open System
@@ -118,10 +118,10 @@
 
             outFile.Write(presentation)
 
-    module GitHubAnuimatorTests =
+    module GitHubAnimatorTests =
         open NUnit.Framework
         open FsUnit
-        open GitHubAnuimator
+        open GitHubAnimator
         open Octokit
 
         [<Test>]
