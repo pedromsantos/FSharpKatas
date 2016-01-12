@@ -2,48 +2,59 @@
 
     module GitHubAnimator =
         open Octokit
-        open System.Net
         open System
         open System.IO
-        open System.Collections.Generic
+        open System.Net
+        
+        type ChangesFor = {Owner:string; Repository:string; File:string}
 
         let createClient = 
             let githubClient = new GitHubClient(
                                     new ProductHeaderValue("GitHubAnimator"),
                                     new Uri("https://github.com/"))
-
-            githubClient.Credentials <- Credentials(Environment.GetEnvironmentVariable("githubtoken"))
+            
+            let githubToken = Environment.GetEnvironmentVariable("githubtoken")
+            githubClient.Credentials <- Credentials(githubToken)
             githubClient
 
-        let commit (gitHubClient:GitHubClient) owner repository reference =
+        let commit commitSha parameters (gitHubClient:GitHubClient) =
             async {
-                return! gitHubClient.Repository.Commits.Get(owner, repository, reference)
+                return! gitHubClient.Repository.Commits.Get(
+                    parameters.Owner, 
+                    parameters.Repository, 
+                    commitSha)
                 |> Async.AwaitTask
             }
         
-        let commits (gitHubClient:GitHubClient) owner repository =
+        let commits parameters (gitHubClient:GitHubClient) =
             async {
                 let! commits = 
-                    gitHubClient.Repository.Commits.GetAll(owner, repository)
+                    gitHubClient.Repository.Commits.GetAll(
+                        parameters.Owner, 
+                        parameters.Repository)
                     |> Async.AwaitTask
 
                 return! commits
-                    |> Seq.map (fun c -> commit gitHubClient owner repository c.Sha)
+                    |> Seq.map (fun c -> commit c.Sha parameters gitHubClient)
                     |> Async.Parallel
             }
 
-        let fileCommits (gitHubClient:GitHubClient) owner repository file =
-            commits gitHubClient owner repository
+        let fileCommits parameters gitHubClient =
+            commits parameters gitHubClient
             |> Async.RunSynchronously
-            |> Seq.filter (fun c -> c.Files |> Seq.exists(fun f -> f.Filename = file))
+            |> Seq.filter (fun c -> 
+                            c.Files 
+                            |> Seq.exists(fun f -> f.Filename = parameters.File))
 
-        let fileChanges (gitHubClient:GitHubClient) owner repository file = 
-            fileCommits gitHubClient owner repository file
+        let fileChanges parameters gitHubClient = 
+            fileCommits parameters gitHubClient
             |> Seq.map (fun c -> c.Files)
-            |> Seq.map (fun files -> files |> Seq.filter(fun f -> f.Filename = file) |> Seq.head)
+            |> Seq.map (fun files -> 
+                files |> Seq.filter(fun f -> 
+                    f.Filename = parameters.File) |> Seq.head)
             
-        let rawUrlFileChanges (gitHubClient:GitHubClient) owner repository file =
-            fileChanges gitHubClient owner repository file
+        let rawUrlFileChanges parameters gitHubClient =
+            fileChanges parameters gitHubClient
             |> Seq.map (fun f -> f.RawUrl)
 
         let fetchUrlAsync url =        
@@ -55,59 +66,54 @@
                 return reader.ReadToEnd() 
             }
 
-        let rawFileChanges (gitHubClient:GitHubClient) owner repository file =
+        let rawFileChanges parameters gitHubClient =
             async {
-                return! rawUrlFileChanges gitHubClient owner repository file
+                return! rawUrlFileChanges parameters gitHubClient
                     |> Seq.map fetchUrlAsync
                     |> Async.Parallel
             }    
 
-        let createPresentation (gitHubClient:GitHubClient) owner repository file =
-            let presenttation = new List<string>()
-            presenttation.Add("<!doctype html><html lang='en'><head><meta charset='utf-8'><title>Slides</title><link rel='stylesheet' href='./css/reveal.css'><link rel='stylesheet' href='./css/theme/black.css' id='theme'><link rel='stylesheet' href='./css/prism.css' /><script src='./js/prism.js'></script><!--[if lt IE 9]><script src='./lib/js/html5shiv.js'></script><![endif]--></head>")
-            presenttation.Add("<body><div class='reveal'><div class='slides'>")
-            
-            let fileChanges = 
-                rawFileChanges gitHubClient owner repository file 
-                |> Async.RunSynchronously
-
-            let slides = new List<string>() 
-
-            for change in fileChanges do
-                slides.Add(System.Environment.NewLine 
+        let createSlidesForChanges parameters gitHubClient =
+            rawFileChanges parameters gitHubClient
+            |> Async.RunSynchronously
+            |> List.ofArray
+            |> List.rev
+            |> List.map (fun change -> 
+                            System.Environment.NewLine
                             + "<section><pre><code class='language-fsharp' data-trim data-noescape>"
-                            + System.Environment.NewLine + change + System.Environment.NewLine
-                            + "</code></pre></section>"
+                            + System.Environment.NewLine 
+                            + change 
                             + System.Environment.NewLine
-                            )
+                            + "</code></pre></section>"
+                            + System.Environment.NewLine)
+            |> List.fold (+) ""
 
-            slides.Reverse()
-            presenttation.AddRange(slides)
-
-            presenttation.Add("</div></div><script src='./lib/js/head.js'></script><script src='./js/reveal.js'></script><script>Reveal.initialize({});</script></body>")
-            presenttation.Add("</html>")
-            
-            presenttation |> Seq.cast |> Seq.fold (+) ""
-
+        let createPresentation parameters gitHubClient =           
+           "<!doctype html><html lang='en'><head><meta charset='utf-8'><title>Slides</title><link rel='stylesheet' href='./css/reveal.css'><link rel='stylesheet' href='./css/theme/black.css' id='theme'><link rel='stylesheet' href='./css/prism.css' /><script src='./js/prism.js'></script><!--[if lt IE 9]><script src='./lib/js/html5shiv.js'></script><![endif]--></head>"
+           + "<body><div class='reveal'><div class='slides'>"
+           + createSlidesForChanges parameters gitHubClient
+           + "</div></div><script src='./lib/js/head.js'></script><script src='./js/reveal.js'></script><script>Reveal.initialize({});</script></body>"
+           + "</html>"
+                    
         let rec directoryCopy srcPath dstPath copySubDirs =
 
             if not <| System.IO.Directory.Exists(srcPath) then
-              let msg = System.String.Format("Source directory does not exist or could not be found: {0}", srcPath)
-              raise (System.IO.DirectoryNotFoundException(msg))
+                let msg = System.String.Format("Source directory does not exist or could not be found: {0}", srcPath)
+                raise (System.IO.DirectoryNotFoundException(msg))
 
             if not <| System.IO.Directory.Exists(dstPath) then
-              System.IO.Directory.CreateDirectory(dstPath) |> ignore
+                System.IO.Directory.CreateDirectory(dstPath) |> ignore
 
             let srcDir = new System.IO.DirectoryInfo(srcPath)
 
             for file in srcDir.GetFiles() do
-              let temppath = System.IO.Path.Combine(dstPath, file.Name)
-              file.CopyTo(temppath, true) |> ignore
+                let temppath = System.IO.Path.Combine(dstPath, file.Name)
+                file.CopyTo(temppath, true) |> ignore
 
             if copySubDirs then
-              for subdir in srcDir.GetDirectories() do
-                  let dstSubDir = System.IO.Path.Combine(dstPath, subdir.Name)
-                  directoryCopy subdir.FullName dstSubDir copySubDirs
+                for subdir in srcDir.GetDirectories() do
+                    let dstSubDir = System.IO.Path.Combine(dstPath, subdir.Name)
+                    directoryCopy subdir.FullName dstSubDir copySubDirs
 
         let savePresentation slidesTemplatePath slidesPath (presentation:string) =
             directoryCopy slidesTemplatePath slidesPath true
@@ -122,6 +128,8 @@
         open GitHubAnimator
         open Octokit
 
+        let parameters = { Owner = "pedromsantos"; Repository = "FSharpKatas"; File="Bowling.fs" }
+
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should create git hub client from token``() =
@@ -130,64 +138,51 @@
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all commits for repository``() =
-            let githubClient = createClient
-
-            let repositoryCommits =  
-                commits githubClient "pedromsantos" "FSharpKatas"
-                 |> Async.RunSynchronously
-
-            repositoryCommits |> should not' (be Empty) 
+            createClient
+            |> commits parameters
+            |> Async.RunSynchronously
+            |> should not' (be Empty) 
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all commits for repository that touch a file``() =
-            let githubClient = createClient
-
-            fileCommits githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
+            createClient
+            |> fileCommits parameters
             |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all changes for a file``() =
-            let githubClient = createClient
-
-            fileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
+            createClient
+            |> fileChanges parameters
             |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all raw url for changes in a file``() =
-            let githubClient = createClient
-
-            rawUrlFileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
+            createClient
+            |> rawUrlFileChanges parameters
             |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all file changes``() =
-            let githubClient = createClient
-
-            let fileChanges = 
-                rawFileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
-                |> Async.RunSynchronously
-                
-            fileChanges |> should not' (be Empty)
+            createClient
+            |> rawFileChanges parameters
+            |> Async.RunSynchronously
+            |> should not' (be Empty)
 
         [<Test>]
+        [<Ignore("To avoid hitting github API request limits")>]
         let ``Should create presentation``() =
-            let githubClient = createClient
-
-            let presentation = createPresentation githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
-
-            printfn "%s" presentation
+            createClient
+            |> createPresentation parameters
+            |> printfn "%s"
 
         [<Test>]
         let ``Should save presentation``() =
-            let githubClient = createClient
-
-            let presentation = createPresentation githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
-
-            savePresentation 
+            createClient
+            |> createPresentation parameters
+            |> savePresentation 
                 "C:\\src\\Katas\\August2015\\FSharpKatas\\reveal.js" 
                 "C:\\src\\Katas\\August2015\\FSharpKatas\\Presentation"
-                presentation
