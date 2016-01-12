@@ -5,6 +5,7 @@
         open System.Net
         open System
         open System.IO
+        open System.Collections.Generic
 
         let createClient = 
             let githubClient = new GitHubClient(
@@ -63,9 +64,59 @@
                     |> Async.Parallel
             }    
 
-        let createPresentation =
-            0 |> ignore
+        let createPresentation (gitHubClient:GitHubClient) owner repository file =
+            let presenttation = new List<string>()
+            presenttation.Add("<!doctype html><html lang='en'><head><meta charset='utf-8'><title>Slides</title><link rel='stylesheet' href='./css/reveal.css'><link rel='stylesheet' href='./css/theme/black.css' id='theme'><link rel='stylesheet' href='./css/prism.css' /><script src='./js/prism.js'></script><!--[if lt IE 9]><script src='./lib/js/html5shiv.js'></script><![endif]--></head>")
+            presenttation.Add("<body><div class='reveal'><div class='slides'>")
             
+            let fileChanges = 
+                rawFileChanges gitHubClient owner repository file 
+                |> Async.RunSynchronously
+
+            let slides = new List<string>() 
+
+            for change in fileChanges do
+                slides.Add(System.Environment.NewLine 
+                            + "<section><pre><code class='language-fsharp' data-trim data-noescape>"
+                            + System.Environment.NewLine + change + System.Environment.NewLine
+                            + "</code></pre></section>"
+                            + System.Environment.NewLine
+                            )
+
+            slides.Reverse()
+            presenttation.AddRange(slides)
+
+            presenttation.Add("</div></div><script src='./lib/js/head.js'></script><script src='./js/reveal.js'></script><script>Reveal.initialize({});</script></body>")
+            presenttation.Add("</html>")
+            
+            presenttation |> Seq.cast |> Seq.fold (+) ""
+
+        let rec directoryCopy srcPath dstPath copySubDirs =
+
+            if not <| System.IO.Directory.Exists(srcPath) then
+              let msg = System.String.Format("Source directory does not exist or could not be found: {0}", srcPath)
+              raise (System.IO.DirectoryNotFoundException(msg))
+
+            if not <| System.IO.Directory.Exists(dstPath) then
+              System.IO.Directory.CreateDirectory(dstPath) |> ignore
+
+            let srcDir = new System.IO.DirectoryInfo(srcPath)
+
+            for file in srcDir.GetFiles() do
+              let temppath = System.IO.Path.Combine(dstPath, file.Name)
+              file.CopyTo(temppath, true) |> ignore
+
+            if copySubDirs then
+              for subdir in srcDir.GetDirectories() do
+                  let dstSubDir = System.IO.Path.Combine(dstPath, subdir.Name)
+                  directoryCopy subdir.FullName dstSubDir copySubDirs
+
+        let savePresentation slidesTemplatePath slidesPath (presentation:string) =
+            directoryCopy slidesTemplatePath slidesPath true
+
+            use outFile = new StreamWriter(slidesPath + "\\Index.html")
+
+            outFile.Write(presentation)
 
     module GitHubAnuimatorTests =
         open NUnit.Framework
@@ -120,6 +171,7 @@
             urls |> should not' (be Empty)
 
         [<Test>]
+        [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all file changes``() =
             let githubClient = createClient
 
@@ -131,4 +183,19 @@
 
         [<Test>]
         let ``Should create presentation``() =
-            createPresentation |> ignore
+            let githubClient = createClient
+
+            let presentation = createPresentation githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
+
+            printfn "%s" presentation
+
+        [<Test>]
+        let ``Should save presentation``() =
+            let githubClient = createClient
+
+            let presentation = createPresentation githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
+
+            savePresentation 
+                "C:\\src\\Katas\\August2015\\FSharpKatas\\reveal.js" 
+                "C:\\src\\Katas\\August2015\\FSharpKatas\\Presentation"
+                presentation
