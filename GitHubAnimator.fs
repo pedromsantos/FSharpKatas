@@ -18,7 +18,7 @@
         let commit (gitHubClient:GitHubClient) owner repository reference =
             async {
                 return! gitHubClient.Repository.Commits.Get(owner, repository, reference)
-                    |> Async.AwaitTask
+                |> Async.AwaitTask
             }
         
         let commits (gitHubClient:GitHubClient) owner repository =
@@ -42,11 +42,9 @@
             |> Seq.map (fun c -> c.Files)
             |> Seq.map (fun files -> files |> Seq.filter(fun f -> f.Filename = file) |> Seq.head)
             
-
         let rawUrlFileChanges (gitHubClient:GitHubClient) owner repository file =
             fileChanges gitHubClient owner repository file
             |> Seq.map (fun f -> f.RawUrl)
-
 
         let fetchUrlAsync url =        
             async {                             
@@ -127,10 +125,7 @@
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should create git hub client from token``() =
-            let githubClient = createClient
-
-
-            githubClient |> should be ofExactType<GitHubClient>
+            createClient |> should be ofExactType<GitHubClient>
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
@@ -148,27 +143,24 @@
         let ``Should get all commits for repository that touch a file``() =
             let githubClient = createClient
 
-            let commits = fileCommits githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
-
-            commits |> should not' (be Empty)
+            fileCommits githubClient "pedromsantos" "FSharpKatas" "Bowling.fs"
+            |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all changes for a file``() =
             let githubClient = createClient
 
-            let files = fileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
-            
-            files |> should not' (be Empty)
+            fileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
+            |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
         let ``Should get all raw url for changes in a file``() =
             let githubClient = createClient
 
-            let urls = rawUrlFileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
-            
-            urls |> should not' (be Empty)
+            rawUrlFileChanges githubClient "pedromsantos" "FSharpKatas" "Bowling.fs" 
+            |> should not' (be Empty)
 
         [<Test>]
         [<Ignore("To avoid hitting github API request limits")>]
