@@ -180,6 +180,7 @@
             |> printfn "%s"
 
         [<Test>]
+        [<Ignore("To avoid hitting github API request limits")>]
         let ``Should save presentation``() =
             createClient
             |> createPresentation parameters
