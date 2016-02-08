@@ -46,8 +46,6 @@
     <Content Include="App.config" />
     <Compile Include="Bowling.fs" />
     <Compile Include="FizzBuzzProperties.fs" />
-    <Compile Include="FsCheckAddin.fs" />
-    <Compile Include="GitHubAnimator.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">
