@@ -62,66 +62,66 @@
             
     module TenisTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open Tenis
 
         [<Test>]
         let ``Should increase points for ball winner from Zero to Fifteen on first win``() =
             let game = newPlayer "Player1", newPlayer "Player2"
 
-            let game = firstWinsBall (game)
+            let palyer1, _ = firstWinsBall (game)
 
-            (fst game).Points |> should equal Points.Fifteen
+            test <@ palyer1.Points = Points.Fifteen @>
         
         [<Test>]
         let ``Should increase points for ball winner from Zero to Fifteen on first win for second player``() =
             let game = newPlayer "Player1", newPlayer "Player2"
 
-            let game = secondWinsBall (game)
+            let _, player2 = secondWinsBall (game)
 
-            (snd game).Points |> should equal Points.Fifteen
+            test <@ player2.Points = Points.Fifteen @>
 
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win``() =
-            let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall
+            let player1, _ = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall
 
-            (fst game).Points |> should equal Points.Thirty
+            test <@ player1.Points = Points.Thirty @>
 
         [<Test>]
         let ``Should increase points for ball winner from Fifteen to Thirty on second win for second player``() =
-            let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall
+            let _, player2 = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall
 
-            (snd game).Points |> should equal Points.Thirty
+            test <@ player2.Points = Points.Thirty @>
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win``() =
-            let game = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall |> firstWinsBall
+            let player1, _ = (newPlayer "Player1", newPlayer "Player2") |> firstWinsBall |> firstWinsBall |> firstWinsBall
 
-            (fst game).Points |> should equal Points.Forty
+            test <@ player1.Points = Points.Forty @>
 
         [<Test>]
         let ``Should increase points for ball winner from Thirty to Forty on third win for second player``() =
-            let game = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall |> secondWinsBall
+            let _, player2 = (newPlayer "Player1", newPlayer "Player2") |> secondWinsBall |> secondWinsBall |> secondWinsBall
 
-            (snd game).Points |> should equal Points.Forty
+            test <@ player2.Points = Points.Forty @>
 
         [<Test>]
         let ``Should calculate score 0 - 0 if no player has won a ball``() =
             let game = (newPlayer "Player1", newPlayer "Player 2")
 
-            score game |> should equal "0-0"
+            test <@ score game = "0-0" @>
 
         [<Test>]
         let ``Should calculate score 15 - 0 if first player has won a ball``() =
             let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall
 
-            score game |> should equal "15-0"
+            test <@ score game = "15-0" @>
 
         [<Test>]
         let ``Should calculate score winner Player1 if first player has won a ball having 40 points``() =
             let game = (newPlayer "Player1", newPlayer "Player 2") |> firstWinsBall |> firstWinsBall |> firstWinsBall |> firstWinsBall
 
-            score game |> should equal "Winner Player1" 
+            test <@ score game = "Winner Player1" @> 
 
         [<Test>]
         let ``Should calculate score Deuce if both playeres have 40 points``() =
@@ -134,7 +134,7 @@
                 |> firstWinsBall 
                 |> secondWinsBall
 
-            score game |> should equal "Deuce"
+            test <@ score game = "Deuce" @>
 
         [<Test>]
         let ``Should calculate score Advantage if playeres are deuce and player 1 wins ball``() =
@@ -148,7 +148,7 @@
                 |> secondWinsBall
                 |> firstWinsBall 
             
-            score game |> should equal "Advantage Player 1"
+            test <@ score game = "Advantage Player 1" @>
 
         [<Test>]
         let ``Should calculate score winner Player1 if playeres are deuce and player 1 wins ball being in advantage``() =
@@ -163,7 +163,7 @@
                 |> firstWinsBall 
                 |> firstWinsBall 
             
-            score game |> should equal "Winner Player 1"
+            test <@ score game  = "Winner Player 1" @>
 
         [<Test>]
         let ``Should calculate score Deuce if player that has advantage looses ball``() =
@@ -178,8 +178,4 @@
                 |> firstWinsBall 
                 |> secondWinsBall 
             
-            score game |> should equal "Deuce"
-
-        
-
-        
+            test <@ score game = "Deuce" @>

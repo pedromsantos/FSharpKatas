@@ -26,7 +26,7 @@ namespace RomanNumerals.FSharpKatas
 
     module RomanNumeralsTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open RomanNumerals
 
         [<TestCase(1, "I")>]
@@ -57,5 +57,4 @@ namespace RomanNumerals.FSharpKatas
         [<TestCase(1999, "MCMXCIX")>]
         [<TestCase(2008, "MMVIII")>]
         let ``Should convert number to roman numeral`` number expectedRomanNumeral = 
-            let romanNumeral = numberToRomanNumeral number
-            romanNumeral |> should equal expectedRomanNumeral
+            test <@ numberToRomanNumeral number = expectedRomanNumeral @>

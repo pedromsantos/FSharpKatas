@@ -9,7 +9,7 @@
 
     module LeapYearTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open LeapYear
 
         [<TestCase(1, false)>]
@@ -20,5 +20,4 @@
         [<TestCase(1996, true)>]
         [<TestCase(2000, true)>]
         let ``Should determine if year is a leap year`` year shouldBeLeapYear =
-            let isLeapYear = leapYear year 
-            isLeapYear |> should equal shouldBeLeapYear
+            test <@ leapYear year = shouldBeLeapYear @>

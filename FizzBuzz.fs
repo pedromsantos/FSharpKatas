@@ -10,7 +10,7 @@ namespace FizzBuzz.FSharpKatas
 
     module FizzBuzzTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open FizzBuzz
 
         [<TestCase(1, "1")>]
@@ -23,5 +23,4 @@ namespace FizzBuzz.FSharpKatas
         [<TestCase(10, "Buzz")>]
         [<TestCase(15, "FizzBuzz")>]
         let ``Should fizz buzz number``number expectedFizzBuzz =
-            let fizzBuzzed = fizzBuzz number
-            fizzBuzzed |> should equal expectedFizzBuzz 
+            test <@ fizzBuzz number = expectedFizzBuzz @>
