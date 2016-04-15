@@ -17,12 +17,12 @@ namespace RomanNumerals.FSharpKatas
                               ] |> List.rev
 
         let conversionFor number =
-            numbersToRomans |> List.tryFind (fun x -> number >= fst x)
+            numbersToRomans |> List.tryFind (fun (arabic, _) -> number >= arabic)
 
         let rec numberToRomanNumeral number =
             match (number, conversionFor number) with
             | (0, _) | (_, None) -> ""
-            | (n, c) -> snd(c.Value) + numberToRomanNumeral(n - fst(c.Value))
+            | (n, Some (arabic, roman)) -> roman + numberToRomanNumeral(n - arabic)
 
     module RomanNumeralsTests =
         open NUnit.Framework
