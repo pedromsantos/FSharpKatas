@@ -1,0 +1,4 @@
+source https://nuget.org/api/v2
+
+nuget FsCheck.NUnit >= 2.2.2
+nuget FsUnit >= 1.3.1
