@@ -9,7 +9,7 @@
 
     module FibonacciTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open Fibonacci
 
         [<TestCase(0, 0)>]
@@ -23,5 +23,4 @@
         [<TestCase(7, 13)>]
         [<TestCase(12, 144)>]
         let ``Should determine fibonacci number for number``(number:int, expectedFibonacciNumber:int) =
-            let fibonacciNumber = fibonacci number 
-            fibonacciNumber |> should equal expectedFibonacciNumber
+            test <@ fibonacci number = expectedFibonacciNumber @>

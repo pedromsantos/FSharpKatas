@@ -49,7 +49,7 @@
 
     module BowlingTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open Bowling 
 
         let rollSame howMany whatValue =
@@ -60,27 +60,21 @@
 
         [<Test>]
         let ``Score should be 0 if all rolls in all frames are 0``() =
-            let result = scoreGame (rollSame 20 0)
-            result |> should equal 0
+            test <@ scoreGame (rollSame 20 0) = 0 @>
 
         [<Test>]
         let ``Score should be 20 if all rolls in all frames are 1``() =
-            let result = scoreGame (rollSame 20 1) 
-            result |> should equal 20
+            test <@ scoreGame (rollSame 20 1) = 20 @>
 
         [<Test>]
         let ``Score should be 16 for example single spare in first frame``() =
             let frames = 3::(rollSame 17 0) |> List.append rollSpare
-            let result = scoreGame frames 
-            result |> should equal 16 
+            test <@ scoreGame frames = 16 @>
 
         [<Test>]
         let ``Score should be 24 for example single strike in first frame``() =
-            let frames = [10;0;4;3] 
-            let result = scoreGame frames 
-            result |> should equal 24
+            test <@ scoreGame [10;0;4;3] = 24 @>
 
         [<Test>]
         let ``Score should be 300 for perfect game``() =
-            let result = scoreGame (rollSame 22 10)  
-            result |> should equal 300
+            test <@ scoreGame (rollSame 22 10) = 300 @>
