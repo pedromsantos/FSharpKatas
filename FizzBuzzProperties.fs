@@ -1,5 +1,5 @@
 ﻿module FizzBuzzProperties.FSharpKatas 
-
+(*
     module FizzBuzzProperties =
         let fizzBuzz (number:int) =
             match (number % 3, number % 5) with
@@ -61,3 +61,4 @@
             | (0, "FizzBuzz") -> true
             | (n, r) when n <> 0 && r <> "FizzBuzz" -> true
             | (_, _) -> false
+*)

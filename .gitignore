@@ -19,3 +19,9 @@ obj
 
 Presentation
 .paket/paket.exe
+.fake/
+.idea/
+.paket/paket.targets
+.vscode/
+TestResult.xml
+build/

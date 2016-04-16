@@ -1,26 +1,38 @@
-// include Fake lib
-#r @"./packages/FAKE.3.5.4/tools/FakeLib.dll"
+// include Fake libs
+#r @"./packages/FAKE/tools/FakeLib.dll"
+
 open Fake
 
-RestorePackages()
-
-// Properties
-let buildDir = "./build/"
+// Directories
+let buildDir  = "./build/"
+let testDir  = "./test/"
 
 // Targets
 Target "Clean" (fun _ ->
-    CleanDir buildDir
+    CleanDirs [buildDir]
 )
 
-Target "Default" (fun _ ->
-    !! "**/*.fsproj"
-    |> MSBuildRelease buildDir "Build"
-    |> Log "AppBuild-Output: "
+Target "Build" (fun _ ->
+    !! "FsharpKatas.fsproj"
+    |> MSBuildDebug buildDir "Build"
+    |> Log "Build-Output: "
 )
 
-// Dependencies
+Target "Test" (fun _ ->
+    !! (buildDir + "FsharpKatas.dll")
+    |> NUnit (fun p ->
+        {p with
+            ToolPath = "./packages/NUnit.Runners/tools"
+            ToolName = "nunit-console.exe"
+            DisableShadowCopy = true;
+            ShowLabels = false;
+        })
+)
+
+// Build order
 "Clean"
-   ==> "Default"
+  ==> "Build"
+  ==> "Test"
 
 // start build
-RunTargetOrDefault "Default"
+RunTargetOrDefault "Test"
