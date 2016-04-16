@@ -73,7 +73,7 @@
 
     module GameOfLifeTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open GameOfLife
         open GameOfLife.Cells
 
@@ -82,34 +82,34 @@
             let cell = Alive 
             let neighbours = [Alive; Dead; Dead]
 
-            neighbours |> tickCell cell |> should equal Dead
+            test <@ neighbours |> tickCell cell = Dead @>
 
         [<Test>]
         let ``A live cell with more than three live neighbours dies, by overcrowding``() = 
             let cell = Alive
             let neighbours = [Alive; Alive; Alive; Alive]
 
-            neighbours |> tickCell cell |> should equal Dead; 
+            test <@ neighbours |> tickCell cell = Dead @>
 
         [<Test>]
         let ``A live cell with two or three live neighbour’s lives on to the next generation``() = 
             let cell = Alive
             let neighbours = [Alive; Alive; Alive]
 
-            neighbours |> tickCell cell |> should equal Alive;
+            test <@ neighbours |> tickCell cell = Alive @>
 
         [<Test>]
         let ``A dead cell with exactly three live neighbours becomes a live cell``() = 
             let cell = Dead
             let neighbours = [Alive; Alive; Alive]
 
-            neighbours |> tickCell cell |> should equal Alive
+            test <@ neighbours |> tickCell cell = Alive @>
 
         [<Test>]
         let ``The Universe can be seeded``() =
             let universe = [coordinate 0 0, Alive] |> Map.ofList
 
-            universe.[coordinate 0 0] |> should equal Alive
+            test <@ universe.[coordinate 0 0]  = Alive @>
 
         [<Test>]
         let ``A Universe with a single live cell will bring no cells alive for next generation``() =
@@ -117,7 +117,7 @@
 
             let updatedUniverse  = tick universe
 
-            updatedUniverse.[coordinate 1 1] |> should equal Dead
+            test <@ updatedUniverse.[coordinate 1 1] = Dead @>
 
         [<Test>]
         let ``A Universe with three neighbour live cells will bring all cells alive for next generation``() =
@@ -126,6 +126,6 @@
 
             let updatedUniverse  = tick universe
 
-            updatedUniverse.[coordinate 0 0] |> should equal Alive 
-            updatedUniverse.[coordinate 0 1] |> should equal Alive
-            updatedUniverse.[coordinate 1 0] |> should equal Alive
+            test <@ updatedUniverse.[coordinate 0 0] = Alive @>
+            test <@ updatedUniverse.[coordinate 0 1] = Alive @>
+            test <@ updatedUniverse.[coordinate 1 0] = Alive @>

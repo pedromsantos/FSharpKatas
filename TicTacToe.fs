@@ -95,78 +95,72 @@
 
     module TicTacToeTests =
         open NUnit.Framework
-        open FsUnit
+        open Swensen.Unquote
         open TicTacToe
 
         [<Test>]
         let ``Should not allow player O to play first``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.O; Row = Rows.Top; Column = Columns.Left }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.InvalidMove
+            test <@ turnStatus = TurnStatus.InvalidMove @>
         
         [<Test>]
         let ``Should allow player X to play first``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.InProgress
+            test <@ turnStatus = TurnStatus.InProgress @>
 
         [<Test>]
         let ``Should allow player O to play second``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
                 |> ticTacToe { Player = Players.O; Row = Rows.Middle; Column = Columns.Left } 
-                |> fst
 
-            turnStatus |> should equal TurnStatus.InProgress
+            test <@ turnStatus = TurnStatus.InProgress @>
         
         [<Test>]
         let ``Should enforce players alternate``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = Rows.Middle; Column = Columns.Left }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.InvalidMove
+            test <@ turnStatus = TurnStatus.InvalidMove @>
         
         [<Test>]
         let ``Should not allow turn with same row and column as last one``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
                 |> ticTacToe { Player = Players.O; Row = Rows.Top; Column = Columns.Left }
-                |> fst 
 
-            turnStatus |> should equal TurnStatus.InvalidMove
+            test <@ turnStatus = TurnStatus.InvalidMove @>
 
         [<Test>]
         let ``Should not allow to play in any previously played positions``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
                 |> ticTacToe { Player = Players.O; Row = Rows.Middle; Column = Columns.Left }
                 |> snd 
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.InvalidMove
+            test <@ turnStatus = TurnStatus.InvalidMove @>
 
         [<TestCase(Rows.Top, Rows.Middle)>]
         [<TestCase(Rows.Middle, Rows.Bottom)>]
         [<TestCase(Rows.Bottom, Rows.Top)>]
         let ``Should declare player as winner if he has three in any row``(winnerRow, looserRow)  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = winnerRow; Column = Columns.Left }
                 |> snd
@@ -177,15 +171,14 @@
                 |> ticTacToe { Player = Players.O; Row = looserRow; Column = Columns.Middle }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = winnerRow; Column = Columns.Right }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.Winner
+            test <@ turnStatus = TurnStatus.Winner @>
 
         [<TestCase(Columns.Left, Columns.Middle)>]
         [<TestCase(Columns.Middle, Columns.Right)>]
         [<TestCase(Columns.Right, Columns.Left)>]
         let ``Should declare player as winner if he has three in any column``(winnerColumn, looserColumn)  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = winnerColumn }
                 |> snd
@@ -196,14 +189,13 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.Middle; Column = looserColumn }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = Rows.Bottom; Column = winnerColumn }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.Winner
+            test <@ turnStatus = TurnStatus.Winner @>
 
         [<Test>]
         let ``Should declare player as winner if he has three in left to rigth diagonal``()  =
 
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
@@ -214,13 +206,12 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.Top; Column = Columns.Right }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = Rows.Bottom; Column = Columns.Right }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.Winner
+            test <@ turnStatus = TurnStatus.Winner @>
 
         [<Test>]
         let ``Should declare player as winner if he has three in rigth to left diagonal``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Right }
                 |> snd
@@ -231,13 +222,12 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.Middle; Column = Columns.Right }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = Rows.Bottom; Column = Columns.Left }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.Winner
+            test <@ turnStatus = TurnStatus.Winner @>
 
         [<Test>]
         let ``Should declare draw if all 9 positions are filled``()  =
-            let turnStatus = 
+            let turnStatus, _ = 
                 init()
                 |> ticTacToe { Player = Players.X; Row = Rows.Top; Column = Columns.Left }
                 |> snd
@@ -256,6 +246,5 @@
                 |> ticTacToe { Player = Players.O; Row = Rows.Bottom; Column = Columns.Left }
                 |> snd
                 |> ticTacToe { Player = Players.X; Row = Rows.Middle; Column = Columns.Right }
-                |> fst
 
-            turnStatus |> should equal TurnStatus.Draw
+            test <@ turnStatus = TurnStatus.Draw @>
