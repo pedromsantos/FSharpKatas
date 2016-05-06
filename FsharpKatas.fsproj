@@ -44,6 +44,7 @@
     <Compile Include="GameOfLife.fs" />
     <Content Include="App.config" />
     <Compile Include="Bowling.fs" />
+    <Compile Include="BowlingV2.fs" />
     <Compile Include="FizzBuzzProperties.fs" />
   </ItemGroup>
   <ItemGroup>
