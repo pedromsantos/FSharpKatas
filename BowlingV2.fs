@@ -13,7 +13,7 @@
             | 'X' -> Strike, 10
             | r -> Ball, Int32.Parse(r.ToString())
         
-        let scoreRoll index (roll:Roll) (rolls:Roll seq) =
+        let scoreRoll index roll rolls =
             let rollList = rolls |> List.ofSeq
             match roll with
                 | (Strike, _) when index >= 10 -> 0
@@ -22,7 +22,7 @@
                 | (Strike, value) -> value + snd rollList.[index + 1] + snd rollList.[index + 2]
                 | (Ball, value) -> value
              
-        let scoreRolls (rolls:Roll seq) =
+        let scoreRolls rolls =
             rolls |> Seq.mapi (fun index roll -> scoreRoll index roll rolls) 
         
         let scoreGame (rolls:string) =
