@@ -25,7 +25,7 @@
         let scoreRolls rolls =
             rolls |> Seq.mapi (fun index roll -> scoreRoll index roll rolls) 
         
-        let scoreGame (rolls:string) =
+        let scoreGame rolls =
             rolls
             |> Seq.map parse
             |> scoreRolls
