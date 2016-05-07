@@ -16,14 +16,14 @@
             | 'X' -> Strike, 10
             | r -> Ball, Int32.Parse(r.ToString())
         
-        let scoreRoll index roll rolls =
+        let scoreRoll index rolls =
             let rollList = rolls |> List.ofSeq
             
             let previousRollValue = fun () -> snd rollList.[index - 1]
             let firstBonusBall = fun () -> snd rollList.[index + 1]
             let secondBonusBall = fun () -> snd rollList.[index + 2]
             
-            match roll with
+            match rollList.[index] with
                 | (Strike, _) when index >= maxStrikes -> 0
                 | (Ball, _) when index >= maxBalls -> 0
                 | (Spare, value) -> value - previousRollValue() + firstBonusBall()
@@ -34,7 +34,7 @@
             let parsedRolls = rolls |> Seq.map parse
             
             parsedRolls
-            |> Seq.mapi (fun index roll -> scoreRoll index roll parsedRolls)
+            |> Seq.mapi (fun index roll -> scoreRoll index parsedRolls)
             |> Seq.sum
 
     module BowlingTests =
