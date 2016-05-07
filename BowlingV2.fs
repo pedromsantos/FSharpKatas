@@ -6,6 +6,9 @@
         type RollType = Strike | Spare | Ball
         type Roll = RollType * int
         
+        let maxStrikes = 10
+        let maxBalls = 20
+            
         let parse roll =
             match roll with
             | '-' -> Ball, 0
@@ -15,9 +18,10 @@
         
         let scoreRoll index roll rolls =
             let rollList = rolls |> List.ofSeq
+            
             match roll with
-                | (Strike, _) when index >= 10 -> 0
-                | (Ball, _) when index >= 20 -> 0
+                | (Strike, _) when index >= maxStrikes -> 0
+                | (Ball, _) when index >= maxBalls -> 0
                 | (Spare, value) -> value - snd rollList.[index - 1] + snd rollList.[index + 1]
                 | (Strike, value) -> value + snd rollList.[index + 1] + snd rollList.[index + 2]
                 | (Ball, value) -> value
