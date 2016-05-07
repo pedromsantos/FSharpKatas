@@ -20,8 +20,8 @@
             let rollList = rolls |> List.ofSeq
             
             let previousRollValue = fun () -> snd rollList.[index - 1]
-            let firstBonusBall = fun () ->snd rollList.[index + 1]
-            let secondBonusBall = fun () ->snd rollList.[index + 2]
+            let firstBonusBall = fun () -> snd rollList.[index + 1]
+            let secondBonusBall = fun () -> snd rollList.[index + 2]
             
             match roll with
                 | (Strike, _) when index >= maxStrikes -> 0
