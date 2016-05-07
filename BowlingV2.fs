@@ -13,19 +13,21 @@
             | 'X' -> Strike, 10
             | r -> Ball, Int32.Parse(r.ToString())
         
-        let scoreRoll index (roll:Roll) (rolls:Roll list) =
+        let scoreRoll index (roll:Roll) (rolls:Roll seq) =
+            let rollList = rolls |> List.ofSeq
             match roll with
-                | (Spare, value) -> value - snd rolls.[index - 1] + snd rolls.[index + 1]
-                | (Strike, value) -> value + snd rolls.[index + 1] + snd rolls.[index + 2]
+                | (Strike, _) when index >= 10 -> 0
+                | (Ball, _) when index >= 20 -> 0
+                | (Spare, value) -> value - snd rollList.[index - 1] + snd rollList.[index + 1]
+                | (Strike, value) -> value + snd rollList.[index + 1] + snd rollList.[index + 2]
                 | (Ball, value) -> value
-        
-        let scoreRolls (rolls:Roll list) =
+             
+        let scoreRolls (rolls:Roll seq) =
             rolls |> Seq.mapi (fun index roll -> scoreRoll index roll rolls) 
         
         let scoreGame (rolls:string) =
             rolls
             |> Seq.map parse
-            |> List.ofSeq
             |> scoreRolls
             |> Seq.sum
 
@@ -49,3 +51,15 @@
         [<Test>]
         let ``Score should be 28 for input "X54" ``() =
             test <@ scoreGame "X54" = 28 @>
+            
+        [<Test>]
+        let ``Score should be 90 for input "9-9-9-9-9-9-9-9-9-9-" ``() =
+            test <@ scoreGame "9-9-9-9-9-9-9-9-9-9-" = 90 @>
+            
+        [<Test>]
+        let ``Score should be 150 for input "5/5/5/5/5/5/5/5/5/5/5" ``() =
+            test <@ scoreGame "5/5/5/5/5/5/5/5/5/5/5" = 150 @>
+            
+        [<Test>]
+        let ``Score should be 150 for input "XXXXXXXXXXXX" ``() =
+            test <@ scoreGame "XXXXXXXXXXXX" = 300 @>
