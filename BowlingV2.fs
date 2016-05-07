@@ -61,5 +61,5 @@
             test <@ scoreGame "5/5/5/5/5/5/5/5/5/5/5" = 150 @>
             
         [<Test>]
-        let ``Score should be 150 for input "XXXXXXXXXXXX" ``() =
+        let ``Score should be 300 for input "XXXXXXXXXXXX" ``() =
             test <@ scoreGame "XXXXXXXXXXXX" = 300 @>
