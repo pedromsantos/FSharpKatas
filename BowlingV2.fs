@@ -3,18 +3,23 @@
     module Bowling = 
         open System
         
+        type RollType = Strike | Spare | Ball
+        type Roll = RollType * int
+        
         let parse roll =
             match roll with
-            | '-' -> 0
-            | '/' -> 10
-            | r -> Int32.Parse(r.ToString())
+            | '-' -> Ball, 0
+            | '/' -> Spare, 10
+            | 'X' -> Strike, 10
+            | r -> Ball, Int32.Parse(r.ToString())
         
-        let scoreRoll index roll (rolls:int list) =
+        let scoreRoll index (roll:Roll) (rolls:Roll list) =
             match roll with
-                | 10 -> 10 - rolls.[index - 1] + rolls.[index + 1]
-                | _ -> roll
+                | (Spare, value) -> value - snd rolls.[index - 1] + snd rolls.[index + 1]
+                | (Strike, value) -> value + snd rolls.[index + 1] + snd rolls.[index + 2]
+                | (Ball, value) -> value
         
-        let scoreRolls (rolls:int list) =
+        let scoreRolls (rolls:Roll list) =
             rolls |> Seq.mapi (fun index roll -> scoreRoll index roll rolls) 
         
         let scoreGame (rolls:string) =
@@ -40,3 +45,7 @@
         [<Test>]
         let ``Score should be 18 for input "5/4" ``() =
             test <@ scoreGame "5/4" = 18 @>
+            
+        [<Test>]
+        let ``Score should be 28 for input "X54" ``() =
+            test <@ scoreGame "X54" = 28 @>
