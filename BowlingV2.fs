@@ -34,7 +34,7 @@
             let parsedRolls = rolls |> Seq.map parse
             
             parsedRolls
-            |> Seq.mapi (fun index roll -> scoreRoll index parsedRolls)
+            |> Seq.mapi (fun index _ -> scoreRoll index parsedRolls)
             |> Seq.sum
 
     module BowlingTests =
