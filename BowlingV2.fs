@@ -21,14 +21,12 @@
                 | (Spare, value) -> value - snd rollList.[index - 1] + snd rollList.[index + 1]
                 | (Strike, value) -> value + snd rollList.[index + 1] + snd rollList.[index + 2]
                 | (Ball, value) -> value
-             
-        let scoreRolls rolls =
-            rolls |> Seq.mapi (fun index roll -> scoreRoll index roll rolls) 
         
         let scoreGame rolls =
-            rolls
-            |> Seq.map parse
-            |> scoreRolls
+            let parsedRolls = rolls |> Seq.map parse
+            
+            parsedRolls
+            |> Seq.mapi (fun index roll -> scoreRoll index roll parsedRolls)
             |> Seq.sum
 
     module BowlingTests =
