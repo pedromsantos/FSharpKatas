@@ -5,7 +5,7 @@
         
         type RollType = Strike | Spare | Ball
         type Roll = RollType * int
-        
+                
         let maxStrikes = 10
         let maxBalls = 20
             
@@ -19,14 +19,14 @@
         let scoreRoll index rolls =
             let rollList = rolls |> List.ofSeq
             
-            let previousRollValue = fun () -> snd rollList.[index - 1]
+            let previousBall = fun () -> snd rollList.[index - 1]
             let firstBonusBall = fun () -> snd rollList.[index + 1]
             let secondBonusBall = fun () -> snd rollList.[index + 2]
             
             match rollList.[index] with
                 | (Strike, _) when index >= maxStrikes -> 0
                 | (Ball, _) when index >= maxBalls -> 0
-                | (Spare, value) -> value - previousRollValue() + firstBonusBall()
+                | (Spare, value) -> value - previousBall() + firstBonusBall()
                 | (Strike, value) -> value + firstBonusBall() + secondBonusBall()
                 | (Ball, value) -> value
         
