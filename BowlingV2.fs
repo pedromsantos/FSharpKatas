@@ -35,7 +35,7 @@
             let exceedsMaxBalls = fun() ->
                 rollList 
                 |> Seq.take index
-                |> Seq.map (fun r -> match r with | (Strike, value) -> 2 | _ -> 1)
+                |> Seq.map (fun r -> match r with | (Strike, _) -> 2 | _ -> 1)
                 |> Seq.sum >= maxBalls
 
             match rollList.[index] with
