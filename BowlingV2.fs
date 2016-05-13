@@ -17,21 +17,19 @@
             | r -> Ball, Int32.Parse(r.ToString())
 
         let scoreRoll index rolls =
-            let rollList = rolls |> List.ofSeq
-
             let rollValueForIndexPlus pad = 
-                if index + pad < rollList.Length then snd rollList.[index + pad] else 0        
+                if index + pad < Seq.length rolls then snd (Seq.item (index + pad) rolls) else 0        
 
             let firstBonusBall = fun () -> rollValueForIndexPlus 1
             let secondBonusBall = fun () -> rollValueForIndexPlus 2
 
             let exceedsMaxBalls = fun() ->
-                rollList 
+                rolls 
                 |> Seq.take index
                 |> Seq.map (fun r -> match r with | (Strike, _) -> 2 | _ -> 1)
                 |> Seq.sum >= maxBalls
 
-            match rollList.[index] with
+            match Seq.item index rolls with
                 | (_, _) when exceedsMaxBalls() -> 0
                 | (Spare, value) -> value + firstBonusBall()
                 | (Strike, value) -> value + firstBonusBall() + secondBonusBall()
