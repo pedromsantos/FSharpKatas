@@ -39,8 +39,7 @@
                 |> Seq.sum >= maxBalls
 
             match rollList.[index] with
-                | (Ball, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
-                | (Strike, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
+                | (_, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
                 | (Spare, value) -> value + firstBonusBall()
                 | (Strike, value) -> value + firstBonusBall() + secondBonusBall()
                 | (Ball, value) -> value
