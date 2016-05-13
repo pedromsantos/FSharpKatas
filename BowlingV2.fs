@@ -26,12 +26,6 @@
             let firstBonusBall = fun () -> rollValueForIndexPlus 1
             let secondBonusBall = fun () -> rollValueForIndexPlus 2
 
-            let exceedsMaxStrikes = fun() ->
-                rollList 
-                |> Seq.take index
-                |> Seq.filter (fun r -> match r with | (Strike, value) -> true | _ -> false)
-                |> Seq.length >= maxStrikes
-
             let exceedsMaxBalls = fun() ->
                 rollList 
                 |> Seq.take index
@@ -39,7 +33,7 @@
                 |> Seq.sum >= maxBalls
 
             match rollList.[index] with
-                | (_, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
+                | (_, _) when exceedsMaxBalls() -> 0
                 | (Spare, value) -> value + firstBonusBall()
                 | (Strike, value) -> value + firstBonusBall() + secondBonusBall()
                 | (Ball, value) -> value
