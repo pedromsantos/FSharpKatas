@@ -6,7 +6,6 @@
         type RollType = Strike | Spare | Ball
         type Roll = RollType * int
 
-        let maxStrikes = 10
         let maxBalls = 20
 
         let parse roll index (rolls:String) =
