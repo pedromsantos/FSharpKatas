@@ -2,70 +2,93 @@
 
     module Bowling = 
         open System
-        
+
         type RollType = Strike | Spare | Ball
         type Roll = RollType * int
-                
+
         let maxStrikes = 10
         let maxBalls = 20
-            
-        let parse roll =
+
+        let parse roll index (rolls:String) =
+            let previousBall = fun () -> rolls |> Seq.item (index - 1)
             match roll with
             | '-' -> Ball, 0
-            | '/' -> Spare, 10
+            | '/' -> Spare, 10 - Int32.Parse(previousBall().ToString())
             | 'X' -> Strike, 10
             | r -> Ball, Int32.Parse(r.ToString())
-        
+
         let scoreRoll index rolls =
             let rollList = rolls |> List.ofSeq
-            
-            let previousBall = fun () -> snd rollList.[index - 1]
-            let firstBonusBall = fun () -> snd rollList.[index + 1]
-            let secondBonusBall = fun () -> snd rollList.[index + 2]
-            
+
+            let rollValueForIndexPlus pad = 
+                if index + pad < rollList.Length then snd rollList.[index + pad] else 0        
+
+            let firstBonusBall = fun () -> rollValueForIndexPlus 1
+            let secondBonusBall = fun () -> rollValueForIndexPlus 2
+
+            let exceedsMaxStrikes = fun() ->
+                rollList 
+                |> Seq.take index
+                |> Seq.filter (fun r -> match r with | (Strike, value) -> true | _ -> false)
+                |> Seq.length >= maxStrikes
+
+            let exceedsMaxBalls = fun() ->
+                rollList 
+                |> Seq.take index
+                |> Seq.map (fun r -> match r with | (Strike, value) -> 2 | _ -> 1)
+                |> Seq.sum >= maxBalls
+
             match rollList.[index] with
-                | (Strike, _) when index >= maxStrikes -> 0
-                | (Ball, _) when index >= maxBalls -> 0
-                | (Spare, value) -> value - previousBall() + firstBonusBall()
+                | (Ball, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
+                | (Strike, _) when exceedsMaxBalls() || exceedsMaxStrikes() -> 0
+                | (Spare, value) -> value + firstBonusBall()
                 | (Strike, value) -> value + firstBonusBall() + secondBonusBall()
                 | (Ball, value) -> value
-        
+
         let scoreGame rolls =
-            let parsedRolls = rolls |> Seq.map parse
-            
+            let parsedRolls = rolls |> Seq.mapi (fun index roll -> parse roll index rolls)
+
             parsedRolls
             |> Seq.mapi (fun index _ -> scoreRoll index parsedRolls)
             |> Seq.sum
-
+                     
     module BowlingTests =
         open NUnit.Framework
         open Swensen.Unquote
         open Bowling
 
         [<Test>]
-        let ``Score should be 0 for input "--" ``() =
-            test <@ scoreGame "--" = 0 @>
-        
-        [<Test>]
-        let ``Score should be 2 for input "11" ``() =
-            test <@ scoreGame "11" = 2 @>
+        let ``calculate scores with no strikes or spares``() =
+            test <@ scoreGame "--" = 0 @> 
+            test <@ scoreGame "1" = 1 @>
+            test <@ scoreGame "13" = 4 @>
+            test <@ scoreGame "13521" = 12 @>
             
         [<Test>]
-        let ``Score should be 18 for input "5/4" ``() =
-            test <@ scoreGame "5/4" = 18 @>
-            
-        [<Test>]
-        let ``Score should be 28 for input "X54" ``() =
-            test <@ scoreGame "X54" = 28 @>
-            
-        [<Test>]
-        let ``Score should be 90 for input "9-9-9-9-9-9-9-9-9-9-" ``() =
+        let ``calculate scores containing a miss``() =
+            test <@ scoreGame "1-5-" = 6 @>
             test <@ scoreGame "9-9-9-9-9-9-9-9-9-9-" = 90 @>
             
         [<Test>]
-        let ``Score should be 150 for input "5/5/5/5/5/5/5/5/5/5/5" ``() =
+        let ``calculate scores containing spares``() =
+            test <@ scoreGame "1/" = 10 @>
+            test <@ scoreGame "1/--" = 10 @>
+            test <@ scoreGame "1/-5" = 15 @>
+            test <@ scoreGame "1/35-" = 21 @>
+            test <@ scoreGame "1/3/23" = 30 @>
             test <@ scoreGame "5/5/5/5/5/5/5/5/5/5/5" = 150 @>
-            
+        
         [<Test>]
-        let ``Score should be 300 for input "XXXXXXXXXXXX" ``() =
+        let ``calculate scores containing strikes``() =
+            test <@ scoreGame "X" = 10 @>
+            test <@ scoreGame "X--" = 10 @>
+            test <@ scoreGame "X--51" = 16 @>
+            test <@ scoreGame "X51" = 22 @>
             test <@ scoreGame "XXXXXXXXXXXX" = 300 @>
+            test <@ scoreGame "XXXXXXXXXX12" = 274 @>
+            test <@ scoreGame "1/35XXX45" = 103 @>
+            test <@ scoreGame "1/35XXX458/X35" = 149 @>
+            test <@ scoreGame "1/35XXX458/X3/" = 153 @>
+            test <@ scoreGame "1/35XXX458/X3/23" = 160 @>
+            test <@ scoreGame "1/35XXX458/X3/X" = 173 @>
+            test <@ scoreGame "1/35XXX458/X3/XX6" = 189 @>
