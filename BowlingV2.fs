@@ -24,9 +24,9 @@
             | r -> Ball, Pins (Int32.Parse(r.ToString()))
 
         let scoreRoll index rolls =
-            let bonusBall = fun(ball) ->  
-                if index + ball < Seq.length rolls 
-                then pinsDown (Seq.item (index + ball) rolls) 
+            let bonusRoll = fun(roll) ->  
+                if index + roll < Seq.length rolls 
+                then pinsDown (Seq.item (index + roll) rolls) 
                 else noPins       
 
             let exceedsMaxRolls = fun() ->
@@ -37,8 +37,8 @@
 
             match Seq.item index rolls with
                 | (_, _) when exceedsMaxRolls() -> noPins
-                | (Spare, Pins pins) -> pins + bonusBall 1
-                | (Strike, Pins pins) -> pins + bonusBall 1 + bonusBall 2
+                | (Spare, Pins pins) -> pins + bonusRoll 1
+                | (Strike, Pins pins) -> pins + bonusRoll 1 + bonusRoll 2
                 | (Ball, Pins pins) -> pins
 
         let scoreGame rolls =
