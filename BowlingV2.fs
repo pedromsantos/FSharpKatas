@@ -3,25 +3,25 @@
     module Bowling = 
         open System
 
-        type RollType = Strike | Spare | Roll
-        type Pins = Pins of int
-        type Roll = RollType * Pins
+        type private RollType = Strike | Spare | Roll
+        type private Pins = Pins of int
+        type private Roll = RollType * Pins
         
-        let maxRolls = 20
-        let maxPins = 10
-        let noPins = 0
+        let private maxRolls = 20
+        let private maxPins = 10
+        let private noPins = 0
         
-        let pinsDown roll =
+        let private pinsDown roll =
             let (Pins pins) = snd roll
             pins
             
-        let pinsFromRoll roll =
+        let private pinsFromRoll roll =
             Pins (Int32.Parse(roll.ToString()))
             
-        let sparePinsFromRoll roll = 
+        let private sparePinsFromRoll roll = 
             Pins (maxPins - Int32.Parse(roll.ToString()))
 
-        let parse roll index rolls =
+        let private parse roll index rolls =
             let previousRoll = fun () -> Seq.item (index - 1) rolls
             match roll with
             | '-' -> Roll, Pins noPins
@@ -29,7 +29,7 @@
             | 'X' -> Strike, Pins maxPins
             | r -> Roll, pinsFromRoll r
 
-        let scoreRoll index rolls =
+        let private scoreRoll index rolls =
             let bonusRoll = fun(roll) ->  
                 if index + roll < Seq.length rolls 
                 then pinsDown (Seq.item (index + roll) rolls) 
