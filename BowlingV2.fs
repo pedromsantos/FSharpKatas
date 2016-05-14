@@ -11,7 +11,7 @@
         let private maxPins = 10
         let private noPins = 0
         
-        let private pinsDown roll =
+        let private pinCountForRoll roll =
             let (Pins pins) = snd roll
             pins
             
@@ -32,7 +32,7 @@
         let private scoreRoll index rolls =
             let bonusRoll = fun(roll) ->  
                 if index + roll < Seq.length rolls 
-                then pinsDown (Seq.item (index + roll) rolls) 
+                then pinCountForRoll (Seq.item (index + roll) rolls) 
                 else noPins       
 
             let exceedsMaxRolls = fun() ->
