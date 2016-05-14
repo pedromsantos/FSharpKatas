@@ -7,7 +7,9 @@
         type Pins = Pins of int
         type Roll = RollType * Pins
         
-        let maxBalls = 20
+        let maxRolls = 20
+        let maxPins = 10
+        let noPins = 0
         
         let pinsDown roll =
             let (Pins pins) = snd roll
@@ -16,30 +18,27 @@
         let parse roll index rolls =
             let previousBall = fun () -> Seq.item (index - 1) rolls
             match roll with
-            | '-' -> Ball, Pins 0
-            | '/' -> Spare, Pins (10 - Int32.Parse(previousBall().ToString()))
-            | 'X' -> Strike, Pins 10
+            | '-' -> Ball, Pins noPins
+            | '/' -> Spare, Pins (maxPins - Int32.Parse(previousBall().ToString()))
+            | 'X' -> Strike, Pins maxPins
             | r -> Ball, Pins (Int32.Parse(r.ToString()))
 
         let scoreRoll index rolls =
-            let rollValueForIndexPlus pad = 
-                if index + pad < Seq.length rolls 
-                then pinsDown (Seq.item (index + pad) rolls) 
-                else 0        
+            let bonusBall = fun(ball) ->  
+                if index + ball < Seq.length rolls 
+                then pinsDown (Seq.item (index + ball) rolls) 
+                else noPins       
 
-            let firstBonusBall = fun () -> rollValueForIndexPlus 1
-            let secondBonusBall = fun () -> rollValueForIndexPlus 2
-
-            let exceedsMaxBalls = fun() ->
+            let exceedsMaxRolls = fun() ->
                 rolls 
                 |> Seq.take index
                 |> Seq.map (fun r -> match r with | (Strike, _) -> 2 | _ -> 1)
-                |> Seq.sum >= maxBalls
+                |> Seq.sum >= maxRolls
 
             match Seq.item index rolls with
-                | (_, _) when exceedsMaxBalls() -> 0
-                | (Spare, Pins pins) -> pins + firstBonusBall()
-                | (Strike, Pins pins) -> pins + firstBonusBall() + secondBonusBall()
+                | (_, _) when exceedsMaxRolls() -> noPins
+                | (Spare, Pins pins) -> pins + bonusBall 1
+                | (Strike, Pins pins) -> pins + bonusBall 1 + bonusBall 2
                 | (Ball, Pins pins) -> pins
 
         let scoreGame rolls =
