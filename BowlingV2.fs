@@ -30,9 +30,9 @@
             | r -> Roll, pinsFromRawRoll r
 
         let private scoreRoll index rolls =
-            let bonusRoll = fun(roll) ->  
-                if index + roll < Seq.length rolls 
-                then pinCountForRoll (Seq.item (index + roll) rolls) 
+            let bonusRoll = fun(lookAhead) ->  
+                if index + lookAhead < Seq.length rolls 
+                then pinCountForRoll (Seq.item (index + lookAhead) rolls) 
                 else noPins       
 
             let exceedsMaxRolls = fun() ->
