@@ -39,7 +39,7 @@
                 | (_, _) when exceedsMaxRolls() -> noPins
                 | (Spare, Pins pins) -> pins + bonusRoll 1
                 | (Strike, Pins pins) -> pins + bonusRoll 1 + bonusRoll 2
-                | (Ball, Pins pins) -> pins
+                | (Roll, Pins pins) -> pins
 
         let scoreGame rolls =
             let parsedRolls = rolls |> Seq.mapi (fun index roll -> parse roll index rolls)
