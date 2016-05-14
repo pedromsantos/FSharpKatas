@@ -15,19 +15,19 @@
             let (Pins pins) = snd roll
             pins
             
-        let private pinsFromRoll roll =
+        let private pinsFromRollScore roll =
             Pins (Int32.Parse(roll.ToString()))
             
-        let private sparePinsFromRoll roll = 
+        let private sparePinsFromRollScore roll = 
             Pins (maxPins - Int32.Parse(roll.ToString()))
 
         let private parse roll index rolls =
             let previousRoll = fun () -> Seq.item (index - 1) rolls
             match roll with
             | '-' -> Roll, Pins noPins
-            | '/' -> Spare, sparePinsFromRoll(previousRoll())
+            | '/' -> Spare, sparePinsFromRollScore(previousRoll())
             | 'X' -> Strike, Pins maxPins
-            | r -> Roll, pinsFromRoll r
+            | r -> Roll, pinsFromRollScore r
 
         let private scoreRoll index rolls =
             let bonusRoll = fun(roll) ->  
