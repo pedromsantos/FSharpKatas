@@ -3,7 +3,7 @@
     module Bowling = 
         open System
 
-        type RollType = Strike | Spare | Ball
+        type RollType = Strike | Spare | Roll
         type Pins = Pins of int
         type Roll = RollType * Pins
         
@@ -16,12 +16,12 @@
             pins
 
         let parse roll index rolls =
-            let previousBall = fun () -> Seq.item (index - 1) rolls
+            let previousRoll = fun () -> Seq.item (index - 1) rolls
             match roll with
-            | '-' -> Ball, Pins noPins
-            | '/' -> Spare, Pins (maxPins - Int32.Parse(previousBall().ToString()))
+            | '-' -> Roll, Pins noPins
+            | '/' -> Spare, Pins (maxPins - Int32.Parse(previousRoll().ToString()))
             | 'X' -> Strike, Pins maxPins
-            | r -> Ball, Pins (Int32.Parse(r.ToString()))
+            | r -> Roll, Pins (Int32.Parse(r.ToString()))
 
         let scoreRoll index rolls =
             let bonusRoll = fun(roll) ->  
