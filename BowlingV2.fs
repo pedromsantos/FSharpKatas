@@ -48,7 +48,8 @@
                 | (Roll, Pins pins) -> pins
 
         let scoreGame rolls =
-            let parsedRolls = rolls |> Seq.mapi (fun index roll -> parse roll index rolls)
+            let parsedRolls = rolls |> Seq.mapi (fun index roll -> 
+                                                    parse roll index rolls)
 
             parsedRolls
             |> Seq.mapi (fun index _ -> scoreRoll index parsedRolls)
