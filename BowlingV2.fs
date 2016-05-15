@@ -3,9 +3,9 @@
     module Bowling = 
         open System
 
-        type private RollType = Strike | Spare | Roll
+        type private Rolls = Strike | Spare | Roll
         type private Pins = Pins of int
-        type private Roll = RollType * Pins
+        type private Roll = Rolls * Pins
         
         let private maxRolls = 20
         let private maxPins = 10
