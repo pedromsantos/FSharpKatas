@@ -1,10 +1,70 @@
 namespace Music.FSharpKatas
 
     module Notes =
-        type Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
+        type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
+                    | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
+                    
+                    override self.ToString() =
+                        match self with
+                        | C -> "C" | CSharp -> "C#" | DFlat -> "Db" | D -> "D"
+                        | DSharp -> "D#" | EFlat -> "Eb" | E -> "E" | F ->  "F"
+                        | FSharp -> "F#" | GFlat -> "Gb" | G -> "G" | GSharp -> "G#"
+                        | AFlat -> "Ab" | A -> "A" | ASharp -> "A#" | BFlat -> "Bb"
+                        | B -> "B"
+                            
+                    member self.sharp =
+                        match self with
+                        | C -> CSharp | CSharp -> D | DFlat -> D | D -> DSharp
+                        | DSharp -> E | EFlat -> E | E -> F | F -> FSharp 
+                        | FSharp -> G | GFlat -> G | G -> GSharp | GSharp -> A 
+                        | AFlat -> A | A -> ASharp | ASharp -> B | BFlat -> B 
+                        | B -> C
+                        
+                    member self.flat =
+                        match self with
+                        | C -> B | CSharp -> C | DFlat -> C | D -> DFlat
+                        | DSharp -> D | EFlat -> D | E -> EFlat | F -> E
+                        | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
+                        | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
+                        | B -> BFlat
+                        
+                    member self.pitch =
+                        match self with
+                        | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
+                        | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
+                        | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
+                        | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10
+                        | B -> 11
+                        
+                    member self.measureAbsoluteSemitones (other:Note) =
+                        let octave = 12
+                        let unisson = 0
+            
+                        let distance = other.pitch - self.pitch
+                        if distance < unisson 
+                        then octave - distance * -1 
+                        else distance
+                    
+                    member self.IntervalWith other =
+                        Interval.fromDistance(self.measureAbsoluteSemitones other)
+                        
+                    member self.Transpose (transposingInterval:Interval) =
+                        let rec loop (interval:Interval) note =
+                            let newNote = transposingInterval.TransposeNote note
+                            let newInterval = self.IntervalWith newNote
+                            
+                            if newInterval = transposingInterval then
+                                newNote
+                            else
+                                loop newInterval newNote
+                            
+                        loop transposingInterval self
+                                
+        and Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
                         | MajorThird | PerfectForth | DiminishedFifth
                         | PerfectFifth | AugmentedFifth | MajorSixth
                         | MinorSeventh | MajorSeventh | PerfectOctave
+                        
                         override self.ToString() =
                             match self with
                             | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
@@ -19,6 +79,17 @@ namespace Music.FSharpKatas
                             | MinorSeventh -> "MinorSeventh"
                             | MajorSeventh -> "MajorSeventh" 
                             | PerfectOctave -> "PerfectOctave"
+                                
+                        member self.TransposeNote (note:Note) =
+                            match self with
+                            | Unisson -> note | MinorSecond  -> note.flat 
+                            | MajorSecond -> note.sharp | MinorThird -> note.flat 
+                            | MajorThird -> note.sharp | PerfectForth -> note.sharp 
+                            | DiminishedFifth -> note.flat | PerfectFifth -> note.sharp 
+                            | AugmentedFifth -> note.sharp | MajorSixth -> note.sharp 
+                            | MinorSeventh -> note.flat | MajorSeventh  -> note.flat 
+                            | PerfectOctave -> note.sharp
+                                
                         static member fromDistance distance =
                                     match distance with
                                     | 0 -> Unisson
@@ -35,48 +106,6 @@ namespace Music.FSharpKatas
                                     | 11 -> MajorSeventh
                                     | 12 -> PerfectOctave
                                     | _ -> Unisson
-                                    
-        type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
-                    | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
-                    override self.ToString() =
-                        match self with
-                        | C -> "C" | CSharp -> "C#" | DFlat -> "Db" | D -> "D"
-                        | DSharp -> "D#" | EFlat -> "Eb" | E -> "E" | F ->  "F"
-                        | FSharp -> "F#" | GFlat -> "Gb" | G -> "G" | GSharp -> "G#"
-                        | AFlat -> "Ab" | A -> "A" | ASharp -> "A#" | BFlat -> "Bb"
-                        | B -> "B"
-                    member self.sharp =
-                        match self with
-                        | C -> CSharp | CSharp -> D | DFlat -> D | D -> DSharp
-                        | DSharp -> E | EFlat -> E | E -> F | F -> FSharp 
-                        | FSharp -> G | GFlat -> G | G -> GSharp | GSharp -> A 
-                        | AFlat -> A | A -> ASharp | ASharp -> B | BFlat -> B 
-                        | B -> C
-                    member self.flat =
-                        match self with
-                        | C -> B | CSharp -> C | DFlat -> C | D -> DFlat
-                        | DSharp -> D | EFlat -> D | E -> EFlat | F -> E
-                        | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
-                        | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
-                        | B -> BFlat
-                    member self.pitch =
-                        match self with
-                        | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
-                        | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
-                        | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
-                        | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10
-                        | B -> 11
-                    member self.measureAbsoluteSemitones (other:Note) =
-                        let octave = 12
-                        let unisson = 0
-            
-                        let distance = other.pitch - self.pitch
-                        if distance < unisson 
-                        then octave - distance * -1 
-                        else distance
-                    
-                    member self.IntervalWith other =
-                        Interval.fromDistance(self.measureAbsoluteSemitones other)
                         
     module NotesTests =
         open NUnit.Framework
@@ -182,6 +211,11 @@ namespace Music.FSharpKatas
             test <@ Note.C.IntervalWith Note.ASharp = MinorSeventh @>
             test <@ Note.C.IntervalWith Note.BFlat = MinorSeventh @>
             test <@ Note.C.IntervalWith Note.B = MajorSeventh @>
+            
+        [<Test>]
+        let ``Should transpose note using interval``() =
+            test <@ Note.C.Transpose Unisson = Note.C @>
+            test <@ Note.C.Transpose MajorSecond = Note.D @>
             
         [<Test>]
         let ``Should relate interval with its name``() =
