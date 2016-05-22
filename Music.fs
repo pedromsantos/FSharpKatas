@@ -1,8 +1,8 @@
 namespace Music.FSharpKatas
 
     module Notes =
-        type Note = C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
-                      | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
+        type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
+                    | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
                     override self.ToString() =
                         match self with
                         | C -> "C" | CSharp -> "C#" | DFlat -> "Db" | D -> "D"
@@ -24,7 +24,26 @@ namespace Music.FSharpKatas
                         | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
                         | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
                         | B -> BFlat
-            
+                        
+        type Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
+                        | MajorThird | PerfectForth | DiminishedFifth
+                        | PerfectFifth | AugmentedFifth | MajorSixth
+                        | MinorSeventh | MajorSeventh | PerfectOctave
+                        override self.ToString() =
+                            match self with
+                            | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
+                            | MajorSecond -> "MajorSecond" 
+                            | MinorThird -> "MinorThird"
+                            | MajorThird -> "MajorThird" 
+                            | PerfectForth -> "PerfectForth"
+                            | DiminishedFifth -> "DiminishedFifth" 
+                            | PerfectFifth -> "PerfectFifth"
+                            | AugmentedFifth -> "AugmentedFifth" 
+                            | MajorSixth -> "MajorSixth" 
+                            | MinorSeventh -> "MinorSeventh"
+                            | MajorSeventh -> "MajorSeventh" 
+                            | PerfectOctave -> "PerfectOctave"
+                        
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -89,3 +108,20 @@ namespace Music.FSharpKatas
             test <@ Note.ASharp.flat = Note.A @>
             test <@ Note.BFlat.flat = Note.A @>
             test <@ Note.B.flat = Note.BFlat @>
+            
+        [<Test>]
+        let ``Should relate interval with its name``() =
+            test <@ Interval.Unisson.ToString() = "Unisson" @>
+            test <@ Interval.MinorSecond.ToString() = "MinorSecond" @>
+            test <@ Interval.MajorSecond.ToString() = "MajorSecond" @>
+            test <@ Interval.MinorThird.ToString() = "MinorThird" @>
+            test <@ Interval.MajorThird.ToString() = "MajorThird" @>
+            test <@ Interval.PerfectForth.ToString() = "PerfectForth" @>
+            test <@ Interval.DiminishedFifth.ToString() = "DiminishedFifth" @>
+            test <@ Interval.PerfectFifth.ToString() = "PerfectFifth" @>
+            test <@ Interval.AugmentedFifth.ToString() = "AugmentedFifth" @>
+            test <@ Interval.MajorSixth.ToString() = "MajorSixth" @>
+            test <@ Interval.MinorSeventh.ToString() = "MinorSeventh" @>
+            test <@ Interval.MajorSeventh.ToString() = "MajorSeventh" @>
+            test <@ Interval.PerfectOctave.ToString() = "PerfectOctave" @>
+            
