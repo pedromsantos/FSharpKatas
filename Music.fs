@@ -43,6 +43,21 @@ namespace Music.FSharpKatas
                             | MinorSeventh -> "MinorSeventh"
                             | MajorSeventh -> "MajorSeventh" 
                             | PerfectOctave -> "PerfectOctave"
+                         static member fromDistance distance =
+                                    match distance with
+                                    | 0 -> Unisson
+                                    | 1 -> MinorSecond
+                                    | 2 -> MajorSecond
+                                    | 3 -> MinorThird
+                                    | 4 -> MajorThird
+                                    | 5 -> PerfectForth
+                                    | 6 -> DiminishedFifth
+                                    | 7 -> PerfectFifth
+                                    | 8 -> AugmentedFifth
+                                    | 9 -> MajorSixth
+                                    | 10 -> MinorSeventh
+                                    | 11 -> MajorSeventh
+                                    | 12 -> PerfectOctave
                         
     module NotesTests =
         open NUnit.Framework
@@ -125,3 +140,18 @@ namespace Music.FSharpKatas
             test <@ Interval.MajorSeventh.ToString() = "MajorSeventh" @>
             test <@ Interval.PerfectOctave.ToString() = "PerfectOctave" @>
             
+        [<Test>]
+        let ``Should relate interval with distances``() =
+            test <@ Interval.fromDistance 0 = Unisson @>
+            test <@ Interval.fromDistance 1 = MinorSecond @>
+            test <@ Interval.fromDistance 2 = MajorSecond @>
+            test <@ Interval.fromDistance 3 = MinorThird @>
+            test <@ Interval.fromDistance 4 = MajorThird @>
+            test <@ Interval.fromDistance 5 = PerfectForth @>
+            test <@ Interval.fromDistance 6 = DiminishedFifth @>
+            test <@ Interval.fromDistance 7 = PerfectFifth @>
+            test <@ Interval.fromDistance 8 = AugmentedFifth @>
+            test <@ Interval.fromDistance 9 = MajorSixth @>
+            test <@ Interval.fromDistance 10 = MinorSeventh @>
+            test <@ Interval.fromDistance 11 = MajorSeventh @>
+            test <@ Interval.fromDistance 12 = PerfectOctave @>
