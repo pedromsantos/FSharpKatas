@@ -1,6 +1,41 @@
 namespace Music.FSharpKatas
 
     module Notes =
+        type Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
+                        | MajorThird | PerfectForth | DiminishedFifth
+                        | PerfectFifth | AugmentedFifth | MajorSixth
+                        | MinorSeventh | MajorSeventh | PerfectOctave
+                        override self.ToString() =
+                            match self with
+                            | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
+                            | MajorSecond -> "MajorSecond" 
+                            | MinorThird -> "MinorThird"
+                            | MajorThird -> "MajorThird" 
+                            | PerfectForth -> "PerfectForth"
+                            | DiminishedFifth -> "DiminishedFifth" 
+                            | PerfectFifth -> "PerfectFifth"
+                            | AugmentedFifth -> "AugmentedFifth" 
+                            | MajorSixth -> "MajorSixth" 
+                            | MinorSeventh -> "MinorSeventh"
+                            | MajorSeventh -> "MajorSeventh" 
+                            | PerfectOctave -> "PerfectOctave"
+                        static member fromDistance distance =
+                                    match distance with
+                                    | 0 -> Unisson
+                                    | 1 -> MinorSecond
+                                    | 2 -> MajorSecond
+                                    | 3 -> MinorThird
+                                    | 4 -> MajorThird
+                                    | 5 -> PerfectForth
+                                    | 6 -> DiminishedFifth
+                                    | 7 -> PerfectFifth
+                                    | 8 -> AugmentedFifth
+                                    | 9 -> MajorSixth
+                                    | 10 -> MinorSeventh
+                                    | 11 -> MajorSeventh
+                                    | 12 -> PerfectOctave
+                                    | _ -> Unisson
+                                    
         type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
                     | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
                     override self.ToString() =
@@ -24,40 +59,24 @@ namespace Music.FSharpKatas
                         | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
                         | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
                         | B -> BFlat
-                        
-        type Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
-                        | MajorThird | PerfectForth | DiminishedFifth
-                        | PerfectFifth | AugmentedFifth | MajorSixth
-                        | MinorSeventh | MajorSeventh | PerfectOctave
-                        override self.ToString() =
-                            match self with
-                            | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
-                            | MajorSecond -> "MajorSecond" 
-                            | MinorThird -> "MinorThird"
-                            | MajorThird -> "MajorThird" 
-                            | PerfectForth -> "PerfectForth"
-                            | DiminishedFifth -> "DiminishedFifth" 
-                            | PerfectFifth -> "PerfectFifth"
-                            | AugmentedFifth -> "AugmentedFifth" 
-                            | MajorSixth -> "MajorSixth" 
-                            | MinorSeventh -> "MinorSeventh"
-                            | MajorSeventh -> "MajorSeventh" 
-                            | PerfectOctave -> "PerfectOctave"
-                         static member fromDistance distance =
-                                    match distance with
-                                    | 0 -> Unisson
-                                    | 1 -> MinorSecond
-                                    | 2 -> MajorSecond
-                                    | 3 -> MinorThird
-                                    | 4 -> MajorThird
-                                    | 5 -> PerfectForth
-                                    | 6 -> DiminishedFifth
-                                    | 7 -> PerfectFifth
-                                    | 8 -> AugmentedFifth
-                                    | 9 -> MajorSixth
-                                    | 10 -> MinorSeventh
-                                    | 11 -> MajorSeventh
-                                    | 12 -> PerfectOctave
+                    member self.pitch =
+                        match self with
+                        | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
+                        | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
+                        | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
+                        | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10
+                        | B -> 11
+                    member self.measureAbsoluteSemitones (other:Note) =
+                        let octave = 12
+                        let unisson = 0
+            
+                        let distance = other.pitch - self.pitch
+                        if distance < unisson 
+                        then octave - distance * -1 
+                        else distance
+                    
+                    member self.IntervalWith other =
+                        Interval.fromDistance(self.measureAbsoluteSemitones other)
                         
     module NotesTests =
         open NUnit.Framework
@@ -123,6 +142,46 @@ namespace Music.FSharpKatas
             test <@ Note.ASharp.flat = Note.A @>
             test <@ Note.BFlat.flat = Note.A @>
             test <@ Note.B.flat = Note.BFlat @>
+            
+        [<Test>]
+        let ``Should measure semitones distance``() =
+            test <@ Note.C.measureAbsoluteSemitones Note.C = 0 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.CSharp = 1 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.DFlat = 1 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.D = 2 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.DSharp = 3 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.EFlat = 3 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.E = 4 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.F = 5 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.FSharp = 6 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.GFlat = 6 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.G = 7 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.GSharp = 8 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.AFlat = 8 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.A = 9 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.ASharp = 10 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.BFlat = 10 @>
+            test <@ Note.C.measureAbsoluteSemitones Note.B = 11 @>
+            
+        [<Test>]
+        let ``Should create interval from distance``() =
+            test <@ Note.C.IntervalWith Note.C = Unisson @>
+            test <@ Note.C.IntervalWith Note.CSharp = MinorSecond @>
+            test <@ Note.C.IntervalWith Note.DFlat = MinorSecond @>
+            test <@ Note.C.IntervalWith Note.D = MajorSecond @>
+            test <@ Note.C.IntervalWith Note.DSharp = MinorThird @>
+            test <@ Note.C.IntervalWith Note.EFlat = MinorThird @>
+            test <@ Note.C.IntervalWith Note.E = MajorThird @>
+            test <@ Note.C.IntervalWith Note.F = PerfectForth @>
+            test <@ Note.C.IntervalWith Note.FSharp = DiminishedFifth @>
+            test <@ Note.C.IntervalWith Note.GFlat = DiminishedFifth @>
+            test <@ Note.C.IntervalWith Note.G = PerfectFifth @>
+            test <@ Note.C.IntervalWith Note.GSharp = AugmentedFifth @>
+            test <@ Note.C.IntervalWith Note.AFlat = AugmentedFifth @>
+            test <@ Note.C.IntervalWith Note.A = MajorSixth @>
+            test <@ Note.C.IntervalWith Note.ASharp = MinorSeventh @>
+            test <@ Note.C.IntervalWith Note.BFlat = MinorSeventh @>
+            test <@ Note.C.IntervalWith Note.B = MajorSeventh @>
             
         [<Test>]
         let ``Should relate interval with its name``() =
