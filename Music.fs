@@ -215,7 +215,17 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Should transpose note using interval``() =
             test <@ Note.C.Transpose Unisson = Note.C @>
+            test <@ Note.C.Transpose MinorSecond = Note.DFlat @>
             test <@ Note.C.Transpose MajorSecond = Note.D @>
+            test <@ Note.C.Transpose MinorThird = Note.EFlat @>
+            test <@ Note.C.Transpose MajorThird = Note.E @>
+            test <@ Note.C.Transpose PerfectForth = Note.F @>
+            test <@ Note.C.Transpose DiminishedFifth = Note.GFlat @>
+            test <@ Note.C.Transpose PerfectFifth = Note.G @>
+            test <@ Note.C.Transpose AugmentedFifth = Note.GSharp @>
+            test <@ Note.C.Transpose MajorSixth = Note.A @>
+            test <@ Note.C.Transpose MinorSeventh = Note.BFlat @>
+            test <@ Note.C.Transpose MajorSeventh = Note.B @>
             
         [<Test>]
         let ``Should relate interval with its name``() =
