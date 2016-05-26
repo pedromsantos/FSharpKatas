@@ -106,7 +106,74 @@ namespace Music.FSharpKatas
                                     | 11 -> MajorSeventh
                                     | 12 -> PerfectOctave
                                     | _ -> Unisson
-                        
+
+    module Scales =
+        open Notes
+
+        type Scale = 
+                | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
+                | CSharpMajor | DMajor | DFlatMajor | EMajor | EFlatMajor
+                | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
+                | AFlatMinor | ASharpMinor | BMinor | BFlatMinor
+                | CMinor | CSharpMinor | DMinor | DSharpMinor
+                | EMinor | FMinor | FSharpMinor | GMinor 
+                | GSharpMinor | EFlatMinor
+            
+                static member Fifths = [F; C; G; D; A; E; B;] 
+
+                member private self.accidentals =
+                    match self with
+                    | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
+                    | BFlatMajor -> -2 | CMajor -> 0 | CSharpMajor -> 7
+                    | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
+                    | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
+                    | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
+                    | AFlatMinor -> -7 | ASharpMinor -> 7 | BMinor -> 2 
+                    | BFlatMinor -> -5 | CMinor -> -3 | CSharpMinor -> 4 
+                    | DMinor -> -1 | DSharpMinor -> 6 | EMinor -> 1
+                    | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
+                    | GSharpMinor -> 5 | EFlatMinor -> -6
+                
+                member private self.root =
+                    match self with
+                    | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
+                    | BFlatMajor -> BFlat | CMajor -> C | CSharpMajor -> CSharp
+                    | DMajor -> D | DFlatMajor -> DFlat | EMajor -> E 
+                    | EFlatMajor -> EFlat | FMajor -> F | FSharpMajor -> FSharp 
+                    | GMajor -> G | GFlatMajor -> GFlat | AMinor -> A
+                    | AFlatMinor -> AFlat | ASharpMinor -> ASharp | BMinor -> B 
+                    | BFlatMinor -> BFlat | CMinor -> C | CSharpMinor -> CSharp 
+                    | DMinor -> D | DSharpMinor -> DSharp | EMinor -> E
+                    | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
+                    | GSharpMinor -> GSharp | EFlatMinor -> EFlat
+                
+                member self.rawNotes = 
+                    if self.accidentals = 0 then Scale.Fifths
+                    else
+                        if self.accidentals < 0 then
+                            (Scale.Fifths |> List.rev |> List.skip -self.accidentals) 
+                            @ 
+                            (Scale.Fifths
+                            |> List.rev
+                            |> List.take(-self.accidentals)
+                            |> List.map( fun n -> n.flat))
+                        else
+                            ((Scale.Fifths |> List.skip self.accidentals) )
+                            @ 
+                            (Scale.Fifths
+                            |> List.take(self.accidentals)
+                            |> List.map( fun n -> n.sharp))
+
+                member self.notes = 
+                    (self.rawNotes
+                    |> List.sortBy (fun n -> n.pitch)
+                    |> List.skipWhile (fun n -> n <> self.root))
+                    @
+                    (self.rawNotes
+                    |> List.sortBy (fun n -> n.pitch)
+                    |> List.takeWhile (fun n -> n <> self.root))
+
+
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -258,3 +325,19 @@ namespace Music.FSharpKatas
             test <@ Interval.fromDistance 10 = MinorSeventh @>
             test <@ Interval.fromDistance 11 = MajorSeventh @>
             test <@ Interval.fromDistance 12 = PerfectOctave @>
+
+     module ScalesTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Scales
+        open Notes
+
+        [<Test>]
+        let ``Should have notes for scale``() =
+            test <@ CMajor.notes = [ C; D; E; F; G; A; B ] @>
+            test <@ AMinor.notes = [ A; B; C; D; E; F; G ] @>
+            test <@ AFlatMajor.notes = [ AFlat; BFlat; C; DFlat; EFlat; F; G ] @>
+            test <@ GFlatMajor.notes = [ GFlat; AFlat; BFlat; B; DFlat; EFlat; F ] @>
+            test <@ EFlatMinor.notes = [ EFlat; F; GFlat; AFlat; BFlat; B; DFlat ] @>
+            test <@ CSharpMajor.notes = [ CSharp; DSharp; F; FSharp; GSharp; ASharp; C ] @>
+            test <@ ASharpMinor.notes = [ ASharp; C; CSharp; DSharp; F; FSharp; GSharp ] @>
