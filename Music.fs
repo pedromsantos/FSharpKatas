@@ -112,10 +112,9 @@ namespace Music.FSharpKatas
 
         type Scale = 
                 | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
-                | CSharpMajor | DMajor | DFlatMajor | EMajor | EFlatMajor
+                | DMajor | DFlatMajor | EMajor | EFlatMajor
                 | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
-                | AFlatMinor | ASharpMinor | BMinor | BFlatMinor
-                | CMinor | CSharpMinor | DMinor | DSharpMinor
+                | BMinor | BFlatMinor | CMinor | CSharpMinor | DMinor
                 | EMinor | FMinor | FSharpMinor | GMinor 
                 | GSharpMinor | EFlatMinor
             
@@ -124,26 +123,24 @@ namespace Music.FSharpKatas
                 member private self.accidentals =
                     match self with
                     | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
-                    | BFlatMajor -> -2 | CMajor -> 0 | CSharpMajor -> 7
+                    | BFlatMajor -> -2 | CMajor -> 0
                     | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
                     | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
                     | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
-                    | AFlatMinor -> -7 | ASharpMinor -> 7 | BMinor -> 2 
-                    | BFlatMinor -> -5 | CMinor -> -3 | CSharpMinor -> 4 
-                    | DMinor -> -1 | DSharpMinor -> 6 | EMinor -> 1
+                    | BMinor -> 2 | BFlatMinor -> -5 | CMinor -> -3 
+                    | CSharpMinor -> 4 | DMinor -> -1 | EMinor -> 1
                     | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
                     | GSharpMinor -> 5 | EFlatMinor -> -6
                 
                 member private self.root =
                     match self with
                     | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
-                    | BFlatMajor -> BFlat | CMajor -> C | CSharpMajor -> CSharp
+                    | BFlatMajor -> BFlat | CMajor -> C
                     | DMajor -> D | DFlatMajor -> DFlat | EMajor -> E 
                     | EFlatMajor -> EFlat | FMajor -> F | FSharpMajor -> FSharp 
                     | GMajor -> G | GFlatMajor -> GFlat | AMinor -> A
-                    | AFlatMinor -> AFlat | ASharpMinor -> ASharp | BMinor -> B 
-                    | BFlatMinor -> BFlat | CMinor -> C | CSharpMinor -> CSharp 
-                    | DMinor -> D | DSharpMinor -> DSharp | EMinor -> E
+                    | BMinor -> B | BFlatMinor -> BFlat | CMinor -> C 
+                    | CSharpMinor -> CSharp | DMinor -> D | EMinor -> E
                     | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
                     | GSharpMinor -> GSharp | EFlatMinor -> EFlat
                 
@@ -355,7 +352,7 @@ namespace Music.FSharpKatas
             test <@ CSharpMinor.notes = [ CSharp; DSharp; E; FSharp; GSharp; A; B ] @>
             test <@ GSharpMinor.notes = [ GSharp; ASharp; B; CSharp; DSharp; E; FSharp ] @>
             test <@ EFlatMinor.notes = [ EFlat; F; GFlat; AFlat; BFlat; B; DFlat ] @>
-            test <@ BFlatMinor.notes = [ BFlat; C; DFlat; F; GFlat; AFlat ] @>
+            test <@ BFlatMinor.notes = [ BFlat; C; DFlat; EFlat; F; GFlat; AFlat ] @>
             test <@ FMinor.notes = [ F; G; AFlat; BFlat; C; DFlat; EFlat ] @>
             test <@ CMinor.notes = [ C; D; EFlat; F; G; AFlat; BFlat ] @>
             test <@ GMinor.notes = [ G; A; BFlat; C; D; EFlat; F ] @>
