@@ -349,6 +349,16 @@ namespace Music.FSharpKatas
             test <@ FMajor.notes = [ F; G; A; BFlat; C; D; E ] @>
 
             test <@ AMinor.notes = [ A; B; C; D; E; F; G ] @>
+            test <@ EMinor.notes = [ E; FSharp; G; A; B; C; D ] @>
+            test <@ BMinor.notes = [ B; CSharp; D; E; FSharp; G; A ] @>
+            test <@ FSharpMinor.notes = [ FSharp; GSharp; A; B; CSharp; D; E ] @>
+            test <@ CSharpMinor.notes = [ CSharp; DSharp; E; FSharp; GSharp; A; B ] @>
+            test <@ GSharpMinor.notes = [ GSharp; ASharp; B; CSharp; DSharp; E; FSharp ] @>
             test <@ EFlatMinor.notes = [ EFlat; F; GFlat; AFlat; BFlat; B; DFlat ] @>
-            test <@ CSharpMajor.notes = [ CSharp; DSharp; F; FSharp; GSharp; ASharp; C ] @>
-            test <@ ASharpMinor.notes = [ ASharp; C; CSharp; DSharp; F; FSharp; GSharp ] @>
+            test <@ BFlatMinor.notes = [ BFlat; C; DFlat; F; GFlat; AFlat ] @>
+            test <@ FMinor.notes = [ F; G; AFlat; BFlat; C; DFlat; EFlat ] @>
+            test <@ CMinor.notes = [ C; D; EFlat; F; G; AFlat; BFlat ] @>
+            test <@ GMinor.notes = [ G; A; BFlat; C; D; EFlat; F ] @>
+            test <@ DMinor.notes = [ D; E; F; G; A; BFlat; C ] @>
+            
+            
