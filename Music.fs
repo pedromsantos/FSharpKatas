@@ -82,14 +82,12 @@ namespace Music.FSharpKatas
                                 
                         member self.TransposeNote (note:Note) =
                             match self with
-                            | Unisson -> note | MinorSecond  -> note.flat 
-                            | MajorSecond -> note.sharp | MinorThird -> note.flat 
-                            | MajorThird -> note.sharp | PerfectForth -> note.sharp 
-                            | DiminishedFifth -> note.flat | PerfectFifth -> note.sharp 
-                            | AugmentedFifth -> note.sharp | MajorSixth -> note.sharp 
-                            | MinorSeventh -> note.flat | MajorSeventh  -> note.flat 
-                            | PerfectOctave -> note.sharp
-                                
+                            | Unisson -> note 
+                            | MajorSecond | PerfectFifth | MajorThird | PerfectForth 
+                            | AugmentedFifth | MajorSixth | PerfectOctave -> note.sharp
+                            | MinorSecond | DiminishedFifth | MinorThird | MinorSeventh 
+                            | MajorSeventh  -> note.flat 
+                            
                         static member fromDistance distance =
                                     match distance with
                                     | 0 -> Unisson
