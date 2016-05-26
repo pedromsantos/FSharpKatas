@@ -335,9 +335,20 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Should have notes for scale``() =
             test <@ CMajor.notes = [ C; D; E; F; G; A; B ] @>
-            test <@ AMinor.notes = [ A; B; C; D; E; F; G ] @>
+            test <@ GMajor.notes = [ G; A; B; C; D; E; FSharp ] @>
+            test <@ DMajor.notes = [ D; E; FSharp; G; A; B; CSharp ] @>
+            test <@ AMajor.notes = [ A; B; CSharp; D; E; FSharp; GSharp ] @>
+            test <@ EMajor.notes = [ E; FSharp; GSharp; A; B; CSharp; DSharp ] @>
+            test <@ BMajor.notes = [ B; CSharp; DSharp; E; FSharp; GSharp; ASharp ] @>
+            test <@ FSharpMajor.notes = [ FSharp; GSharp; ASharp; B; CSharp; DSharp; F ] @>
+            test <@ DFlatMajor.notes = [ DFlat; EFlat; F; GFlat; AFlat; BFlat; C ] @>
             test <@ AFlatMajor.notes = [ AFlat; BFlat; C; DFlat; EFlat; F; G ] @>
             test <@ GFlatMajor.notes = [ GFlat; AFlat; BFlat; B; DFlat; EFlat; F ] @>
+            test <@ EFlatMajor.notes = [ EFlat; F; G; AFlat; BFlat; C; D ] @>
+            test <@ BFlatMajor.notes = [ BFlat; C; D; EFlat; F; G; A ] @>
+            test <@ FMajor.notes = [ F; G; A; BFlat; C; D; E ] @>
+
+            test <@ AMinor.notes = [ A; B; C; D; E; F; G ] @>
             test <@ EFlatMinor.notes = [ EFlat; F; GFlat; AFlat; BFlat; B; DFlat ] @>
             test <@ CSharpMajor.notes = [ CSharp; DSharp; F; FSharp; GSharp; ASharp; C ] @>
             test <@ ASharpMinor.notes = [ ASharp; C; CSharp; DSharp; F; FSharp; GSharp ] @>
