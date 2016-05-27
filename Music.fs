@@ -79,14 +79,24 @@ namespace Music.FSharpKatas
                             | MinorSeventh -> "MinorSeventh"
                             | MajorSeventh -> "MajorSeventh" 
                             | PerfectOctave -> "PerfectOctave"
-                                
+                        
+                        member self.distance =
+                            match self with
+                            | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2
+                            | MinorThird -> 3 | MajorThird -> 4 | PerfectForth -> 5
+                            | DiminishedFifth -> 6 | PerfectFifth -> 7 | AugmentedFifth -> 8
+                            | MajorSixth -> 9 | MinorSeventh -> 10 | MajorSeventh -> 11
+                            | PerfectOctave -> 12
+
                         member self.TransposeNote (note:Note) =
                             match self with
                             | Unisson -> note 
+                            
                             | MajorSecond | PerfectFifth | MajorThird | PerfectForth 
                             | AugmentedFifth | MajorSixth | PerfectOctave -> note.sharp
-                            | MinorSecond | DiminishedFifth | MinorThird | MinorSeventh 
-                            | MajorSeventh  -> note.flat 
+                            
+                            | MinorSecond | DiminishedFifth | MinorThird 
+                            | MinorSeventh | MajorSeventh  -> note.flat 
                             
                         static member fromDistance distance =
                                     match distance with
@@ -142,7 +152,7 @@ namespace Music.FSharpKatas
                     | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
                     | GSharpMinor -> GSharp | EFlatMinor -> EFlat
                 
-                member self.rawNotes = 
+                member private self.rawNotes = 
                     if self.accidentals = 0 then Scale.Fifths
                     else
                         if self.accidentals < 0 then
@@ -157,6 +167,7 @@ namespace Music.FSharpKatas
                             @ 
                             (Scale.Fifths
                             |> List.take(self.accidentals)
+                            
                             |> List.map( fun n -> n.sharp))
 
                 member self.notes = 
@@ -168,6 +179,88 @@ namespace Music.FSharpKatas
                     |> List.sortBy (fun n -> n.pitch)
                     |> List.takeWhile (fun n -> n <> self.root))
 
+    module Chords =
+        open Notes
+
+        type ChordFunction = 
+            | Major | Augmented | Minor | Diminished
+            | Major7 | Augmented7 | Minor7 | Diminished7 
+            | Dominant7 | Minor7b5 | MinorMaj7
+            | Sus2 | Sus2Diminished | Sus2Augmented
+            | Sus4 | Sus4Diminished | Sus4Augmented
+            member self.intervals =
+                match self with
+                | Major -> [MajorThird; PerfectFifth]
+                | Augmented -> [MajorThird; AugmentedFifth]
+                | Minor -> [MinorThird; PerfectFifth]
+                | Diminished -> [MinorThird; DiminishedFifth]
+                | Major7 -> [MajorThird; PerfectFifth; MajorSeventh]
+                | Augmented7 -> [MajorThird; AugmentedFifth; MajorSeventh]
+                | Minor7 -> [MinorThird; PerfectFifth; MinorSeventh]
+                | Diminished7 -> [MinorThird; DiminishedFifth; MajorSixth]
+                | Dominant7 -> [MajorThird; PerfectFifth; MinorSeventh]
+                | Minor7b5 -> [MinorThird; DiminishedFifth; MinorSeventh]
+                | MinorMaj7 -> [MinorThird; PerfectFifth; MajorSeventh]
+                | Sus2 -> [MajorSecond; PerfectFifth]
+                | Sus2Diminished -> [MajorSecond; DiminishedFifth]
+                | Sus2Augmented -> [MajorSecond; AugmentedFifth]
+                | Sus4 -> [PerfectForth; PerfectFifth]
+                | Sus4Diminished -> [PerfectForth; DiminishedFifth]
+                | Sus4Augmented -> [PerfectForth; AugmentedFifth]
+
+            static member forIntervals intervals =
+                match intervals with
+                | [MajorThird; PerfectFifth] -> Major
+                | [MajorThird; AugmentedFifth] -> Augmented
+                | [MinorThird; PerfectFifth] -> Minor
+                | [MinorThird; DiminishedFifth] -> Diminished
+                | [MajorThird; PerfectFifth; MajorSeventh] -> Major7
+                | [MajorThird; AugmentedFifth; MajorSeventh] -> Augmented7
+                | [MinorThird; PerfectFifth; MinorSeventh] -> Minor7
+                | [MinorThird; DiminishedFifth; MajorSixth] -> Diminished7
+                | [MajorThird; PerfectFifth; MinorSeventh] -> Dominant7
+                | [MinorThird; DiminishedFifth; MinorSeventh] -> Minor7b5
+                | [MinorThird; PerfectFifth; MajorSeventh] -> MinorMaj7
+                | [MajorSecond; PerfectFifth] -> Sus2
+                | [MajorSecond; DiminishedFifth] -> Sus2Diminished 
+                | [MajorSecond; AugmentedFifth] -> Sus2Augmented
+                | [PerfectForth; PerfectFifth] -> Sus4
+                | [PerfectForth; DiminishedFifth] -> Sus4Diminished
+                | [PerfectForth; AugmentedFifth] -> Sus4Augmented
+                | _ -> Major
+
+            member self.abrevitedName =
+                match self with
+                | Major -> "Maj" | Augmented -> "Aug" | Minor -> "Min" 
+                | Diminished -> "Dim" | Major7 -> "Maj7" 
+                | Augmented7 -> "Aug7" | Minor7 -> "Min7" 
+                | Diminished7 -> "Dim7" | Dominant7 -> "Dom7" 
+                | Minor7b5 -> "Min7b5" | MinorMaj7 -> "MinMaj7"
+                | Sus2 -> "Sus2" | Sus2Diminished -> "Sus2Dim" 
+                | Sus2Augmented -> "Sus2Aug"
+                | Sus4 -> "Sus4" | Sus4Diminished -> "SusDim" 
+                | Sus4Augmented -> "Sus4Aug"
+
+        type ChordNoteFunction = | Root | Third | Fifth | Seventh | Ninth | Eleventh | Thirteenth
+        type ChordType = | Open | Closed | Drop2 | Drop3
+        type ChordNote = Note * ChordNoteFunction
+
+        type Chord = {notes:ChordNote list; chordType:ChordType;}
+                        member self.noteForFunction chordNoteFunction =
+                            fst (self.notes |> List.find (fun n -> snd n = chordNoteFunction))
+                        member self.bass =
+                            fst (self.notes |> List.head)
+                        member self.lead =
+                            fst (self.notes |> List.last)
+                        member self.name =
+                            (self.noteForFunction Root).ToString() + (ChordFunction.forIntervals self.intervals).abrevitedName
+                        member private self.intervals =
+                            let root = self.noteForFunction Root
+                            self.notes
+                            |> List.map (fun n -> root.IntervalWith(fst n))
+                            |> List.sortBy(fun i -> i.distance)
+                            |> List.skip 1
+                        
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -354,5 +447,36 @@ namespace Music.FSharpKatas
             test <@ CMinor.notes = [ C; D; EFlat; F; G; AFlat; BFlat ] @>
             test <@ GMinor.notes = [ G; A; BFlat; C; D; EFlat; F ] @>
             test <@ DMinor.notes = [ D; E; F; G; A; BFlat; C ] @>
-            
-            
+
+    module ChordsTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Scales
+        open Notes
+        open Chords
+
+        [<Test>]
+        let ``Chord should have notes for function``() =
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.noteForFunction Root = C @>
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.noteForFunction Third = E @>
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.noteForFunction Fifth = G @>
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.noteForFunction Seventh = B @>
+
+        [<Test>]
+        let ``Chord should return lowest note for bass``() =
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.bass = C @>
+
+        [<Test>]
+        let ``Chord should return highest note for lead``() =
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.lead = B @>
+
+        [<Test>]
+        let ``Chord should be named after the root``() =
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.name.StartsWith("C") @>
+
+        [<Test>]
+        let ``Chord should be named after the function``() =
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth)]; chordType=Closed}.name.StartsWith("CMaj") @>
+            test <@ {notes= [(C, Root); (E, Third); (GSharp, Fifth)]; chordType=Closed}.name.StartsWith("CAug") @>
+            test <@ {notes= [(C, Root); (EFlat, Third); (G, Fifth)]; chordType=Closed}.name.StartsWith("CMin") @>
+            test <@ {notes= [(C, Root); (EFlat, Third); (GFlat, Fifth)]; chordType=Closed}.name.StartsWith("CDim") @>
