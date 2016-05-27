@@ -253,7 +253,8 @@ namespace Music.FSharpKatas
                         member self.lead =
                             fst (self.notes |> List.last)
                         member self.name =
-                            (self.noteForFunction Root).ToString() + (ChordFunction.forIntervals self.intervals).abrevitedName
+                            (self.noteForFunction Root).ToString() 
+                            + (ChordFunction.forIntervals self.intervals).abrevitedName
                         member private self.intervals =
                             let root = self.noteForFunction Root
                             self.notes
@@ -480,3 +481,7 @@ namespace Music.FSharpKatas
             test <@ {notes= [(C, Root); (E, Third); (GSharp, Fifth)]; chordType=Closed}.name.StartsWith("CAug") @>
             test <@ {notes= [(C, Root); (EFlat, Third); (G, Fifth)]; chordType=Closed}.name.StartsWith("CMin") @>
             test <@ {notes= [(C, Root); (EFlat, Third); (GFlat, Fifth)]; chordType=Closed}.name.StartsWith("CDim") @>
+            test <@ {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}.name.StartsWith("CMaj7") @>
+            test <@ {notes= [(C, Root); (E, Third); (GSharp, Fifth); (B, Seventh)]; chordType=Closed}.name.StartsWith("CAug7") @>
+            test <@ {notes= [(C, Root); (EFlat, Third); (G, Fifth); (BFlat, Seventh)]; chordType=Closed}.name.StartsWith("CMin7") @>
+            test <@ {notes= [(C, Root); (EFlat, Third); (GFlat, Fifth); (A, Seventh)]; chordType=Closed}.name.StartsWith("CDim7") @>
