@@ -119,12 +119,12 @@ namespace Music.FSharpKatas
         open Notes
 
         type Scale = 
-                | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
-                | DMajor | DFlatMajor | EMajor | EFlatMajor
-                | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
-                | BMinor | BFlatMinor | CMinor | CSharpMinor | DMinor
-                | EMinor | FMinor | FSharpMinor | GMinor 
-                | GSharpMinor | EFlatMinor
+            | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
+            | DMajor | DFlatMajor | EMajor | EFlatMajor
+            | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
+            | BMinor | BFlatMinor | CMinor | CSharpMinor | DMinor
+            | EMinor | FMinor | FSharpMinor | GMinor 
+            | GSharpMinor | EFlatMinor
 
         let accidentals scale =
             match scale with
@@ -150,25 +150,30 @@ namespace Music.FSharpKatas
             | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
             | GSharpMinor -> GSharp | EFlatMinor -> EFlat
         
+        let flatedNotesScale fifths scaleAccidents =
+            (fifths |> List.rev |> List.skip -scaleAccidents) 
+            @ (fifths
+            |> List.rev
+            |> List.take(-scaleAccidents)
+            |> List.map( fun n -> flat n))
+        
+        let sharpedNotesScale fifths scaleAccidents =
+            ((fifths |> List.skip scaleAccidents) )
+            @ (fifths
+            |> List.take(scaleAccidents)
+            |> List.map( fun n -> sharp n))
+        
         let rawNotes scale = 
             let Fifths = [F; C; G; D; A; E; B;]
             let scaleAccidents = accidentals scale
-            if accidentals scale = 0 then Fifths
-            else
-                if scaleAccidents < 0 then
-                    (Fifths |> List.rev |> List.skip -scaleAccidents) 
-                    @ 
-                    (Fifths
-                    |> List.rev
-                    |> List.take(-scaleAccidents)
-                    |> List.map( fun n -> flat n))
+            
+            if scaleAccidents = 0 then
+                Fifths
+            else 
+                if scaleAccidents < 0 then 
+                    flatedNotesScale Fifths scaleAccidents
                 else
-                    ((Fifths |> List.skip scaleAccidents) )
-                    @ 
-                    (Fifths
-                    |> List.take(scaleAccidents)
-                    
-                    |> List.map( fun n -> sharp n))
+                    sharpedNotesScale Fifths scaleAccidents
 
         let notes scale = 
             (rawNotes scale
