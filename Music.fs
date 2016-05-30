@@ -164,16 +164,16 @@ namespace Music.FSharpKatas
             |> List.map( fun n -> sharp n))
         
         let rawNotes scale = 
-            let Fifths = [F; C; G; D; A; E; B;]
+            let fifths = [F; C; G; D; A; E; B;]
             let scaleAccidents = accidentals scale
             
             if scaleAccidents = 0 then
-                Fifths
+                fifths
             else 
                 if scaleAccidents < 0 then 
-                    flatedNotesScale Fifths scaleAccidents
+                    flatedNotesScale fifths scaleAccidents
                 else
-                    sharpedNotesScale Fifths scaleAccidents
+                    sharpedNotesScale fifths scaleAccidents
 
         let notes scale = 
             (rawNotes scale
@@ -200,6 +200,14 @@ namespace Music.FSharpKatas
 
         type Chord = {notes:ChordNote list; chordType:ChordType;}
         
+        let functionForInterval interval =
+            match interval with
+            | Unisson -> Root
+            | MajorThird | MinorThird -> Third 
+            | PerfectFifth | DiminishedFifth | AugmentedFifth  -> Fifth
+            | MajorSeventh | MinorSeventh | MajorSixth -> Seventh
+            | _ -> Root
+            
         let intervalsForFunction chordFunction =
             match chordFunction with
             | Major -> [MajorThird; PerfectFifth]
@@ -272,6 +280,16 @@ namespace Music.FSharpKatas
         let name chord =
             noteName (noteForFunction chord Root) 
             + abrevitedName (functionForIntervals(intervalsForChord chord))
+            
+        let noteNames chord =
+            chord.notes |> List.map (fun n -> noteName (fst n))
+            
+        let chordFromRootAndFunction root chordFunction =
+            {notes=
+                [(root, Root)]@
+                (intervalsForFunction chordFunction
+                |> List.map (fun i -> ((transpose root i), functionForInterval i)));
+             chordType=Closed}
                         
     module NotesTests =
         open NUnit.Framework
@@ -475,6 +493,7 @@ namespace Music.FSharpKatas
         let cAug7 = {notes= [(C, Root); (E, Third); (GSharp, Fifth); (B, Seventh)];chordType=Closed}
         let cMin7 = {notes= [(C, Root); (EFlat, Third); (G, Fifth); (BFlat, Seventh)]; chordType=Closed}
         let cDim7 = {notes= [(C, Root); (EFlat, Third); (GFlat, Fifth); (A, Seventh)]; chordType=Closed}
+        let cMin7b5 = {notes= [(C, Root); (EFlat, Third); (GFlat, Fifth); (BFlat, Seventh)]; chordType=Closed}
                 
         [<Test>]
         let ``Chord should have notes for function``() =
@@ -482,6 +501,10 @@ namespace Music.FSharpKatas
             test <@ noteForFunction cMaj7 Third = E @>
             test <@ noteForFunction cMaj7 Fifth = G @>
             test <@ noteForFunction cMaj7 Seventh = B @>
+            
+        [<Test>]
+        let ``Chord should return note names``() =
+            test <@ noteNames cMaj7 = ["C"; "E"; "G"; "B"] @>
 
         [<Test>]
         let ``Chord should return lowest note for bass``() =
@@ -505,3 +528,15 @@ namespace Music.FSharpKatas
             test <@ (name cAug7).StartsWith("CAug7") @>
             test <@ (name cMin7).StartsWith("CMin7") @>
             test <@ (name cDim7).StartsWith("CDim7") @>
+            
+        [<Test>]
+        let ``Should create chord from root and function``() =
+             test <@ chordFromRootAndFunction C Major = cMaj @>
+             test <@ chordFromRootAndFunction C Augmented = cAug @>
+             test <@ chordFromRootAndFunction C Minor = cMin @>
+             test <@ chordFromRootAndFunction C Diminished = cDim @>
+             test <@ chordFromRootAndFunction C Major7 = cMaj7 @>
+             test <@ chordFromRootAndFunction C Augmented7 = cAug7 @>
+             test <@ chordFromRootAndFunction C Minor7 = cMin7 @>
+             test <@ chordFromRootAndFunction C Diminished7 = cDim7 @>
+             test <@ chordFromRootAndFunction C Minor7b5 = cMin7b5 @>
