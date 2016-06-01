@@ -301,7 +301,7 @@ namespace Music.FSharpKatas
             | f -> f
 
         let invert chord =
-            {notes= rotate chord.notes; chordType=Closed}
+            {notes= rotate chord.notes; chordType=chord.chordType}
 
         let toDrop2 chord =
             {notes= chord.notes |> swapFirstTwo |> rotate; chordType=Drop2}
