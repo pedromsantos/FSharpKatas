@@ -290,6 +290,13 @@ namespace Music.FSharpKatas
                 (intervalsForFunction chordFunction
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
              chordType=Closed}
+
+        let rotate list =
+            (list |> List.skip 1) @ (list |> List.take 1)
+
+        let invert chord =
+            let invertedChordNotes = rotate chord.notes
+            {notes= invertedChordNotes; chordType=Closed}
                         
     module NotesTests =
         open NUnit.Framework
@@ -531,12 +538,44 @@ namespace Music.FSharpKatas
             
         [<Test>]
         let ``Should create chord from root and function``() =
-             test <@ chordFromRootAndFunction C Major = cMaj @>
-             test <@ chordFromRootAndFunction C Augmented = cAug @>
-             test <@ chordFromRootAndFunction C Minor = cMin @>
-             test <@ chordFromRootAndFunction C Diminished = cDim @>
-             test <@ chordFromRootAndFunction C Major7 = cMaj7 @>
-             test <@ chordFromRootAndFunction C Augmented7 = cAug7 @>
-             test <@ chordFromRootAndFunction C Minor7 = cMin7 @>
-             test <@ chordFromRootAndFunction C Diminished7 = cDim7 @>
-             test <@ chordFromRootAndFunction C Minor7b5 = cMin7b5 @>
+            test <@ chordFromRootAndFunction C Major = cMaj @>
+            test <@ chordFromRootAndFunction C Augmented = cAug @>
+            test <@ chordFromRootAndFunction C Minor = cMin @>
+            test <@ chordFromRootAndFunction C Diminished = cDim @>
+            test <@ chordFromRootAndFunction C Major7 = cMaj7 @>
+            test <@ chordFromRootAndFunction C Augmented7 = cAug7 @>
+            test <@ chordFromRootAndFunction C Minor7 = cMin7 @>
+            test <@ chordFromRootAndFunction C Diminished7 = cDim7 @>
+            test <@ chordFromRootAndFunction C Minor7b5 = cMin7b5 @>
+
+        [<Test>]
+        let ``Should invert chord for first inversion``() =
+            test <@ (invert cMaj).notes = [(E, Third); (G, Fifth); (C, Root)]  @>
+            test <@ (invert cAug).notes = [(E, Third); (GSharp, Fifth); (C, Root)]  @>
+            test <@ (invert cMin).notes = [(EFlat, Third); (G, Fifth); (C, Root)]  @>
+            test <@ (invert cDim).notes = [(EFlat, Third); (GFlat, Fifth); (C, Root)]  @>
+            test <@ (invert cMaj7).notes = [(E, Third); (G, Fifth); (B, Seventh); (C, Root)]  @>
+            test <@ (invert cAug7).notes = [(E, Third); (GSharp, Fifth); (B, Seventh); (C, Root)]  @>
+            test <@ (invert cMin7).notes = [(EFlat, Third); (G, Fifth); (BFlat, Seventh); (C, Root)]  @>
+            test <@ (invert cDim7).notes = [(EFlat, Third); (GFlat, Fifth); (A, Seventh); (C, Root)]  @>
+            test <@ (invert cMin7b5).notes = [(EFlat, Third); (GFlat, Fifth); (BFlat, Seventh); (C, Root)]  @>
+
+        [<Test>]
+        let ``Should invert chord for second inversion``() =
+            test <@ (cMaj |> invert |> invert).notes = [(G, Fifth); (C, Root); (E, Third)]  @>
+            test <@ (cAug |> invert |> invert).notes = [(GSharp, Fifth); (C, Root); (E, Third)]  @>
+            test <@ (cMin |> invert |> invert).notes = [(G, Fifth); (C, Root); (EFlat, Third)]  @>
+            test <@ (cDim |> invert |> invert).notes = [(GFlat, Fifth); (C, Root); (EFlat, Third)]  @>
+            test <@ (cMaj7 |> invert |> invert).notes = [(G, Fifth); (B, Seventh); (C, Root); (E, Third)]  @>
+            test <@ (cAug7 |> invert |> invert).notes = [(GSharp, Fifth); (B, Seventh); (C, Root); (E, Third)]  @>
+            test <@ (cMin7 |> invert |> invert).notes = [(G, Fifth); (BFlat, Seventh); (C, Root); (EFlat, Third)]  @>
+            test <@ (cDim7 |> invert |> invert).notes = [(GFlat, Fifth); (A, Seventh); (C, Root); (EFlat, Third)]  @>
+            test <@ (cMin7b5 |> invert |> invert).notes = [(GFlat, Fifth); (BFlat, Seventh); (C, Root); (EFlat, Third)]  @>
+
+        [<Test>]
+        let ``Should invert chord for third inversion``() =
+            test <@ (cMaj7 |> invert |> invert |> invert).notes = [(B, Seventh); (C, Root); (E, Third); (G, Fifth)]  @>
+            test <@ (cAug7 |> invert |> invert |> invert).notes = [(B, Seventh); (C, Root); (E, Third); (GSharp, Fifth)]  @>
+            test <@ (cMin7 |> invert |> invert |> invert).notes = [(BFlat, Seventh); (C, Root); (EFlat, Third); (G, Fifth)]  @>
+            test <@ (cDim7 |> invert |> invert |> invert).notes = [(A, Seventh); (C, Root); (EFlat, Third); (GFlat, Fifth)]  @>
+            test <@ (cMin7b5 |> invert |> invert |> invert).notes = [(BFlat, Seventh); (C, Root); (EFlat, Third); (GFlat, Fifth)]  @>
