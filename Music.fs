@@ -291,17 +291,24 @@ namespace Music.FSharpKatas
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
              chordType=Closed}
 
-        let rotate list =
+        let private rotate list =
             (list |> List.skip 1) @ (list |> List.take 1)
 
-        let swapFirstTwo list = 
+        let private swapFirstTwo list = 
             match list with
             | [] -> []
             | f::s::t -> s::f::t
             | f -> f
 
+        let private swapSecondTwo list = 
+            (list |> List.take 1) @ (swapFirstTwo (list |> List.skip 1))
+
         let invert chord =
-            {notes= rotate chord.notes; chordType=chord.chordType}
+            let numberOfNotesInChord = chord.notes.Length - 1
+            match chord.chordType with
+            | Closed | Open -> {notes= rotate chord.notes; chordType=chord.chordType}
+            | Drop2 -> {notes= ([chord.notes |> List.last] @ (chord.notes |> List.take numberOfNotesInChord |> rotate |> rotate)); chordType=chord.chordType}
+            | Drop3 -> {notes= chord.notes |> rotate |> rotate |> swapSecondTwo ; chordType=chord.chordType}
 
         let toDrop2 chord =
             {notes= chord.notes |> swapFirstTwo |> rotate; chordType=Drop2}
@@ -598,3 +605,11 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Should transform chord to drop3``() =
             test <@ (cMaj7 |> toDrop3).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
+
+        [<Test>]
+        let ``Should invert drop2``() =
+            test <@ (cMaj7 |> toDrop2 |> invert).notes = [(E, Third); (B, Seventh); (C, Root); (G, Fifth);]  @>
+
+        [<Test>]
+        let ``Should invert drop3``() =
+            test <@ (cMaj7 |> toDrop3 |> invert).notes = [(E, Third); (C, Root); (G, Fifth); (B, Seventh)]  @>
