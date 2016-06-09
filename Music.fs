@@ -609,7 +609,13 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Should invert drop2``() =
             test <@ (cMaj7 |> toDrop2 |> invert).notes = [(E, Third); (B, Seventh); (C, Root); (G, Fifth);]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert).notes = [(G, Fifth); (C, Root); (E, Third); (B, Seventh);]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert |> invert ).notes = [(B, Seventh); (E, Third); (G, Fifth); (C, Root); ]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert |> invert |> invert).notes = [(C, Root); (G, Fifth); (B, Seventh); (E, Third);]  @>
 
         [<Test>]
         let ``Should invert drop3``() =
             test <@ (cMaj7 |> toDrop3 |> invert).notes = [(E, Third); (C, Root); (G, Fifth); (B, Seventh)]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert).notes = [(G, Fifth); (E, Third); (B, Seventh); (C, Root);]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert).notes = [(B, Seventh); (G, Fifth); (C, Root); (E, Third);]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert |> invert).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
