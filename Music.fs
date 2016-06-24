@@ -291,23 +291,33 @@ namespace Music.FSharpKatas
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
              chordType=Closed}
 
-        let rotate list =
-            (list |> List.skip 1) @ (list |> List.take 1)
+        let private rotate list rotation =
+            (list |> List.skip rotation) @ (list |> List.take rotation)
 
-        let swapFirstTwo list = 
+        let private rotateByOne list =
+            rotate list 1
+
+        let private swapFirstTwo list = 
             match list with
             | [] -> []
             | f::s::t -> s::f::t
             | f -> f
 
+        let private swapSecondTwo list = 
+            (list |> List.take 1) @ (swapFirstTwo (list |> List.skip 1))
+
         let invert chord =
-            {notes= rotate chord.notes; chordType=chord.chordType}
+            let numberOfNotesInChord = chord.notes.Length - 1
+            match chord.chordType with
+            | Closed | Open -> {notes= rotateByOne chord.notes; chordType=chord.chordType}
+            | Drop2 -> {notes= ([chord.notes |> List.last] @ (chord.notes |> List.take numberOfNotesInChord |> rotateByOne |> rotateByOne)); chordType=chord.chordType}
+            | Drop3 -> {notes= chord.notes |> rotateByOne |> rotateByOne |> swapSecondTwo ; chordType=chord.chordType}
 
         let toDrop2 chord =
-            {notes= chord.notes |> swapFirstTwo |> rotate; chordType=Drop2}
+            {notes= chord.notes |> swapFirstTwo |> rotateByOne; chordType=Drop2}
 
         let toDrop3 chord =
-            {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}        
+            {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}
                         
     module NotesTests =
         open NUnit.Framework
@@ -597,8 +607,18 @@ namespace Music.FSharpKatas
 
         [<Test>]
         let ``Should transform chord to drop3``() =
-            test <@ (cMaj7 |> toDrop3).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)] @>
-            
+            test <@ (cMaj7 |> toDrop3).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
+
         [<Test>]
-        let ``Should invert Drop2 chord``() =
-            test <@ (cMaj7 |> toDrop2 |> invert).notes = [(E, Third); (B, Seventh); (C, Root); (G, Fifth)] @>
+        let ``Should invert drop2``() =
+            test <@ (cMaj7 |> toDrop2 |> invert).notes = [(E, Third); (B, Seventh); (C, Root); (G, Fifth);]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert).notes = [(G, Fifth); (C, Root); (E, Third); (B, Seventh);]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert |> invert ).notes = [(B, Seventh); (E, Third); (G, Fifth); (C, Root); ]  @>
+            test <@ (cMaj7 |> toDrop2 |> invert |> invert |> invert |> invert).notes = [(C, Root); (G, Fifth); (B, Seventh); (E, Third);]  @>
+
+        [<Test>]
+        let ``Should invert drop3``() =
+            test <@ (cMaj7 |> toDrop3 |> invert).notes = [(E, Third); (C, Root); (G, Fifth); (B, Seventh)]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert).notes = [(G, Fifth); (E, Third); (B, Seventh); (C, Root);]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert).notes = [(B, Seventh); (G, Fifth); (C, Root); (E, Third);]  @>
+            test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert |> invert).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
