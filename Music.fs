@@ -307,7 +307,7 @@ namespace Music.FSharpKatas
             {notes= chord.notes |> swapFirstTwo |> rotate; chordType=Drop2}
 
         let toDrop3 chord =
-            {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}
+            {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}        
                         
     module NotesTests =
         open NUnit.Framework
@@ -597,4 +597,8 @@ namespace Music.FSharpKatas
 
         [<Test>]
         let ``Should transform chord to drop3``() =
-            test <@ (cMaj7 |> toDrop3).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
+            test <@ (cMaj7 |> toDrop3).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)] @>
+            
+        [<Test>]
+        let ``Should invert Drop2 chord``() =
+            test <@ (cMaj7 |> toDrop2 |> invert).notes = [(E, Third); (B, Seventh); (C, Root); (G, Fifth)] @>
