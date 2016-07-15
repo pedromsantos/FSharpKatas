@@ -4,7 +4,7 @@ namespace Music.FSharpKatas
         type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
                     | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
                     
-        type Interval = | Unisson | MinorSecond | MajorSecond | MinorThird
+        type Interval = | Unisson | MinorSecond | MajorSecond | AugmentedSecond | MinorThird
                         | MajorThird | PerfectForth | AugmentedForth | DiminishedFifth
                         | PerfectFifth | AugmentedFifth | MinorSixth | MajorSixth
                         | MinorSeventh | MajorSeventh | PerfectOctave
@@ -45,6 +45,7 @@ namespace Music.FSharpKatas
             match interval with
             | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
             | MajorSecond -> "MajorSecond" 
+            | AugmentedSecond -> "AugmentedSecond"
             | MinorThird -> "MinorThird"
             | MajorThird -> "MajorThird" 
             | PerfectForth -> "PerfectForth"
@@ -60,7 +61,7 @@ namespace Music.FSharpKatas
         
         let distance interval =
             match interval with
-            | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2
+            | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2 | AugmentedSecond -> 3
             | MinorThird -> 3 | MajorThird -> 4 | PerfectForth -> 5
             | AugmentedForth -> 6
             | DiminishedFifth -> 6 | PerfectFifth -> 7 | AugmentedFifth -> 8
@@ -98,7 +99,7 @@ namespace Music.FSharpKatas
             match interval with
             | Unisson -> note 
             
-            | MajorSecond | PerfectFifth | MajorThird | PerfectForth
+            | MajorSecond | AugmentedSecond | PerfectFifth | MajorThird | PerfectForth
             | AugmentedFifth | MajorSixth | PerfectOctave | AugmentedForth -> sharp note
             
             | MinorSecond | DiminishedFifth | MinorThird
@@ -112,7 +113,7 @@ namespace Music.FSharpKatas
                 let newNote = transposeStep note transposingInterval
                 let newInterval = intervalBetween noteToTranspose newNote
                 
-                if newInterval = transposingInterval then
+                if distance newInterval = distance transposingInterval then
                     newNote
                 else
                     loop newNote newInterval
@@ -144,12 +145,12 @@ namespace Music.FSharpKatas
             | HarmonicMinor -> [Unisson; MajorSecond; MinorThird; PerfectForth; PerfectFifth; MinorSixth; MajorSeventh]
             | MelodicMinor -> [Unisson; MajorSecond; MinorThird; PerfectForth; PerfectFifth; MajorSixth; MajorSeventh]
             | Dorianb2 -> [Unisson; MinorSecond; MinorThird; PerfectForth; PerfectFifth; MajorSixth; MinorSeventh]
-            | LydianAugmented -> [Unisson; MajorSecond; MajorThird; DiminishedFifth; AugmentedFifth; MajorSixth; MajorSeventh]
-            | LydianDominant -> [Unisson; MajorSecond; MajorThird; DiminishedFifth; PerfectFifth; MajorSixth; MinorSeventh]
+            | LydianAugmented -> [Unisson; MajorSecond; MajorThird; AugmentedForth; AugmentedFifth; MajorSixth; MajorSeventh]
+            | LydianDominant -> [Unisson; MajorSecond; MajorThird; AugmentedForth; PerfectFifth; MajorSixth; MinorSeventh]
             | Mixolydianb6 -> [Unisson; MajorSecond; MajorThird; PerfectForth; PerfectFifth; MinorSixth; MinorSeventh]
             | LocrianSharp2 -> [Unisson; MajorSecond; MinorThird; PerfectForth; DiminishedFifth; MinorSixth; MinorSeventh]
-            | AlteredDominant -> [Unisson; MinorSecond; MinorThird; MajorThird; DiminishedFifth;  AugmentedFifth; MinorSeventh]
-            | HalfWholeDiminished -> [Unisson; MinorSecond; MinorThird; MajorThird; DiminishedFifth;  PerfectFifth; MajorSixth; MinorSeventh]
+            | AlteredDominant -> [Unisson; MinorSecond; AugmentedSecond; MajorThird; DiminishedFifth;  AugmentedFifth; MinorSeventh]
+            | HalfWholeDiminished -> [Unisson; MinorSecond; MinorThird; MajorThird; AugmentedForth;  PerfectFifth; MajorSixth; MinorSeventh]
             | WholeTone -> [Unisson; MajorSecond; MajorThird; DiminishedFifth; AugmentedFifth; MinorSeventh]
 
         type Scale = 
@@ -543,7 +544,8 @@ namespace Music.FSharpKatas
             test <@ notes GMinor = [ G; A; BFlat; C; D; EFlat; F ] @>
             test <@ notes DMinor = [ D; E; F; G; A; BFlat; C ] @>
 
-            (*
+        [<Test>]
+        let ``Should have notes for other scales``() =
             test <@ createScale Ionian C = [ C; D; E; F; G; A; B ] @>
             test <@ createScale Dorian C = [ C; D; EFlat; F; G; A; BFlat ] @>
             test <@ createScale Phrygian C = [ C; DFlat; EFlat; F; G; AFlat; BFlat ] @>
@@ -562,9 +564,8 @@ namespace Music.FSharpKatas
             test <@ createScale Mixolydianb6 C = [ C; D; E; F; G; AFlat; BFlat ] @>
             test <@ createScale LocrianSharp2 C = [ C; D; EFlat; F; GFlat; AFlat; BFlat ] @>
             test <@ createScale AlteredDominant C = [ C; DFlat; DSharp; E; GFlat; GSharp; BFlat ] @>
-            test <@ createScale HalfWholeDiminished C = [ C; DFlat; DSharp; E; FSharp; G; A; BFlat ] @>
+            test <@ createScale HalfWholeDiminished C = [ C; DFlat; EFlat; E; FSharp; G; A; BFlat ] @>
             test <@ createScale WholeTone C = [ C; D; E; GFlat; GSharp; BFlat ] @>
-            *)
             
     module ChordsTests =
         open NUnit.Framework
