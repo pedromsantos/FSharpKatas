@@ -38,8 +38,8 @@ namespace Music.FSharpKatas
             | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
             | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
             | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
-            | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10
-            | B -> 11
+            | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10 
+            | B -> 11 
                              
         let intervalName interval =
             match interval with
@@ -59,40 +59,35 @@ namespace Music.FSharpKatas
             | MajorSeventh -> "MajorSeventh" 
             | PerfectOctave -> "PerfectOctave"
         
-        let distance interval =
+        let toDistance interval =
             match interval with
             | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2 | AugmentedSecond -> 3
             | MinorThird -> 3 | MajorThird -> 4 | PerfectForth -> 5
-            | AugmentedForth -> 6
-            | DiminishedFifth -> 6 | PerfectFifth -> 7 | AugmentedFifth -> 8
-            | MinorSixth -> 8
-            | MajorSixth -> 9 | MinorSeventh -> 10 | MajorSeventh -> 11
-            | PerfectOctave -> 12
+            | AugmentedForth -> 6| DiminishedFifth -> 6 | PerfectFifth -> 7 
+            | AugmentedFifth -> 8 | MinorSixth -> 8| MajorSixth -> 9 
+            | MinorSeventh -> 10 | MajorSeventh -> 11 | PerfectOctave -> 12
             
         let fromDistance distance =
-                match distance with
-                | 0 -> Unisson
-                | 1 -> MinorSecond
-                | 2 -> MajorSecond
-                | 3 -> MinorThird
-                | 4 -> MajorThird
-                | 5 -> PerfectForth
-                | 6 -> DiminishedFifth
-                | 7 -> PerfectFifth
-                | 8 -> AugmentedFifth
-                | 9 -> MajorSixth
-                | 10 -> MinorSeventh
-                | 11 -> MajorSeventh
-                | 12 -> PerfectOctave
-                | _ -> Unisson
+            match distance with
+            | 0 -> Unisson
+            | 1 -> MinorSecond
+            | 2 -> MajorSecond
+            | 3 -> MinorThird
+            | 4 -> MajorThird
+            | 5 -> PerfectForth
+            | 6 -> DiminishedFifth
+            | 7 -> PerfectFifth
+            | 8 -> AugmentedFifth
+            | 9 -> MajorSixth
+            | 10 -> MinorSeventh
+            | 11 -> MajorSeventh
+            | 12 -> PerfectOctave
+            | _ -> Unisson
         
         let measureAbsoluteSemitones note other =
-            let octave = 12
-            let unisson = 0
-
             let distance = (pitch other) - (pitch note)
-            if distance < unisson 
-            then octave - distance * -1 
+            if distance < (toDistance Unisson) 
+            then (toDistance PerfectOctave) - distance * -1 
             else distance    
                 
         let transposeStep note interval =
@@ -113,7 +108,7 @@ namespace Music.FSharpKatas
                 let newNote = transposeStep note transposingInterval
                 let newInterval = intervalBetween noteToTranspose newNote
                 
-                if distance newInterval = distance transposingInterval then
+                if toDistance newInterval = toDistance transposingInterval then
                     newNote
                 else
                     loop newNote newInterval
@@ -312,7 +307,7 @@ namespace Music.FSharpKatas
             let root = noteForFunction chord Root
             chord.notes
             |> List.map (fun n -> intervalBetween root (fst n))
-            |> List.sortBy(fun i -> distance i)
+            |> List.sortBy(fun i -> toDistance i)
             |> List.skip 1
             
         let name chord =
