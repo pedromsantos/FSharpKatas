@@ -294,19 +294,25 @@ namespace Music.FSharpKatas
             | Sus4 -> "Sus4" | Sus4Diminished -> "SusDim" 
             | Sus4Augmented -> "Sus4Aug"
 
+        let note chordNote =
+            fst chordNote
+
+        let noteFunction chordNote =
+            snd chordNote
+
         let noteForFunction chord chordNoteFunction =
-            fst (chord.notes |> List.find (fun n -> snd n = chordNoteFunction))
+            note (chord.notes |> List.find (fun n -> noteFunction n = chordNoteFunction))
         
         let bass chord =
-            fst (chord.notes |> List.head)
+            note (chord.notes |> List.head)
         
         let lead chord =
-            fst (chord.notes |> List.last)
+            note (chord.notes |> List.last)
         
         let intervalsForChord chord =
             let root = noteForFunction chord Root
             chord.notes
-            |> List.map (fun n -> intervalBetween root (fst n))
+            |> List.map (fun n -> intervalBetween root (note n))
             |> List.sortBy(fun i -> toDistance i)
             |> List.skip 1
             
@@ -315,20 +321,33 @@ namespace Music.FSharpKatas
             + abrevitedName (functionForIntervals(intervalsForChord chord))
             
         let noteNames chord =
-            chord.notes |> List.map (fun n -> noteName (fst n))
+            chord.notes |> List.map (fun n -> noteName (note n))
             
         let chordFromRootAndFunction root chordFunction =
             {notes=
                 [(root, Root)]@
                 (intervalsForFunction chordFunction
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
-             chordType=Closed}
+             chordType = Closed}
 
         let private rotate list rotation =
             (list |> List.skip rotation) @ (list |> List.take rotation)
 
         let private rotateByOne list =
             rotate list 1
+
+        let invertOpenOrClosed chord =
+            {notes= rotateByOne chord.notes; chordType=chord.chordType}
+
+        let invertDrop2 chord = 
+            {
+                notes= [chord.notes |> List.last] 
+                    @ chord.notes 
+                        |> List.take (chord.notes.Length - 1) 
+                        |> rotateByOne 
+                        |> rotateByOne; 
+                chordType=chord.chordType
+             }
 
         let private swapFirstTwo list = 
             match list with
@@ -339,12 +358,14 @@ namespace Music.FSharpKatas
         let private swapSecondTwo list = 
             (list |> List.take 1) @ (swapFirstTwo (list |> List.skip 1))
 
+        let invertDrop3 chord =
+            {notes= chord.notes |> rotateByOne |> rotateByOne |> swapSecondTwo; chordType=chord.chordType}
+
         let invert chord =
-            let numberOfNotesInChord = chord.notes.Length - 1
             match chord.chordType with
-            | Closed | Open -> {notes= rotateByOne chord.notes; chordType=chord.chordType}
-            | Drop2 -> {notes= ([chord.notes |> List.last] @ (chord.notes |> List.take numberOfNotesInChord |> rotateByOne |> rotateByOne)); chordType=chord.chordType}
-            | Drop3 -> {notes= chord.notes |> rotateByOne |> rotateByOne |> swapSecondTwo ; chordType=chord.chordType}
+            | Closed | Open -> invertOpenOrClosed chord
+            | Drop2 -> invertDrop2 chord
+            | Drop3 -> invertDrop3 chord
 
         let toDrop2 chord =
             {notes= chord.notes |> swapFirstTwo |> rotateByOne; chordType=Drop2}
