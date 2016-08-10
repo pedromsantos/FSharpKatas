@@ -342,10 +342,10 @@ namespace Music.FSharpKatas
         let invertDrop2 chord = 
             {
                 notes= [chord.notes |> List.last] 
-                    @ chord.notes 
+                    @ (chord.notes 
                         |> List.take (chord.notes.Length - 1) 
                         |> rotateByOne 
-                        |> rotateByOne; 
+                        |> rotateByOne) 
                 chordType=chord.chordType
              }
 
