@@ -185,13 +185,13 @@ namespace Music.FSharpKatas
             @ (fifths
             |> List.rev
             |> List.take(-scaleAccidents)
-            |> List.map( fun n -> flat n))
+            |> List.map flat)
         
         let sharpedNotesScale fifths scaleAccidents =
             ((fifths |> List.skip scaleAccidents) )
             @ (fifths
             |> List.take(scaleAccidents)
-            |> List.map( fun n -> sharp n))
+            |> List.map sharp)
         
         let rawNotes scale = 
             let fifths = [F; C; G; D; A; E; B;]
@@ -207,11 +207,11 @@ namespace Music.FSharpKatas
 
         let notes scale = 
             (rawNotes scale
-            |> List.sortBy (fun n -> pitch n)
+            |> List.sortBy pitch
             |> List.skipWhile (fun n -> n <> root scale))
             @
             (rawNotes scale
-            |> List.sortBy (fun n -> pitch n)
+            |> List.sortBy pitch
             |> List.takeWhile (fun n -> n <> root scale))
 
         let createScale scale root = 
@@ -313,7 +313,7 @@ namespace Music.FSharpKatas
             let root = noteForFunction chord Root
             chord.notes
             |> List.map (fun n -> intervalBetween root (note n))
-            |> List.sortBy(fun i -> toDistance i)
+            |> List.sortBy toDistance
             |> List.skip 1
             
         let name chord =
@@ -372,7 +372,44 @@ namespace Music.FSharpKatas
 
         let toDrop3 chord =
             {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}
-                        
+
+    module ScaleHarmonizer =
+        open Chords
+        open Scales
+        open Notes
+        
+        type ScaleDgrees = | I = 0 | II = 1 | III = 2 | IV = 3 | V = 4 | VI = 5 | VII = 6
+
+        let circularSequenceFromList (lst:'a list) = 
+            let rec next () = 
+                seq {
+                    for element in lst do
+                        yield element
+                    yield! next()
+                }
+            next()
+
+        let thirds (fromPosition:ScaleDgrees) (scale:Note list) =
+            scale 
+            |> circularSequenceFromList
+            |> Seq.skip (int fromPosition)
+            |> Seq.take 7 
+            |> Seq.mapi (fun i v -> i, v)
+            |> Seq.filter (fun (i, v) -> i % 2 = 0)
+            |> Seq.map snd
+            |> Seq.toList
+
+        let triadsHarmonizer forDegree scale =
+            let thirdsList = 
+                scale
+                |> thirds forDegree
+                |> List.take 3
+            
+            {notes= [(thirdsList.[0], Root); 
+                     (thirdsList.[1] , Third); 
+                     (thirdsList.[2], Fifth)]; 
+             chordType = Closed}
+
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -528,6 +565,7 @@ namespace Music.FSharpKatas
      module ScalesTests =
         open NUnit.Framework
         open Swensen.Unquote
+        open ScaleHarmonizer
         open Scales
         open Notes
 
@@ -581,8 +619,8 @@ namespace Music.FSharpKatas
             test <@ createScale LocrianSharp2 C = [ C; D; EFlat; F; GFlat; AFlat; BFlat ] @>
             test <@ createScale AlteredDominant C = [ C; DFlat; DSharp; E; GFlat; GSharp; BFlat ] @>
             test <@ createScale HalfWholeDiminished C = [ C; DFlat; EFlat; E; FSharp; G; A; BFlat ] @>
-            test <@ createScale WholeTone C = [ C; D; E; GFlat; GSharp; BFlat ] @>
-            
+            test <@ createScale WholeTone C = [ C; D; E; GFlat; GSharp; BFlat ] @> 
+
     module ChordsTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -699,3 +737,57 @@ namespace Music.FSharpKatas
             test <@ (cMaj7 |> toDrop3 |> invert |> invert).notes = [(G, Fifth); (E, Third); (B, Seventh); (C, Root);]  @>
             test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert).notes = [(B, Seventh); (G, Fifth); (C, Root); (E, Third);]  @>
             test <@ (cMaj7 |> toDrop3 |> invert |> invert |> invert |> invert).notes = [(C, Root); (B, Seventh); (E, Third); (G, Fifth)]  @>
+
+    module ScalesHormonizerTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open ScaleHarmonizer
+        open Scales
+        open Chords
+        open Notes
+        
+        let cMaj = {notes= [(C, Root); (E, Third); (G, Fifth)]; chordType=Closed}
+        let cMin = {notes= [(C, Root); (EFlat, Third); (G, Fifth)]; chordType=Closed}
+        let dMin = {notes= [(D, Root); (F, Third); (A, Fifth)]; chordType=Closed}
+        let dDim = {notes= [(D, Root); (F, Third); (AFlat, Fifth)]; chordType=Closed}
+        let eMin = {notes= [(E, Root); (G, Third); (B, Fifth)]; chordType=Closed}
+        let eFlatAug = {notes= [(EFlat, Root); (G, Third); (B, Fifth)]; chordType=Closed}
+        let fMaj = {notes= [(F, Root); (A, Third); (C, Fifth)]; chordType=Closed}
+        let fMin = {notes= [(F, Root); (AFlat, Third); (C, Fifth)]; chordType=Closed}
+        let gMaj = {notes= [(G, Root); (B, Third); (D, Fifth)]; chordType=Closed}
+        let aFlatMaj = {notes= [(AFlat, Root); (C, Third); (EFlat, Fifth)]; chordType=Closed}
+        let aMin = {notes= [(A, Root); (C, Third); (E, Fifth)]; chordType=Closed}
+        let bDim = {notes= [(B, Root); (D, Third); (F, Fifth)]; chordType=Closed}
+
+        [<Test>]
+        let ``Should filter scale in thirds`` () =
+            let cIonian = createScale Ionian C
+            test <@ thirds ScaleDgrees.I cIonian  = [ C; E; G; B ] @>
+            test <@ thirds ScaleDgrees.II cIonian  = [ D; F; A; C ] @>
+            test <@ thirds ScaleDgrees.III cIonian  = [ E; G; B; D ] @>
+            test <@ thirds ScaleDgrees.IV cIonian  = [ F; A; C; E ] @>
+            test <@ thirds ScaleDgrees.V cIonian  = [ G; B; D; F ] @>
+            test <@ thirds ScaleDgrees.VI cIonian  = [ A; C; E; G ] @>
+            test <@ thirds ScaleDgrees.VII cIonian  = [ B; D; F; A ] @>
+
+        [<Test>]
+        let ``Should create chords for Ionian scale`` () =
+            let cIonian = createScale Ionian C
+            test <@ triadsHarmonizer ScaleDgrees.I cIonian = cMaj @>
+            test <@ triadsHarmonizer ScaleDgrees.II cIonian = dMin @>
+            test <@ triadsHarmonizer ScaleDgrees.III cIonian = eMin @>
+            test <@ triadsHarmonizer ScaleDgrees.IV cIonian = fMaj @>
+            test <@ triadsHarmonizer ScaleDgrees.V cIonian = gMaj @>
+            test <@ triadsHarmonizer ScaleDgrees.VI cIonian = aMin @>
+            test <@ triadsHarmonizer ScaleDgrees.VII cIonian = bDim @>
+
+        [<Test>]
+        let ``Should create chords for Harmonic Minor scale`` () =
+            let cMinor = createScale HarmonicMinor C
+            test <@ triadsHarmonizer ScaleDgrees.I cMinor = cMin @>
+            test <@ triadsHarmonizer ScaleDgrees.II cMinor = dDim @>
+            test <@ triadsHarmonizer ScaleDgrees.III cMinor = eFlatAug @>
+            test <@ triadsHarmonizer ScaleDgrees.IV cMinor = fMin @>
+            test <@ triadsHarmonizer ScaleDgrees.V cMinor = gMaj @>
+            test <@ triadsHarmonizer ScaleDgrees.VI cMinor = aFlatMaj @>
+            test <@ triadsHarmonizer ScaleDgrees.VII cMinor = bDim @>
