@@ -410,6 +410,18 @@ namespace Music.FSharpKatas
                      (thirdsList.[2], Fifth)]; 
              chordType = Closed}
 
+        let seventhsHarmonizer forDegree scale =
+            let thirdsList = 
+                scale
+                |> thirds forDegree
+                |> List.take 4
+            
+            {notes= [(thirdsList.[0], Root); 
+                     (thirdsList.[1] , Third); 
+                     (thirdsList.[2], Fifth); 
+                     (thirdsList.[3], Seventh)]; 
+             chordType = Closed}
+
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -747,17 +759,33 @@ namespace Music.FSharpKatas
         open Notes
         
         let cMaj = {notes= [(C, Root); (E, Third); (G, Fifth)]; chordType=Closed}
-        let cMin = {notes= [(C, Root); (EFlat, Third); (G, Fifth)]; chordType=Closed}
         let dMin = {notes= [(D, Root); (F, Third); (A, Fifth)]; chordType=Closed}
-        let dDim = {notes= [(D, Root); (F, Third); (AFlat, Fifth)]; chordType=Closed}
         let eMin = {notes= [(E, Root); (G, Third); (B, Fifth)]; chordType=Closed}
-        let eFlatAug = {notes= [(EFlat, Root); (G, Third); (B, Fifth)]; chordType=Closed}
         let fMaj = {notes= [(F, Root); (A, Third); (C, Fifth)]; chordType=Closed}
-        let fMin = {notes= [(F, Root); (AFlat, Third); (C, Fifth)]; chordType=Closed}
         let gMaj = {notes= [(G, Root); (B, Third); (D, Fifth)]; chordType=Closed}
-        let aFlatMaj = {notes= [(AFlat, Root); (C, Third); (EFlat, Fifth)]; chordType=Closed}
         let aMin = {notes= [(A, Root); (C, Third); (E, Fifth)]; chordType=Closed}
         let bDim = {notes= [(B, Root); (D, Third); (F, Fifth)]; chordType=Closed}
+
+        let cMin = {notes= [(C, Root); (EFlat, Third); (G, Fifth)]; chordType=Closed}
+        let dDim = {notes= [(D, Root); (F, Third); (AFlat, Fifth)]; chordType=Closed}
+        let eFlatAug = {notes= [(EFlat, Root); (G, Third); (B, Fifth)]; chordType=Closed}
+        let fMin = {notes= [(F, Root); (AFlat, Third); (C, Fifth)]; chordType=Closed}
+        let aFlatMaj = {notes= [(AFlat, Root); (C, Third); (EFlat, Fifth)]; chordType=Closed}
+
+        let cMaj7 = {notes= [(C, Root); (E, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}
+        let dMin7 = {notes= [(D, Root); (F, Third); (A, Fifth); (C, Seventh)]; chordType=Closed}
+        let eMin7 = {notes= [(E, Root); (G, Third); (B, Fifth); (D, Seventh)]; chordType=Closed}
+        let fMaj7 = {notes= [(F, Root); (A, Third); (C, Fifth); (E, Seventh)]; chordType=Closed}
+        let gDom7 = {notes= [(G, Root); (B, Third); (D, Fifth); (F, Seventh)]; chordType=Closed}
+        let aMin7 = {notes= [(A, Root); (C, Third); (E, Fifth); (G, Seventh)]; chordType=Closed}
+        let bMin7b5 = {notes= [(B, Root); (D, Third); (F, Fifth); (A, Seventh)]; chordType=Closed}
+
+        let cMinMaj7 = {notes= [(C, Root); (EFlat, Third); (G, Fifth); (B, Seventh)]; chordType=Closed}
+        let dMin7b5 = {notes= [(D, Root); (F, Third); (AFlat, Fifth); (C, Seventh)]; chordType=Closed}
+        let eFlatAug7 = {notes= [(EFlat, Root); (G, Third); (B, Fifth); (D, Seventh)]; chordType=Closed}
+        let fMin7 = {notes= [(F, Root); (AFlat, Third); (C, Fifth); (EFlat, Seventh)]; chordType=Closed}
+        let aFlatMaj7 = {notes= [(AFlat, Root); (C, Third); (EFlat, Fifth); (G, Seventh)]; chordType=Closed}
+        let bDim7 = {notes= [(B, Root); (D, Third); (F, Fifth); (AFlat, Seventh)]; chordType=Closed}
 
         [<Test>]
         let ``Should filter scale in thirds`` () =
@@ -771,7 +799,7 @@ namespace Music.FSharpKatas
             test <@ thirds ScaleDgrees.VII cIonian  = [ B; D; F; A ] @>
 
         [<Test>]
-        let ``Should create chords for Ionian scale`` () =
+        let ``Should create triads for Ionian scale`` () =
             let cIonian = createScale Ionian C
             test <@ triadsHarmonizer ScaleDgrees.I cIonian = cMaj @>
             test <@ triadsHarmonizer ScaleDgrees.II cIonian = dMin @>
@@ -782,7 +810,7 @@ namespace Music.FSharpKatas
             test <@ triadsHarmonizer ScaleDgrees.VII cIonian = bDim @>
 
         [<Test>]
-        let ``Should create chords for Harmonic Minor scale`` () =
+        let ``Should create triads for Harmonic Minor scale`` () =
             let cMinor = createScale HarmonicMinor C
             test <@ triadsHarmonizer ScaleDgrees.I cMinor = cMin @>
             test <@ triadsHarmonizer ScaleDgrees.II cMinor = dDim @>
@@ -791,3 +819,25 @@ namespace Music.FSharpKatas
             test <@ triadsHarmonizer ScaleDgrees.V cMinor = gMaj @>
             test <@ triadsHarmonizer ScaleDgrees.VI cMinor = aFlatMaj @>
             test <@ triadsHarmonizer ScaleDgrees.VII cMinor = bDim @>
+
+        [<Test>]
+        let ``Should create seventh chords for Ionian scale`` () =
+            let cIonian = createScale Ionian C
+            test <@ seventhsHarmonizer ScaleDgrees.I cIonian = cMaj7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.II cIonian = dMin7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.III cIonian = eMin7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.IV cIonian = fMaj7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.V cIonian = gDom7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.VI cIonian = aMin7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.VII cIonian = bMin7b5 @>
+
+        [<Test>]
+        let ``Should create seventh chords for Harmonic Minor scale`` () =
+            let cMinor = createScale HarmonicMinor C
+            test <@ seventhsHarmonizer ScaleDgrees.I cMinor = cMinMaj7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.II cMinor = dMin7b5 @>
+            test <@ seventhsHarmonizer ScaleDgrees.III cMinor = eFlatAug7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.IV cMinor = fMin7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.V cMinor = gDom7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.VI cMinor = aFlatMaj7 @>
+            test <@ seventhsHarmonizer ScaleDgrees.VII cMinor = bDim7 @>
