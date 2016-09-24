@@ -36,38 +36,40 @@ namespace Music.FSharpKatas
                         | MajorThird | PerfectForth | AugmentedForth | DiminishedFifth
                         | PerfectFifth | AugmentedFifth | MinorSixth | MajorSixth
                         | MinorSeventh | MajorSeventh | PerfectOctave
-                    
-        let noteName note =
+        
+        type NoteAttributes = {Name:string; Sharp:Note; Flat:Note; Pitch:int}
+
+        let private noteAttributes note =
             match note with
-            | C -> "C" | CSharp -> "C#" | DFlat -> "Db" | D -> "D"
-            | DSharp -> "D#" | EFlat -> "Eb" | E -> "E" | F ->  "F"
-            | FSharp -> "F#" | GFlat -> "Gb" | G -> "G" | GSharp -> "G#"
-            | AFlat -> "Ab" | A -> "A" | ASharp -> "A#" | BFlat -> "Bb"
-            | B -> "B"
+            | C -> {Name="C"; Sharp=CSharp; Flat=B; Pitch=0}
+            | CSharp -> {Name="C#"; Sharp=D; Flat=C; Pitch=1}
+            | DFlat -> {Name="Db"; Sharp=D; Flat=C; Pitch=1}
+            | D -> {Name="D"; Sharp=DSharp; Flat=DFlat; Pitch=2}
+            | DSharp -> {Name="D#"; Sharp=E; Flat=D; Pitch=3}
+            | EFlat -> {Name="Eb"; Sharp=E; Flat=D; Pitch=3}
+            | E -> {Name="E"; Sharp=F; Flat=EFlat; Pitch=4}
+            | F -> {Name="F"; Sharp=FSharp; Flat=E; Pitch=5}
+            | FSharp -> {Name="F#"; Sharp=G; Flat=F; Pitch=6}
+            | GFlat -> {Name="Gb"; Sharp=G; Flat=F; Pitch=6}
+            | G -> {Name="G"; Sharp=GSharp; Flat=GFlat; Pitch=7}
+            | GSharp -> {Name="G#"; Sharp=A; Flat=G; Pitch=8}
+            | AFlat -> {Name="Ab"; Sharp=A; Flat=G; Pitch=8}
+            | A -> {Name="A"; Sharp=ASharp; Flat=AFlat; Pitch=9}
+            | ASharp -> {Name="A#"; Sharp=B; Flat=A; Pitch=10}
+            | BFlat -> {Name="Bb"; Sharp=B; Flat=A; Pitch=10}
+            | B -> {Name="B"; Sharp=C; Flat=BFlat; Pitch=11}
+
+        let noteName note =
+            (noteAttributes note).Name
                 
         let sharp note =
-            match note with
-            | C -> CSharp | CSharp -> D | DFlat -> D | D -> DSharp
-            | DSharp -> E | EFlat -> E | E -> F | F -> FSharp 
-            | FSharp -> G | GFlat -> G | G -> GSharp | GSharp -> A 
-            | AFlat -> A | A -> ASharp | ASharp -> B | BFlat -> B 
-            | B -> C
-            
+            (noteAttributes note).Sharp
+
         let flat note =
-            match note with
-            | C -> B | CSharp -> C | DFlat -> C | D -> DFlat
-            | DSharp -> D | EFlat -> D | E -> EFlat | F -> E
-            | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
-            | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
-            | B -> BFlat
+            (noteAttributes note).Flat
             
         let pitch note =
-            match note with
-            | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
-            | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
-            | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
-            | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10 
-            | B -> 11 
+            (noteAttributes note).Pitch
                              
         let intervalName interval =
             match interval with
