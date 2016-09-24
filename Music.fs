@@ -406,17 +406,6 @@ namespace Music.FSharpKatas
             |> Seq.map snd
             |> Seq.toList
 
-        let triadsHarmonizer forDegree scale =
-            let thirdsList = 
-                scale
-                |> thirds forDegree
-                |> List.take 3
-            
-            {notes= [(thirdsList.[0], Root); 
-                     (thirdsList.[1] , Third); 
-                     (thirdsList.[2], Fifth)]; 
-             chordType = Closed}
-
         let seventhsHarmonizer forDegree scale =
             let thirdsList = 
                 scale
@@ -428,6 +417,10 @@ namespace Music.FSharpKatas
                      (thirdsList.[2], Fifth); 
                      (thirdsList.[3], Seventh)]; 
              chordType = Closed}
+
+        let triadsHarmonizer forDegree scale =
+            let seventh = seventhsHarmonizer forDegree scale
+            {seventh with notes = seventh.notes |> List.take 3}
 
     module InfrastructureTests =
         open NUnit.Framework
