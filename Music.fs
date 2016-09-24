@@ -614,16 +614,14 @@ namespace Music.FSharpKatas
             test <@ fromDistance 11 = MajorSeventh @>
             test <@ fromDistance 12 = PerfectOctave @>
 
-     module ScalesTests =
+     module KeyTests =
         open NUnit.Framework
         open Swensen.Unquote
-        open ScaleHarmonizer
-        open Scales
         open Notes
         open Keys
 
         [<Test>]
-        let ``Should have notes for scale``() =
+        let ``Should have notes for key``() =
             test <@ notes CMajor = [ C; D; E; F; G; A; B ] @>
             test <@ notes GMajor = [ G; A; B; C; D; E; FSharp ] @>
             test <@ notes DMajor = [ D; E; FSharp; G; A; B; CSharp ] @>
@@ -650,6 +648,12 @@ namespace Music.FSharpKatas
             test <@ notes CMinor = [ C; D; EFlat; F; G; AFlat; BFlat ] @>
             test <@ notes GMinor = [ G; A; BFlat; C; D; EFlat; F ] @>
             test <@ notes DMinor = [ D; E; F; G; A; BFlat; C ] @>
+
+    module ScaleTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Notes
+        open Scales
 
         [<Test>]
         let ``Should have notes for other scales``() =
