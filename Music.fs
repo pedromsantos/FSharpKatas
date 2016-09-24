@@ -72,19 +72,13 @@ namespace Music.FSharpKatas
         let intervalName interval =
             match interval with
             | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
-            | MajorSecond -> "MajorSecond" 
-            | AugmentedSecond -> "AugmentedSecond"
-            | MinorThird -> "MinorThird"
-            | MajorThird -> "MajorThird" 
-            | PerfectForth -> "PerfectForth"
-            | AugmentedForth -> "AugmentedForth"
-            | DiminishedFifth -> "DiminishedFifth" 
-            | PerfectFifth -> "PerfectFifth"
+            | MajorSecond -> "MajorSecond" | AugmentedSecond -> "AugmentedSecond"
+            | MinorThird -> "MinorThird" | MajorThird -> "MajorThird" 
+            | PerfectForth -> "PerfectForth" | AugmentedForth -> "AugmentedForth"
+            | DiminishedFifth -> "DiminishedFifth" | PerfectFifth -> "PerfectFifth"
             | AugmentedFifth -> "AugmentedFifth" 
-            | MinorSixth -> "MinorSixth" 
-            | MajorSixth -> "MajorSixth" 
-            | MinorSeventh -> "MinorSeventh"
-            | MajorSeventh -> "MajorSeventh" 
+            | MinorSixth -> "MinorSixth" | MajorSixth -> "MajorSixth" 
+            | MinorSeventh -> "MinorSeventh" | MajorSeventh -> "MajorSeventh" 
             | PerfectOctave -> "PerfectOctave"
         
         let toDistance interval =
@@ -188,18 +182,6 @@ namespace Music.FSharpKatas
             | EMinor | FMinor | FSharpMinor | GMinor 
             | GSharpMinor | EFlatMinor
 
-        let accidentals key =
-            match key with
-            | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
-            | BFlatMajor -> -2 | CMajor -> 0
-            | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
-            | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
-            | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
-            | BMinor -> 2 | BFlatMinor -> -5 | CMinor -> -3 
-            | CSharpMinor -> 4 | DMinor -> -1 | EMinor -> 1
-            | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
-            | GSharpMinor -> 5 | EFlatMinor -> -6
-        
         let root key =
             match key with
             | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
@@ -212,30 +194,42 @@ namespace Music.FSharpKatas
             | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
             | GSharpMinor -> GSharp | EFlatMinor -> EFlat
         
-        let private flatedKey fifths scaleAccidents =
-            (fifths |> List.rev |> List.skip -scaleAccidents) 
+        let private flatedKey fifths keyAccidents =
+            (fifths |> List.rev |> List.skip -keyAccidents) 
             @ (fifths
             |> List.rev
-            |> List.take(-scaleAccidents)
+            |> List.take(-keyAccidents)
             |> List.map flat)
         
-        let private sharpedKey fifths scaleAccidents =
-            ((fifths |> List.skip scaleAccidents) )
+        let private sharpedKey fifths keyAccidents =
+            ((fifths |> List.skip keyAccidents) )
             @ (fifths
-            |> List.take(scaleAccidents)
+            |> List.take(keyAccidents)
             |> List.map sharp)
+        
+        let private accidentals key =
+            match key with
+            | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
+            | BFlatMajor -> -2 | CMajor -> 0
+            | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
+            | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
+            | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
+            | BMinor -> 2 | BFlatMinor -> -5 | CMinor -> -3 
+            | CSharpMinor -> 4 | DMinor -> -1 | EMinor -> 1
+            | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
+            | GSharpMinor -> 5 | EFlatMinor -> -6
         
         let private rawNotes scale = 
             let fifths = [F; C; G; D; A; E; B;]
-            let scaleAccidents = accidentals scale
+            let keyAccidents = accidentals scale
             
-            if scaleAccidents = 0 then
+            if keyAccidents = 0 then
                 fifths
             else 
-                if scaleAccidents < 0 then 
-                    flatedKey fifths scaleAccidents
+                if keyAccidents < 0 then 
+                    flatedKey fifths keyAccidents
                 else
-                    sharpedKey fifths scaleAccidents
+                    sharpedKey fifths keyAccidents
 
         let notes scale = 
             (rawNotes scale
