@@ -396,7 +396,7 @@ namespace Music.FSharpKatas
         
         type ScaleDgrees = | I = 0 | II = 1 | III = 2 | IV = 3 | V = 4 | VI = 5 | VII = 6
 
-        let thirds (fromPosition:ScaleDgrees) (scale:Note list) =
+        let thirds fromPosition scale =
             scale 
             |> circularSequenceFromList
             |> Seq.skip (int fromPosition)
