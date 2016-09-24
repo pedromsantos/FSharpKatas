@@ -1,5 +1,34 @@
 namespace Music.FSharpKatas
 
+    module Infrastructure =
+        let private rotate list rotation =
+            (list |> List.skip rotation) @ (list |> List.take rotation)
+
+        let rotateByOne list =
+            rotate list 1
+
+        let swapFirstTwo list = 
+            match list with
+            | [] -> []
+            | f::s::t -> s::f::t
+            | f -> f
+
+        let swapSecondTwo list = 
+            match list with
+            | [] -> []
+            | f::s::t::r -> f::t::s::r
+            | f::s::t -> f::s::t        
+            | f -> f
+
+        let circularSequenceFromList (lst:'a list) = 
+            let rec next () = 
+                seq {
+                    for element in lst do
+                        yield element
+                    yield! next()
+                }
+            next()
+
     module Notes =
         type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
                     | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
@@ -219,6 +248,7 @@ namespace Music.FSharpKatas
 
     module Chords =
         open Notes
+        open Infrastructure
 
         type ChordFunction = 
             | Major | Augmented | Minor | Diminished
@@ -328,13 +358,7 @@ namespace Music.FSharpKatas
                 [(root, Root)]@
                 (intervalsForFunction chordFunction
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
-             chordType = Closed}
-
-        let private rotate list rotation =
-            (list |> List.skip rotation) @ (list |> List.take rotation)
-
-        let private rotateByOne list =
-            rotate list 1
+             chordType = Closed}      
 
         let invertOpenOrClosed chord =
             {notes= rotateByOne chord.notes; chordType=chord.chordType}
@@ -347,16 +371,7 @@ namespace Music.FSharpKatas
                         |> rotateByOne 
                         |> rotateByOne) 
                 chordType=chord.chordType
-             }
-
-        let private swapFirstTwo list = 
-            match list with
-            | [] -> []
-            | f::s::t -> s::f::t
-            | f -> f
-
-        let private swapSecondTwo list = 
-            (list |> List.take 1) @ (swapFirstTwo (list |> List.skip 1))
+             }     
 
         let invertDrop3 chord =
             {notes= chord.notes |> rotateByOne |> rotateByOne |> swapSecondTwo; chordType=chord.chordType}
@@ -374,20 +389,12 @@ namespace Music.FSharpKatas
             {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}
 
     module ScaleHarmonizer =
+        open Infrastructure
         open Chords
         open Scales
         open Notes
         
         type ScaleDgrees = | I = 0 | II = 1 | III = 2 | IV = 3 | V = 4 | VI = 5 | VII = 6
-
-        let circularSequenceFromList (lst:'a list) = 
-            let rec next () = 
-                seq {
-                    for element in lst do
-                        yield element
-                    yield! next()
-                }
-            next()
 
         let thirds (fromPosition:ScaleDgrees) (scale:Note list) =
             scale 
@@ -422,6 +429,29 @@ namespace Music.FSharpKatas
                      (thirdsList.[3], Seventh)]; 
              chordType = Closed}
 
+    module InfrastructureTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Infrastructure
+
+        [<Test>]
+        let ``Should rotate list``() =
+            test <@ rotateByOne [1; 2; 3] = [2; 3; 1] @>
+
+        [<Test>]
+        let ``Should swap first 2 elements in list``() =
+            test <@ swapFirstTwo [1; 2; 3] = [2; 1; 3] @>
+
+        [<Test>]
+        let ``Should swap second 2 elements in list``() =
+            test <@ swapSecondTwo [1; 2; 3] = [1; 3; 2] @>
+
+        [<Test>]
+        let ``Should create circular sequence from list``() =
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 3 |> Seq.last = 3 @>
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 4 |> Seq.last = 1 @>
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 5 |> Seq.last = 2 @>
+        
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
