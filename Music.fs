@@ -37,7 +37,8 @@ namespace Music.FSharpKatas
                         | PerfectFifth | AugmentedFifth | MinorSixth | MajorSixth
                         | MinorSeventh | MajorSeventh | PerfectOctave
         
-        type NoteAttributes = {Name:string; Sharp:Note; Flat:Note; Pitch:int}
+        type private NoteAttributes = {Name:string; Sharp:Note; Flat:Note; Pitch:int}
+        type private IntervalAttributes = {Name:string; Distance:int}
 
         let private noteAttributes note =
             match note with
@@ -70,26 +71,31 @@ namespace Music.FSharpKatas
             
         let pitch note =
             (noteAttributes note).Pitch
-                             
-        let intervalName interval =
+
+        let private intervalAttributes interval =
             match interval with
-            | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
-            | MajorSecond -> "MajorSecond" | AugmentedSecond -> "AugmentedSecond"
-            | MinorThird -> "MinorThird" | MajorThird -> "MajorThird" 
-            | PerfectForth -> "PerfectForth" | AugmentedForth -> "AugmentedForth"
-            | DiminishedFifth -> "DiminishedFifth" | PerfectFifth -> "PerfectFifth"
-            | AugmentedFifth -> "AugmentedFifth" 
-            | MinorSixth -> "MinorSixth" | MajorSixth -> "MajorSixth" 
-            | MinorSeventh -> "MinorSeventh" | MajorSeventh -> "MajorSeventh" 
-            | PerfectOctave -> "PerfectOctave"
+            | Unisson -> {Name="Unisson"; Distance=0} 
+            | MinorSecond -> {Name="MinorSecond"; Distance=1} 
+            | MajorSecond -> {Name="MajorSecond"; Distance=2} 
+            | AugmentedSecond -> {Name="AugmentedSecond"; Distance=3} 
+            | MinorThird -> {Name="MinorThird"; Distance=3} 
+            | MajorThird -> {Name="MajorThird"; Distance=4} 
+            | PerfectForth -> {Name="PerfectForth"; Distance=5} 
+            | AugmentedForth -> {Name="AugmentedForth"; Distance=6} 
+            | DiminishedFifth -> {Name="DiminishedFifth"; Distance=6} 
+            | PerfectFifth -> {Name="PerfectFifth"; Distance=7} 
+            | AugmentedFifth -> {Name="AugmentedFifth"; Distance=8} 
+            | MinorSixth -> {Name="MinorSixth"; Distance=8} 
+            | MajorSixth -> {Name="MajorSixth"; Distance=9} 
+            | MinorSeventh -> {Name="MinorSeventh"; Distance=10} 
+            | MajorSeventh -> {Name="MajorSeventh"; Distance=11} 
+            | PerfectOctave -> {Name="PerfectOctave"; Distance=12} 
+
+        let intervalName interval =
+            (intervalAttributes interval).Name
         
         let toDistance interval =
-            match interval with
-            | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2 | AugmentedSecond -> 3
-            | MinorThird -> 3 | MajorThird -> 4 | PerfectForth -> 5
-            | AugmentedForth -> 6| DiminishedFifth -> 6 | PerfectFifth -> 7 
-            | AugmentedFifth -> 8 | MinorSixth -> 8| MajorSixth -> 9 
-            | MinorSeventh -> 10 | MajorSeventh -> 11 | PerfectOctave -> 12
+            (intervalAttributes interval).Distance
             
         let fromDistance distance =
             match distance with
@@ -184,17 +190,41 @@ namespace Music.FSharpKatas
             | EMinor | FMinor | FSharpMinor | GMinor 
             | GSharpMinor | EFlatMinor
 
-        let root key =
+        type private KeyAttributes = {Root:Note; Accidentals:int}
+
+        let private keyAttributes key =
             match key with
-            | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
-            | BFlatMajor -> BFlat | CMajor -> C
-            | DMajor -> D | DFlatMajor -> DFlat | EMajor -> E 
-            | EFlatMajor -> EFlat | FMajor -> F | FSharpMajor -> FSharp 
-            | GMajor -> G | GFlatMajor -> GFlat | AMinor -> A
-            | BMinor -> B | BFlatMinor -> BFlat | CMinor -> C 
-            | CSharpMinor -> CSharp | DMinor -> D | EMinor -> E
-            | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
-            | GSharpMinor -> GSharp | EFlatMinor -> EFlat
+            | AMajor -> {Root=A; Accidentals=3} 
+            | AFlatMajor -> {Root=AFlat; Accidentals=(-4)} 
+            | BMajor -> {Root=B; Accidentals=5} 
+            | BFlatMajor -> {Root=BFlat; Accidentals=(-2)} 
+            | CMajor -> {Root=C; Accidentals=0} 
+            | DMajor -> {Root=D; Accidentals=2} 
+            | DFlatMajor -> {Root=DFlat; Accidentals=(-5)} 
+            | EMajor -> {Root=E; Accidentals=4} 
+            | EFlatMajor -> {Root=EFlat; Accidentals=(-3)} 
+            | FMajor -> {Root=F; Accidentals=(-1)} 
+            | FSharpMajor -> {Root=FSharp; Accidentals=6} 
+            | GMajor -> {Root=G; Accidentals=1} 
+            | GFlatMajor -> {Root=GFlat; Accidentals=(-6)} 
+            | AMinor -> {Root=A; Accidentals=0} 
+            | BMinor -> {Root=B; Accidentals=2} 
+            | BFlatMinor -> {Root=BFlat; Accidentals=(-5)} 
+            | CMinor -> {Root=C; Accidentals=(-3)} 
+            | CSharpMinor -> {Root=CSharp; Accidentals=4} 
+            | DMinor -> {Root=D; Accidentals=(-1)} 
+            | EMinor -> {Root=E; Accidentals=1} 
+            | FMinor -> {Root=F; Accidentals=(-4)} 
+            | FSharpMinor -> {Root=FSharp; Accidentals=3} 
+            | GMinor -> {Root=G; Accidentals=(-2)} 
+            | GSharpMinor -> {Root=GSharp; Accidentals=5} 
+            | EFlatMinor -> {Root=EFlat; Accidentals=(-6)} 
+
+        let root key =
+            (keyAttributes key).Root
+
+        let private accidentals key =
+            (keyAttributes key).Accidentals
         
         let private flatedKey fifths keyAccidents =
             (fifths |> List.rev |> List.skip -keyAccidents) 
@@ -208,18 +238,6 @@ namespace Music.FSharpKatas
             @ (fifths
             |> List.take(keyAccidents)
             |> List.map sharp)
-        
-        let private accidentals key =
-            match key with
-            | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
-            | BFlatMajor -> -2 | CMajor -> 0
-            | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
-            | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
-            | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
-            | BMinor -> 2 | BFlatMinor -> -5 | CMinor -> -3 
-            | CSharpMinor -> 4 | DMinor -> -1 | EMinor -> 1
-            | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
-            | GSharpMinor -> 5 | EFlatMinor -> -6
         
         let private rawNotes scale = 
             let fifths = [F; C; G; D; A; E; B;]
