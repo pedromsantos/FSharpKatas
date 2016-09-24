@@ -1,11 +1,10 @@
 namespace Music.FSharpKatas
 
     module Infrastructure =
-        let private rotate list rotation =
-            (list |> List.skip rotation) @ (list |> List.take rotation)
-
         let rotateByOne list =
-            rotate list 1
+            match list with
+            | [] -> []
+            | f::t -> t @ [f]
 
         let swapFirstTwo list = 
             match list with
@@ -119,13 +118,11 @@ namespace Music.FSharpKatas
             then (toDistance PerfectOctave) - distance * -1 
             else distance    
                 
-        let transposeStep note interval =
+        let private transposeDirection note interval =
             match interval with
             | Unisson -> note 
-            
             | MajorSecond | AugmentedSecond | PerfectFifth | MajorThird | PerfectForth
             | AugmentedFifth | MajorSixth | PerfectOctave | AugmentedForth -> sharp note
-            
             | MinorSecond | DiminishedFifth | MinorThird
             | MinorSixth | MinorSeventh | MajorSeventh  -> flat note
             
@@ -134,7 +131,7 @@ namespace Music.FSharpKatas
             
         let transpose noteToTranspose transposingInterval =
             let rec loop note interval =
-                let newNote = transposeStep note transposingInterval
+                let newNote = transposeDirection note transposingInterval
                 let newInterval = intervalBetween noteToTranspose newNote
                 
                 if toDistance newInterval = toDistance transposingInterval then
@@ -176,8 +173,14 @@ namespace Music.FSharpKatas
             | AlteredDominant -> [Unisson; MinorSecond; AugmentedSecond; MajorThird; DiminishedFifth;  AugmentedFifth; MinorSeventh]
             | HalfWholeDiminished -> [Unisson; MinorSecond; MinorThird; MajorThird; AugmentedForth;  PerfectFifth; MajorSixth; MinorSeventh]
             | WholeTone -> [Unisson; MajorSecond; MajorThird; DiminishedFifth; AugmentedFifth; MinorSeventh]
+        
+        let createScale scale root = 
+            formula scale |> List.map (fun interval -> transpose root interval)
 
-        type Scale = 
+    module Keys =
+        open Notes
+
+        type Key = 
             | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
             | DMajor | DFlatMajor | EMajor | EFlatMajor
             | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
@@ -185,8 +188,8 @@ namespace Music.FSharpKatas
             | EMinor | FMinor | FSharpMinor | GMinor 
             | GSharpMinor | EFlatMinor
 
-        let accidentals scale =
-            match scale with
+        let accidentals key =
+            match key with
             | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
             | BFlatMajor -> -2 | CMajor -> 0
             | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
@@ -197,8 +200,8 @@ namespace Music.FSharpKatas
             | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
             | GSharpMinor -> 5 | EFlatMinor -> -6
         
-        let root scale =
-            match scale with
+        let root key =
+            match key with
             | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
             | BFlatMajor -> BFlat | CMajor -> C
             | DMajor -> D | DFlatMajor -> DFlat | EMajor -> E 
@@ -209,20 +212,20 @@ namespace Music.FSharpKatas
             | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
             | GSharpMinor -> GSharp | EFlatMinor -> EFlat
         
-        let flatedNotesScale fifths scaleAccidents =
+        let private flatedKey fifths scaleAccidents =
             (fifths |> List.rev |> List.skip -scaleAccidents) 
             @ (fifths
             |> List.rev
             |> List.take(-scaleAccidents)
             |> List.map flat)
         
-        let sharpedNotesScale fifths scaleAccidents =
+        let private sharpedKey fifths scaleAccidents =
             ((fifths |> List.skip scaleAccidents) )
             @ (fifths
             |> List.take(scaleAccidents)
             |> List.map sharp)
         
-        let rawNotes scale = 
+        let private rawNotes scale = 
             let fifths = [F; C; G; D; A; E; B;]
             let scaleAccidents = accidentals scale
             
@@ -230,9 +233,9 @@ namespace Music.FSharpKatas
                 fifths
             else 
                 if scaleAccidents < 0 then 
-                    flatedNotesScale fifths scaleAccidents
+                    flatedKey fifths scaleAccidents
                 else
-                    sharpedNotesScale fifths scaleAccidents
+                    sharpedKey fifths scaleAccidents
 
         let notes scale = 
             (rawNotes scale
@@ -241,10 +244,7 @@ namespace Music.FSharpKatas
             @
             (rawNotes scale
             |> List.sortBy pitch
-            |> List.takeWhile (fun n -> n <> root scale))
-
-        let createScale scale root = 
-            formula scale |> List.map (fun interval -> transpose root interval)
+            |> List.takeWhile (fun n -> n <> root scale))  
 
     module Chords =
         open Notes
@@ -436,6 +436,9 @@ namespace Music.FSharpKatas
 
         [<Test>]
         let ``Should rotate list``() =
+            test <@ rotateByOne [] |> List.isEmpty @>
+            test <@ rotateByOne [1] = [1] @>
+            test <@ rotateByOne [1; 2] = [2; 1] @>
             test <@ rotateByOne [1; 2; 3] = [2; 3; 1] @>
 
         [<Test>]
@@ -610,6 +613,7 @@ namespace Music.FSharpKatas
         open ScaleHarmonizer
         open Scales
         open Notes
+        open Keys
 
         [<Test>]
         let ``Should have notes for scale``() =
