@@ -9,7 +9,7 @@ namespace Music.FSharpKatas
         let swapFirstTwo list = 
             match list with
             | [] -> []
-            | f::s::t -> s::f::t
+            | f::s::r -> s::f::r
             | f -> f
 
         let swapSecondTwo list = 
@@ -326,7 +326,7 @@ namespace Music.FSharpKatas
             | [PerfectForth; AugmentedFifth] -> Sus4Augmented
             | _ -> Major
 
-        let abrevitedName chordFunction =
+        let abreviatedName chordFunction =
             match chordFunction with
             | Major -> "Maj" | Augmented -> "Aug" | Minor -> "Min" 
             | Diminished -> "Dim" | Major7 -> "Maj7" 
@@ -362,7 +362,7 @@ namespace Music.FSharpKatas
             
         let name chord =
             noteName (noteForFunction chord Root) 
-            + abrevitedName (functionForIntervals(intervalsForChord chord))
+            + abreviatedName (functionForIntervals(intervalsForChord chord))
             
         let noteNames chord =
             chord.notes |> List.map (fun n -> noteName (note n))
