@@ -656,7 +656,7 @@ namespace Music.FSharpKatas
         open Scales
 
         [<Test>]
-        let ``Should have notes for other scales``() =
+        let ``Should have notes for scales``() =
             test <@ createScale Ionian C = [ C; D; E; F; G; A; B ] @>
             test <@ createScale Dorian C = [ C; D; EFlat; F; G; A; BFlat ] @>
             test <@ createScale Phrygian C = [ C; DFlat; EFlat; F; G; AFlat; BFlat ] @>
@@ -698,9 +698,9 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Chord should have notes for function``() =
             test <@ noteForFunction cMaj7 Root = C @>
-            test <@ noteForFunction cMaj7 Third = E @>
-            test <@ noteForFunction cMaj7 Fifth = G @>
-            test <@ noteForFunction cMaj7 Seventh = B @>
+            test <@ noteForFunction cAug Third = E @>
+            test <@ noteForFunction cDim Fifth = GFlat @>
+            test <@ noteForFunction cMin7b5 Seventh = BFlat @>
             
         [<Test>]
         let ``Chord should return note names``() =
@@ -708,15 +708,15 @@ namespace Music.FSharpKatas
 
         [<Test>]
         let ``Chord should return lowest note for bass``() =
-            test <@ bass cMaj7 = C @>
+            test <@ bass cDim7 = C @>
 
         [<Test>]
         let ``Chord should return highest note for lead``() =
-            test <@ lead cMaj7 = B @>
+            test <@ lead cMin7 = BFlat @>
 
         [<Test>]
         let ``Chord should be named after the root``() =
-            test <@ (name cMaj7).StartsWith("C") @>
+            test <@ (name cMin7b5).StartsWith("C") @>
 
         [<Test>]
         let ``Chord should be named after the function``() = 
