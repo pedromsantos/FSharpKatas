@@ -34,21 +34,18 @@
             return i 
         }
 
-        let isMultipleOfFour number =
-            number % 4 = 0
+        let isMultipleOf divisor number =
+            number % divisor = 0
 
         let isNotMultipleOfOneHundred number =
             number % 100 <> 0
 
-        let isMultipleOfFourHundred number =
-            number % 400 = 0
-
         let multiplesOfFourButNoOuneHundred = gen { 
-            return! (years |> Gen.suchThat (fun y -> isMultipleOfFour y && (isNotMultipleOfOneHundred y)))
+            return! (years |> Gen.suchThat (fun y -> isMultipleOf 4 y && (isNotMultipleOfOneHundred y)))
         }
 
         let multiplesOfFourAndFourHundred = gen { 
-            return! (years |> Gen.suchThat (fun y -> isMultipleOfFour y && (isMultipleOfFourHundred y)))
+            return! (years |> Gen.suchThat (fun y -> isMultipleOf 4 y && (isMultipleOf 400 y)))
         }
 
         [<Test>]
