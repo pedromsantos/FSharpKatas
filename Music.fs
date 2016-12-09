@@ -1,5 +1,33 @@
 namespace Music.FSharpKatas
 
+    module Infrastructure =
+        let rotateByOne list =
+            match list with
+            | [] -> []
+            | f::t -> t @ [f]
+
+        let swapFirstTwo list = 
+            match list with
+            | [] -> []
+            | f::s::r -> s::f::r
+            | f -> f
+
+        let swapSecondTwo list = 
+            match list with
+            | [] -> []
+            | f::s::t::r -> f::t::s::r
+            | f::s::t -> f::s::t        
+            | f -> f
+
+        let circularSequenceFromList (lst:'a list) = 
+            let rec next () = 
+                seq {
+                    for element in lst do
+                        yield element
+                    yield! next()
+                }
+            next()
+
     module Notes =
         type Note = | C | CSharp | DFlat | D | DSharp | EFlat | E | F | FSharp 
                     | GFlat | G | GSharp | AFlat | A | ASharp | BFlat | B
@@ -8,64 +36,66 @@ namespace Music.FSharpKatas
                         | MajorThird | PerfectForth | AugmentedForth | DiminishedFifth
                         | PerfectFifth | AugmentedFifth | MinorSixth | MajorSixth
                         | MinorSeventh | MajorSeventh | PerfectOctave
-                    
-        let noteName note =
+        
+        type private NoteAttributes = {Name:string; Sharp:Note; Flat:Note; Pitch:int}
+        type private IntervalAttributes = {Name:string; Distance:int}
+
+        let private noteAttributes note =
             match note with
-            | C -> "C" | CSharp -> "C#" | DFlat -> "Db" | D -> "D"
-            | DSharp -> "D#" | EFlat -> "Eb" | E -> "E" | F ->  "F"
-            | FSharp -> "F#" | GFlat -> "Gb" | G -> "G" | GSharp -> "G#"
-            | AFlat -> "Ab" | A -> "A" | ASharp -> "A#" | BFlat -> "Bb"
-            | B -> "B"
+            | C -> {Name="C"; Sharp=CSharp; Flat=B; Pitch=0}
+            | CSharp -> {Name="C#"; Sharp=D; Flat=C; Pitch=1}
+            | DFlat -> {Name="Db"; Sharp=D; Flat=C; Pitch=1}
+            | D -> {Name="D"; Sharp=DSharp; Flat=DFlat; Pitch=2}
+            | DSharp -> {Name="D#"; Sharp=E; Flat=D; Pitch=3}
+            | EFlat -> {Name="Eb"; Sharp=E; Flat=D; Pitch=3}
+            | E -> {Name="E"; Sharp=F; Flat=EFlat; Pitch=4}
+            | F -> {Name="F"; Sharp=FSharp; Flat=E; Pitch=5}
+            | FSharp -> {Name="F#"; Sharp=G; Flat=F; Pitch=6}
+            | GFlat -> {Name="Gb"; Sharp=G; Flat=F; Pitch=6}
+            | G -> {Name="G"; Sharp=GSharp; Flat=GFlat; Pitch=7}
+            | GSharp -> {Name="G#"; Sharp=A; Flat=G; Pitch=8}
+            | AFlat -> {Name="Ab"; Sharp=A; Flat=G; Pitch=8}
+            | A -> {Name="A"; Sharp=ASharp; Flat=AFlat; Pitch=9}
+            | ASharp -> {Name="A#"; Sharp=B; Flat=A; Pitch=10}
+            | BFlat -> {Name="Bb"; Sharp=B; Flat=A; Pitch=10}
+            | B -> {Name="B"; Sharp=C; Flat=BFlat; Pitch=11}
+
+        let noteName note =
+            (noteAttributes note).Name
                 
         let sharp note =
-            match note with
-            | C -> CSharp | CSharp -> D | DFlat -> D | D -> DSharp
-            | DSharp -> E | EFlat -> E | E -> F | F -> FSharp 
-            | FSharp -> G | GFlat -> G | G -> GSharp | GSharp -> A 
-            | AFlat -> A | A -> ASharp | ASharp -> B | BFlat -> B 
-            | B -> C
-            
+            (noteAttributes note).Sharp
+
         let flat note =
-            match note with
-            | C -> B | CSharp -> C | DFlat -> C | D -> DFlat
-            | DSharp -> D | EFlat -> D | E -> EFlat | F -> E
-            | FSharp -> F | GFlat -> F | G -> GFlat | GSharp -> G
-            | AFlat -> G | A -> AFlat | ASharp -> A | BFlat -> A
-            | B -> BFlat
+            (noteAttributes note).Flat
             
         let pitch note =
-            match note with
-            | C -> 0 | CSharp -> 1 | DFlat -> 1 | D -> 2
-            | DSharp -> 3 | EFlat -> 3 | E -> 4 | F -> 5
-            | FSharp -> 6 | GFlat -> 6 | G -> 7 | GSharp -> 8
-            | AFlat -> 8 | A -> 9 | ASharp -> 10 | BFlat -> 10 
-            | B -> 11 
-                             
-        let intervalName interval =
+            (noteAttributes note).Pitch
+
+        let private intervalAttributes interval =
             match interval with
-            | Unisson -> "Unisson" | MinorSecond -> "MinorSecond" 
-            | MajorSecond -> "MajorSecond" 
-            | AugmentedSecond -> "AugmentedSecond"
-            | MinorThird -> "MinorThird"
-            | MajorThird -> "MajorThird" 
-            | PerfectForth -> "PerfectForth"
-            | AugmentedForth -> "AugmentedForth"
-            | DiminishedFifth -> "DiminishedFifth" 
-            | PerfectFifth -> "PerfectFifth"
-            | AugmentedFifth -> "AugmentedFifth" 
-            | MinorSixth -> "MinorSixth" 
-            | MajorSixth -> "MajorSixth" 
-            | MinorSeventh -> "MinorSeventh"
-            | MajorSeventh -> "MajorSeventh" 
-            | PerfectOctave -> "PerfectOctave"
+            | Unisson -> {Name="Unisson"; Distance=0} 
+            | MinorSecond -> {Name="MinorSecond"; Distance=1} 
+            | MajorSecond -> {Name="MajorSecond"; Distance=2} 
+            | AugmentedSecond -> {Name="AugmentedSecond"; Distance=3} 
+            | MinorThird -> {Name="MinorThird"; Distance=3} 
+            | MajorThird -> {Name="MajorThird"; Distance=4} 
+            | PerfectForth -> {Name="PerfectForth"; Distance=5} 
+            | AugmentedForth -> {Name="AugmentedForth"; Distance=6} 
+            | DiminishedFifth -> {Name="DiminishedFifth"; Distance=6} 
+            | PerfectFifth -> {Name="PerfectFifth"; Distance=7} 
+            | AugmentedFifth -> {Name="AugmentedFifth"; Distance=8} 
+            | MinorSixth -> {Name="MinorSixth"; Distance=8} 
+            | MajorSixth -> {Name="MajorSixth"; Distance=9} 
+            | MinorSeventh -> {Name="MinorSeventh"; Distance=10} 
+            | MajorSeventh -> {Name="MajorSeventh"; Distance=11} 
+            | PerfectOctave -> {Name="PerfectOctave"; Distance=12} 
+
+        let intervalName interval =
+            (intervalAttributes interval).Name
         
         let toDistance interval =
-            match interval with
-            | Unisson -> 0 | MinorSecond -> 1 | MajorSecond -> 2 | AugmentedSecond -> 3
-            | MinorThird -> 3 | MajorThird -> 4 | PerfectForth -> 5
-            | AugmentedForth -> 6| DiminishedFifth -> 6 | PerfectFifth -> 7 
-            | AugmentedFifth -> 8 | MinorSixth -> 8| MajorSixth -> 9 
-            | MinorSeventh -> 10 | MajorSeventh -> 11 | PerfectOctave -> 12
+            (intervalAttributes interval).Distance
             
         let fromDistance distance =
             match distance with
@@ -90,13 +120,11 @@ namespace Music.FSharpKatas
             then (toDistance PerfectOctave) - distance * -1 
             else distance    
                 
-        let transposeStep note interval =
+        let private transposeDirection note interval =
             match interval with
             | Unisson -> note 
-            
             | MajorSecond | AugmentedSecond | PerfectFifth | MajorThird | PerfectForth
             | AugmentedFifth | MajorSixth | PerfectOctave | AugmentedForth -> sharp note
-            
             | MinorSecond | DiminishedFifth | MinorThird
             | MinorSixth | MinorSeventh | MajorSeventh  -> flat note
             
@@ -105,7 +133,7 @@ namespace Music.FSharpKatas
             
         let transpose noteToTranspose transposingInterval =
             let rec loop note interval =
-                let newNote = transposeStep note transposingInterval
+                let newNote = transposeDirection note transposingInterval
                 let newInterval = intervalBetween noteToTranspose newNote
                 
                 if toDistance newInterval = toDistance transposingInterval then
@@ -147,8 +175,14 @@ namespace Music.FSharpKatas
             | AlteredDominant -> [Unisson; MinorSecond; AugmentedSecond; MajorThird; DiminishedFifth;  AugmentedFifth; MinorSeventh]
             | HalfWholeDiminished -> [Unisson; MinorSecond; MinorThird; MajorThird; AugmentedForth;  PerfectFifth; MajorSixth; MinorSeventh]
             | WholeTone -> [Unisson; MajorSecond; MajorThird; DiminishedFifth; AugmentedFifth; MinorSeventh]
+        
+        let createScale scale root = 
+            formula scale |> List.map (fun interval -> transpose root interval)
 
-        type Scale = 
+    module Keys =
+        open Notes
+
+        type Key = 
             | AMajor | AFlatMajor | BMajor | BFlatMajor | CMajor
             | DMajor | DFlatMajor | EMajor | EFlatMajor
             | FMajor | FSharpMajor | GMajor | GFlatMajor | AMinor
@@ -156,54 +190,66 @@ namespace Music.FSharpKatas
             | EMinor | FMinor | FSharpMinor | GMinor 
             | GSharpMinor | EFlatMinor
 
-        let accidentals scale =
-            match scale with
-            | AMajor -> 3 | AFlatMajor -> -4 | BMajor -> 5 
-            | BFlatMajor -> -2 | CMajor -> 0
-            | DMajor -> 2 | DFlatMajor -> -5 | EMajor -> 4 
-            | EFlatMajor -> -3 | FMajor -> -1 | FSharpMajor -> 6 
-            | GMajor -> 1 | GFlatMajor -> -6 | AMinor -> 0
-            | BMinor -> 2 | BFlatMinor -> -5 | CMinor -> -3 
-            | CSharpMinor -> 4 | DMinor -> -1 | EMinor -> 1
-            | FMinor -> -4 | FSharpMinor -> 3 | GMinor -> -2 
-            | GSharpMinor -> 5 | EFlatMinor -> -6
+        type private KeyAttributes = {Root:Note; Accidentals:int}
+
+        let private keyAttributes key =
+            match key with
+            | AMajor -> {Root=A; Accidentals=3} 
+            | AFlatMajor -> {Root=AFlat; Accidentals=(-4)} 
+            | BMajor -> {Root=B; Accidentals=5} 
+            | BFlatMajor -> {Root=BFlat; Accidentals=(-2)} 
+            | CMajor -> {Root=C; Accidentals=0} 
+            | DMajor -> {Root=D; Accidentals=2} 
+            | DFlatMajor -> {Root=DFlat; Accidentals=(-5)} 
+            | EMajor -> {Root=E; Accidentals=4} 
+            | EFlatMajor -> {Root=EFlat; Accidentals=(-3)} 
+            | FMajor -> {Root=F; Accidentals=(-1)} 
+            | FSharpMajor -> {Root=FSharp; Accidentals=6} 
+            | GMajor -> {Root=G; Accidentals=1} 
+            | GFlatMajor -> {Root=GFlat; Accidentals=(-6)} 
+            | AMinor -> {Root=A; Accidentals=0} 
+            | BMinor -> {Root=B; Accidentals=2} 
+            | BFlatMinor -> {Root=BFlat; Accidentals=(-5)} 
+            | CMinor -> {Root=C; Accidentals=(-3)} 
+            | CSharpMinor -> {Root=CSharp; Accidentals=4} 
+            | DMinor -> {Root=D; Accidentals=(-1)} 
+            | EMinor -> {Root=E; Accidentals=1} 
+            | FMinor -> {Root=F; Accidentals=(-4)} 
+            | FSharpMinor -> {Root=FSharp; Accidentals=3} 
+            | GMinor -> {Root=G; Accidentals=(-2)} 
+            | GSharpMinor -> {Root=GSharp; Accidentals=5} 
+            | EFlatMinor -> {Root=EFlat; Accidentals=(-6)} 
+
+        let root key =
+            (keyAttributes key).Root
+
+        let private accidentals key =
+            (keyAttributes key).Accidentals
         
-        let root scale =
-            match scale with
-            | AMajor -> A | AFlatMajor -> AFlat | BMajor -> B 
-            | BFlatMajor -> BFlat | CMajor -> C
-            | DMajor -> D | DFlatMajor -> DFlat | EMajor -> E 
-            | EFlatMajor -> EFlat | FMajor -> F | FSharpMajor -> FSharp 
-            | GMajor -> G | GFlatMajor -> GFlat | AMinor -> A
-            | BMinor -> B | BFlatMinor -> BFlat | CMinor -> C 
-            | CSharpMinor -> CSharp | DMinor -> D | EMinor -> E
-            | FMinor -> F | FSharpMinor -> FSharp | GMinor -> G 
-            | GSharpMinor -> GSharp | EFlatMinor -> EFlat
-        
-        let flatedNotesScale fifths scaleAccidents =
-            (fifths |> List.rev |> List.skip -scaleAccidents) 
+        let private flatedKey fifths keyAccidents =
+            (fifths |> List.rev |> List.skip -keyAccidents) 
             @ (fifths
             |> List.rev
-            |> List.take(-scaleAccidents)
+            |> List.take(-keyAccidents)
             |> List.map flat)
         
-        let sharpedNotesScale fifths scaleAccidents =
-            ((fifths |> List.skip scaleAccidents) )
+        let private sharpedKey fifths keyAccidents =
+            ((fifths |> List.skip keyAccidents) )
             @ (fifths
-            |> List.take(scaleAccidents)
+            |> List.take(keyAccidents)
             |> List.map sharp)
         
-        let rawNotes scale = 
+        let private rawNotes scale = 
             let fifths = [F; C; G; D; A; E; B;]
-            let scaleAccidents = accidentals scale
+            let keyAccidents = accidentals scale
             
-            if scaleAccidents = 0 then
+            if keyAccidents = 0 then
                 fifths
             else 
-                if scaleAccidents < 0 then 
-                    flatedNotesScale fifths scaleAccidents
+                if keyAccidents < 0 then 
+                    flatedKey fifths keyAccidents
                 else
-                    sharpedNotesScale fifths scaleAccidents
+                    sharpedKey fifths keyAccidents
 
         let notes scale = 
             (rawNotes scale
@@ -212,13 +258,11 @@ namespace Music.FSharpKatas
             @
             (rawNotes scale
             |> List.sortBy pitch
-            |> List.takeWhile (fun n -> n <> root scale))
-
-        let createScale scale root = 
-            formula scale |> List.map (fun interval -> transpose root interval)
+            |> List.takeWhile (fun n -> n <> root scale))  
 
     module Chords =
         open Notes
+        open Infrastructure
 
         type ChordFunction = 
             | Major | Augmented | Minor | Diminished
@@ -282,7 +326,7 @@ namespace Music.FSharpKatas
             | [PerfectForth; AugmentedFifth] -> Sus4Augmented
             | _ -> Major
 
-        let abrevitedName chordFunction =
+        let abreviatedName chordFunction =
             match chordFunction with
             | Major -> "Maj" | Augmented -> "Aug" | Minor -> "Min" 
             | Diminished -> "Dim" | Major7 -> "Maj7" 
@@ -318,7 +362,7 @@ namespace Music.FSharpKatas
             
         let name chord =
             noteName (noteForFunction chord Root) 
-            + abrevitedName (functionForIntervals(intervalsForChord chord))
+            + abreviatedName (functionForIntervals(intervalsForChord chord))
             
         let noteNames chord =
             chord.notes |> List.map (fun n -> noteName (note n))
@@ -328,13 +372,7 @@ namespace Music.FSharpKatas
                 [(root, Root)]@
                 (intervalsForFunction chordFunction
                 |> List.map (fun i -> ((transpose root i), functionForInterval i)));
-             chordType = Closed}
-
-        let private rotate list rotation =
-            (list |> List.skip rotation) @ (list |> List.take rotation)
-
-        let private rotateByOne list =
-            rotate list 1
+             chordType = Closed}      
 
         let invertOpenOrClosed chord =
             {notes= rotateByOne chord.notes; chordType=chord.chordType}
@@ -347,16 +385,7 @@ namespace Music.FSharpKatas
                         |> rotateByOne 
                         |> rotateByOne) 
                 chordType=chord.chordType
-             }
-
-        let private swapFirstTwo list = 
-            match list with
-            | [] -> []
-            | f::s::t -> s::f::t
-            | f -> f
-
-        let private swapSecondTwo list = 
-            (list |> List.take 1) @ (swapFirstTwo (list |> List.skip 1))
+             }     
 
         let invertDrop3 chord =
             {notes= chord.notes |> rotateByOne |> rotateByOne |> swapSecondTwo; chordType=chord.chordType}
@@ -374,22 +403,14 @@ namespace Music.FSharpKatas
             {notes= (chord |> toDrop2 |> toDrop2).notes; chordType=Drop3}
 
     module ScaleHarmonizer =
+        open Infrastructure
         open Chords
         open Scales
         open Notes
         
         type ScaleDgrees = | I = 0 | II = 1 | III = 2 | IV = 3 | V = 4 | VI = 5 | VII = 6
 
-        let circularSequenceFromList (lst:'a list) = 
-            let rec next () = 
-                seq {
-                    for element in lst do
-                        yield element
-                    yield! next()
-                }
-            next()
-
-        let thirds (fromPosition:ScaleDgrees) (scale:Note list) =
+        let thirds fromPosition scale =
             scale 
             |> circularSequenceFromList
             |> Seq.skip (int fromPosition)
@@ -398,17 +419,6 @@ namespace Music.FSharpKatas
             |> Seq.filter (fun (i, v) -> i % 2 = 0)
             |> Seq.map snd
             |> Seq.toList
-
-        let triadsHarmonizer forDegree scale =
-            let thirdsList = 
-                scale
-                |> thirds forDegree
-                |> List.take 3
-            
-            {notes= [(thirdsList.[0], Root); 
-                     (thirdsList.[1] , Third); 
-                     (thirdsList.[2], Fifth)]; 
-             chordType = Closed}
 
         let seventhsHarmonizer forDegree scale =
             let thirdsList = 
@@ -422,6 +432,36 @@ namespace Music.FSharpKatas
                      (thirdsList.[3], Seventh)]; 
              chordType = Closed}
 
+        let triadsHarmonizer forDegree scale =
+            let seventh = seventhsHarmonizer forDegree scale
+            {seventh with notes = seventh.notes |> List.take 3}
+
+    module InfrastructureTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Infrastructure
+
+        [<Test>]
+        let ``Should rotate list``() =
+            test <@ rotateByOne [] |> List.isEmpty @>
+            test <@ rotateByOne [1] = [1] @>
+            test <@ rotateByOne [1; 2] = [2; 1] @>
+            test <@ rotateByOne [1; 2; 3] = [2; 3; 1] @>
+
+        [<Test>]
+        let ``Should swap first 2 elements in list``() =
+            test <@ swapFirstTwo [1; 2; 3] = [2; 1; 3] @>
+
+        [<Test>]
+        let ``Should swap second 2 elements in list``() =
+            test <@ swapSecondTwo [1; 2; 3] = [1; 3; 2] @>
+
+        [<Test>]
+        let ``Should create circular sequence from list``() =
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 3 |> Seq.last = 3 @>
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 4 |> Seq.last = 1 @>
+            test <@ circularSequenceFromList [1; 2; 3] |> Seq.take 5 |> Seq.last = 2 @>
+        
     module NotesTests =
         open NUnit.Framework
         open Swensen.Unquote
@@ -574,15 +614,14 @@ namespace Music.FSharpKatas
             test <@ fromDistance 11 = MajorSeventh @>
             test <@ fromDistance 12 = PerfectOctave @>
 
-     module ScalesTests =
+     module KeyTests =
         open NUnit.Framework
         open Swensen.Unquote
-        open ScaleHarmonizer
-        open Scales
         open Notes
+        open Keys
 
         [<Test>]
-        let ``Should have notes for scale``() =
+        let ``Should have notes for key``() =
             test <@ notes CMajor = [ C; D; E; F; G; A; B ] @>
             test <@ notes GMajor = [ G; A; B; C; D; E; FSharp ] @>
             test <@ notes DMajor = [ D; E; FSharp; G; A; B; CSharp ] @>
@@ -610,8 +649,14 @@ namespace Music.FSharpKatas
             test <@ notes GMinor = [ G; A; BFlat; C; D; EFlat; F ] @>
             test <@ notes DMinor = [ D; E; F; G; A; BFlat; C ] @>
 
+    module ScaleTests =
+        open NUnit.Framework
+        open Swensen.Unquote
+        open Notes
+        open Scales
+
         [<Test>]
-        let ``Should have notes for other scales``() =
+        let ``Should have notes for scales``() =
             test <@ createScale Ionian C = [ C; D; E; F; G; A; B ] @>
             test <@ createScale Dorian C = [ C; D; EFlat; F; G; A; BFlat ] @>
             test <@ createScale Phrygian C = [ C; DFlat; EFlat; F; G; AFlat; BFlat ] @>
@@ -653,9 +698,9 @@ namespace Music.FSharpKatas
         [<Test>]
         let ``Chord should have notes for function``() =
             test <@ noteForFunction cMaj7 Root = C @>
-            test <@ noteForFunction cMaj7 Third = E @>
-            test <@ noteForFunction cMaj7 Fifth = G @>
-            test <@ noteForFunction cMaj7 Seventh = B @>
+            test <@ noteForFunction cAug Third = E @>
+            test <@ noteForFunction cDim Fifth = GFlat @>
+            test <@ noteForFunction cMin7b5 Seventh = BFlat @>
             
         [<Test>]
         let ``Chord should return note names``() =
@@ -663,15 +708,15 @@ namespace Music.FSharpKatas
 
         [<Test>]
         let ``Chord should return lowest note for bass``() =
-            test <@ bass cMaj7 = C @>
+            test <@ bass cDim7 = C @>
 
         [<Test>]
         let ``Chord should return highest note for lead``() =
-            test <@ lead cMaj7 = B @>
+            test <@ lead cMin7 = BFlat @>
 
         [<Test>]
         let ``Chord should be named after the root``() =
-            test <@ (name cMaj7).StartsWith("C") @>
+            test <@ (name cMin7b5).StartsWith("C") @>
 
         [<Test>]
         let ``Chord should be named after the function``() = 
