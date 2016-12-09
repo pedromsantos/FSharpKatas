@@ -24,9 +24,7 @@
 
     module LeapYearPropertyTests =
         open FsCheck
-        open FsCheck.NUnit
         open NUnit.Framework
-        open Swensen.Unquote
         open LeapYear
 
         let years = gen { 
@@ -40,20 +38,20 @@
         let isNotMultipleOfOneHundred number =
             number % 100 <> 0
 
-        let multiplesOfFourButNoOuneHundred = gen { 
+        let multiplesOfFourButNoOuneHundred = Arb.fromGen (gen { 
             return! (years |> Gen.suchThat (fun y -> isMultipleOf 4 y && (isNotMultipleOfOneHundred y)))
-        }
+            })
 
-        let multiplesOfFourAndFourHundred = gen { 
+        let multiplesOfFourAndFourHundred = Arb.fromGen ( gen { 
             return! (years |> Gen.suchThat (fun y -> isMultipleOf 4 y && (isMultipleOf 400 y)))
-        }
+        })
 
         [<Test>]
         let ``Should be a leap year when divisible by 4 but not by 100``() =
-            Prop.forAll (Arb.fromGen multiplesOfFourButNoOuneHundred) (fun year -> LeapYear.leapYear year = true)
+            Prop.forAll multiplesOfFourButNoOuneHundred (fun year -> LeapYear.leapYear year)
             |> Check.VerboseThrowOnFailure
 
         [<Test>]
         let ``Should be a leap year when divisible by 4 and by 400``() =
-            Prop.forAll (Arb.fromGen multiplesOfFourAndFourHundred) (fun year -> LeapYear.leapYear year = true)
+            Prop.forAll multiplesOfFourAndFourHundred (fun year -> LeapYear.leapYear year)
             |> Check.VerboseThrowOnFailure
