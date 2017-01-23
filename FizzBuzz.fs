@@ -11,6 +11,11 @@ namespace FizzBuzz.FSharpKatas
             | DivisibleBy 3 -> "Fizz"
             | _ -> number.ToString()
 
+        let printFizzBuzz =
+            [1..100]
+            |> List.map fizzBuzz
+            |> List.iter (printf "%s\n")
+
     module FizzBuzzTests =
         open NUnit.Framework
         open Swensen.Unquote
