@@ -40,12 +40,9 @@
         let isMultipleOf divisor number =
             number % divisor = 0
 
-        let isNotMultipleOfOneHundred number =
-            number % 100 <> 0
-
         let multiplesOfFourButNoOneHundred = Arb.fromGen (gen { 
             return! (years |> Gen.suchThat (fun y -> 
-                                isMultipleOf 4 y && (isNotMultipleOfOneHundred y)))
+                                isMultipleOf 4 y && (not (isMultipleOf 100 y))))
             })
 
         let multiplesOfOneHundredButNotFourHundred = Arb.fromGen (gen { 
