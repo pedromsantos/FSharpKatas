@@ -1,12 +1,15 @@
 namespace FizzBuzz.FSharpKatas
 
     module FizzBuzz =
+
+        let (|DivisibleBy|_|) by x = if x % by = 0 then Some DivisibleBy else None
+
         let fizzBuzz number =
-            match (number % 3, number % 5) with
-                | (0, 0) -> "FizzBuzz"
-                | (0, _) -> "Fizz"
-                | (_, 0) -> "Buzz"
-                | (_, _) -> number.ToString()
+            match number with
+                | DivisibleBy 5 & DivisibleBy 3 -> "FizzBuzz"
+                | DivisibleBy 3 -> "Fizz"
+                | DivisibleBy 5 -> "Buzz"
+                | _ -> number.ToString()
 
     module FizzBuzzTests =
         open NUnit.Framework
