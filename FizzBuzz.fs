@@ -6,10 +6,10 @@ namespace FizzBuzz.FSharpKatas
 
         let fizzBuzz number =
             match number with
-                | DivisibleBy 5 & DivisibleBy 3 -> "FizzBuzz"
-                | DivisibleBy 3 -> "Fizz"
-                | DivisibleBy 5 -> "Buzz"
-                | _ -> number.ToString()
+            | DivisibleBy 5 & DivisibleBy 3 -> "FizzBuzz"
+            | DivisibleBy 3 -> "Fizz"
+            | DivisibleBy 5 -> "Buzz"
+            | _ -> number.ToString()
 
     module FizzBuzzTests =
         open NUnit.Framework
