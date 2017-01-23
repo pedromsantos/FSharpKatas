@@ -1,10 +1,12 @@
 namespace RomanNumerals.FSharpKatas
 
     module RomanNumerals =
+        
         let numbersToRomans = [1, "I"; 
                                4, "IV"; 
                                5, "V"; 
                                9, "IX"; 
+                               10, "X"; 
                                10, "X"; 
                                40, "XL"; 
                                50, "L"; 
@@ -16,13 +18,14 @@ namespace RomanNumerals.FSharpKatas
                                1000, "M"
                               ] |> List.rev
 
-        let conversionFor number =
+        let private largestArabicRomanFor number =
             numbersToRomans |> List.tryFind (fun (arabic, _) -> number >= arabic)
 
         let rec numberToRomanNumeral number =
-            match (number, conversionFor number) with
-            | (0, _) | (_, None) -> ""
-            | (n, Some (arabic, roman)) -> roman + numberToRomanNumeral(n - arabic)
+            let largestArabicRoman = largestArabicRomanFor number
+            match largestArabicRoman with
+            | None -> ""
+            | Some (arabic, roman) -> roman + numberToRomanNumeral(number - arabic)
 
     module RomanNumeralsTests =
         open NUnit.Framework
