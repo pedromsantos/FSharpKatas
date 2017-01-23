@@ -43,19 +43,32 @@
         let isNotMultipleOfOneHundred number =
             number % 100 <> 0
 
-        let multiplesOfFourButNoOuneHundred = Arb.fromGen (gen { 
+        let multiplesOfFourButNoOneHundred = Arb.fromGen (gen { 
             return! (years |> Gen.suchThat (fun y -> 
-                isMultipleOf 4 y && (isNotMultipleOfOneHundred y)))
+                                isMultipleOf 4 y && (isNotMultipleOfOneHundred y)))
+            })
+
+        let multiplesOfOneHundredButNotFourHundred = Arb.fromGen (gen { 
+            return! (years |> Gen.suchThat (fun y -> 
+                                isMultipleOf 100 y && (not (isMultipleOf 400 y))))
             })
 
         let multiplesOfFourAndFourHundred = Arb.fromGen ( gen { 
             return! (years |> Gen.suchThat (fun y -> 
-                isMultipleOf 4 y && (isMultipleOf 400 y)))
+                                isMultipleOf 4 y && (isMultipleOf 400 y)))
         })
+
+        let verifyNotLeatYear year =
+            not (leapYear year)
+
+        [<Test>]
+        let ``Should not be a leap year when divisible by 100``() =
+            Prop.forAll multiplesOfOneHundredButNotFourHundred verifyNotLeatYear
+            |> Check.VerboseThrowOnFailure
 
         [<Test>]
         let ``Should be a leap year when divisible by 4 but not by 100``() =
-            Prop.forAll multiplesOfFourButNoOuneHundred leapYear
+            Prop.forAll multiplesOfFourButNoOneHundred leapYear
             |> Check.VerboseThrowOnFailure
 
         [<Test>]
