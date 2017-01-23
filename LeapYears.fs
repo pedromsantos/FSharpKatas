@@ -2,11 +2,14 @@
 
     module LeapYear  =
 
+        let (|DivisibleBy|_|) by x = if x % by = 0 then Some DivisibleBy else None
+
         let leapYear year =
-            match ((year % 4 = 0), (year % 100 = 0), (year % 400 = 0)) with
-            | (true, false, _) -> true
-            | (true, true, true) -> true
-            | _ -> false
+            match year with
+            | DivisibleBy 400 -> true
+            | DivisibleBy 100 -> false
+            | DivisibleBy 4   -> true
+            | _               -> false
 
     module LeapYearTests =
         open NUnit.Framework
