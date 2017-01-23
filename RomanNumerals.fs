@@ -9,7 +9,8 @@ namespace RomanNumerals.FSharpKatas
                               ] |> List.rev
 
         let private largestArabicRomanFor number =
-            numbersToRomans |> List.tryFind (fun (arabic, _) -> number >= arabic)
+            if number > 3999 then None
+            else numbersToRomans |> List.tryFind (fun (arabic, _) -> number >= arabic)
 
         let rec numberToRomanNumeral number =
             let largestArabicRoman = largestArabicRomanFor number
@@ -49,5 +50,7 @@ namespace RomanNumerals.FSharpKatas
         [<TestCase(846, "DCCCXLVI")>]
         [<TestCase(1999, "MCMXCIX")>]
         [<TestCase(2008, "MMVIII")>]
+        [<TestCase(0, "")>]
+        [<TestCase(4000, "")>]
         let ``Should convert number to roman numeral`` number expectedRomanNumeral = 
             test <@ numberToRomanNumeral number = expectedRomanNumeral @>
