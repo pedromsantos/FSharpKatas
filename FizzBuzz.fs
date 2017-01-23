@@ -7,8 +7,8 @@ namespace FizzBuzz.FSharpKatas
         let fizzBuzz number =
             match number with
             | DivisibleBy 5 & DivisibleBy 3 -> "FizzBuzz"
-            | DivisibleBy 3 -> "Fizz"
             | DivisibleBy 5 -> "Buzz"
+            | DivisibleBy 3 -> "Fizz"
             | _ -> number.ToString()
 
     module FizzBuzzTests =
