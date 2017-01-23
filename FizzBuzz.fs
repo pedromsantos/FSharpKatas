@@ -4,16 +4,16 @@ namespace FizzBuzz.FSharpKatas
 
         let (|DivisibleBy|_|) by x = if x % by = 0 then Some DivisibleBy else None
 
-        let fizzBuzz number =
+        let toFizzBuzz number =
             match number with
             | DivisibleBy 5 & DivisibleBy 3 -> "FizzBuzz"
             | DivisibleBy 5 -> "Buzz"
             | DivisibleBy 3 -> "Fizz"
             | _ -> number.ToString()
 
-        let printFizzBuzz =
+        let fizzBuzz =
             [1..100]
-            |> List.map fizzBuzz
+            |> List.map toFizzBuzz
             |> List.iter (printf "%s\n")
 
     module FizzBuzzTests =
@@ -31,4 +31,4 @@ namespace FizzBuzz.FSharpKatas
         [<TestCase(10, "Buzz")>]
         [<TestCase(15, "FizzBuzz")>]
         let ``Should fizz buzz number``number expectedFizzBuzz =
-            test <@ fizzBuzz number = expectedFizzBuzz @>
+            test <@ toFizzBuzz number = expectedFizzBuzz @>
