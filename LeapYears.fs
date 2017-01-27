@@ -14,6 +14,7 @@
     module LeapYearTests =
         open NUnit.Framework
         open Swensen.Unquote
+        open FsCheck
         open LeapYear
 
         [<TestCase(1, false)>]
@@ -27,45 +28,43 @@
         let ``Should determine if year is a leap year`` year shouldBeLeapYear =
             test <@ leapYear year = shouldBeLeapYear @>
 
-    module LeapYearPropertyTests =
-        open FsCheck
-        open NUnit.Framework
-        open LeapYear
+        let multiplesOfFour years = 
+            years |> Gen.suchThat (fun y -> y % 4 = 0)
 
-        let years = gen { 
-            let! year = Gen.choose (1, 2100) 
-            return year 
-        }
+        let multiplesOfOneHundred years = 
+            years |> Gen.suchThat (fun y -> y % 100 = 0)
 
-        let isMultipleOf divisor number =
-            number % divisor = 0
+        let multiplesOfFourHundred years = 
+            years |> Gen.suchThat (fun y -> y % 400 = 0)
 
-        let multiplesOfFourButNoOneHundred = Arb.fromGen (gen { 
-            return! (years |> Gen.suchThat (fun y -> 
-                                isMultipleOf 4 y && (not (isMultipleOf 100 y))))
-            })
+        let nonMultiplesOfOneHundred years = 
+            years |> Gen.suchThat (fun y -> y % 100 <> 0)
 
-        let multiplesOfOneHundredButNotFourHundred = Arb.fromGen (gen { 
-            return! (years |> Gen.suchThat (fun y -> 
-                                isMultipleOf 100 y && (not (isMultipleOf 400 y))))
-            })
+        let nonMultiplesOfFourHundred years = 
+            years |> Gen.suchThat (fun y -> y % 400 <> 0)
 
-        let multiplesOfFourAndFourHundred = Arb.fromGen ( gen { 
-            return! (years |> Gen.suchThat (fun y -> 
-                                isMultipleOf 4 y && (isMultipleOf 400 y)))
-        })
+        let years = gen { return! Gen.choose (1, 2266) }
+
+        let multiplesOfFourButNoOuneHundred = 
+            Arb.fromGen (years |> multiplesOfFour |> nonMultiplesOfOneHundred)
+
+        let multiplesOfOneHundredButNotFourHundred = 
+            Arb.fromGen (years |> multiplesOfOneHundred |> nonMultiplesOfFourHundred)
+
+        let multiplesOfFourAndFourHundred = 
+            Arb.fromGen (years |> multiplesOfFour |> multiplesOfFourHundred)
 
         let verifyNotLeatYear year =
             not (leapYear year)
 
         [<Test>]
-        let ``Should not be a leap year when divisible by 100``() =
-            Prop.forAll multiplesOfOneHundredButNotFourHundred verifyNotLeatYear
+        let ``Should be a leap year when divisible by 4 but not by 100``() =
+            Prop.forAll multiplesOfFourButNoOuneHundred leapYear
             |> Check.VerboseThrowOnFailure
 
         [<Test>]
-        let ``Should be a leap year when divisible by 4 but not by 100``() =
-            Prop.forAll multiplesOfFourButNoOneHundred leapYear
+        let ``Should not be a leap year when divisible by 100 but not 400``() =
+            Prop.forAll multiplesOfOneHundredButNotFourHundred verifyNotLeatYear
             |> Check.VerboseThrowOnFailure
 
         [<Test>]
