@@ -28,31 +28,22 @@
         let ``Should determine if year is a leap year`` year shouldBeLeapYear =
             test <@ leapYear year = shouldBeLeapYear @>
 
-        let multiplesOfFour years = 
-            years |> Gen.suchThat (fun y -> y % 4 = 0)
+        let yearsMultipleOf multiple years = 
+            years |> Gen.suchThat (fun y -> y % multiple = 0)
 
-        let multiplesOfOneHundred years = 
-            years |> Gen.suchThat (fun y -> y % 100 = 0)
-
-        let multiplesOfFourHundred years = 
-            years |> Gen.suchThat (fun y -> y % 400 = 0)
-
-        let nonMultiplesOfOneHundred years = 
-            years |> Gen.suchThat (fun y -> y % 100 <> 0)
-
-        let nonMultiplesOfFourHundred years = 
-            years |> Gen.suchThat (fun y -> y % 400 <> 0)
+        let yearsNotMultipleOf multiple years = 
+            years |> Gen.suchThat (fun y -> y % multiple <> 0)
 
         let years = gen { return! Gen.choose (1, 2266) }
 
         let multiplesOfFourButNoOuneHundred = 
-            Arb.fromGen (years |> multiplesOfFour |> nonMultiplesOfOneHundred)
+            Arb.fromGen (years |> yearsMultipleOf 4 |> yearsNotMultipleOf 100)
 
         let multiplesOfOneHundredButNotFourHundred = 
-            Arb.fromGen (years |> multiplesOfOneHundred |> nonMultiplesOfFourHundred)
+            Arb.fromGen (years |> yearsMultipleOf 100 |> yearsNotMultipleOf 400)
 
         let multiplesOfFourAndFourHundred = 
-            Arb.fromGen (years |> multiplesOfFour |> multiplesOfFourHundred)
+            Arb.fromGen (years |> yearsMultipleOf 4 |> yearsMultipleOf 400)
 
         let verifyNotLeatYear year =
             not (leapYear year)
